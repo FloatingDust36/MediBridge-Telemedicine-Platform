@@ -1,0 +1,6 @@
+# Ignore Python, Node, model files, etc.
+__pycache__/
+*.pkl
+*.log
+node_modules/
+.env
