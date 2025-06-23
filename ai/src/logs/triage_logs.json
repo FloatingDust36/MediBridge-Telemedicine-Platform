@@ -1,0 +1,42 @@
+[
+  {
+    "user_id": "123",
+    "symptoms": [
+      "having",
+      "fever"
+    ],
+    "severity": "severe",
+    "duration": "3 days",
+    "triage_level": 2,
+    "triage_label": "Emergency",
+    "confidence": 0.48,
+    "suggested_action": "Go to the nearest hospital immediately!",
+    "timestamp": "2025-06-23T00:42:05.775494"
+  },
+  {
+    "user_id": "123",
+    "symptoms": [
+      "sprained"
+    ],
+    "severity": "severe",
+    "duration": "just now",
+    "triage_level": 2,
+    "triage_label": "Emergency",
+    "confidence": 0.63,
+    "suggested_action": "Go to the nearest hospital immediately!",
+    "timestamp": "2025-06-23T00:43:26.238283"
+  },
+  {
+    "user_id": "123",
+    "symptoms": [
+      "none"
+    ],
+    "severity": "mild",
+    "duration": "none",
+    "triage_level": 5,
+    "triage_label": "Non-Urgent",
+    "confidence": 0.58,
+    "suggested_action": "No emergency. You may self-monitor or consult if needed.",
+    "timestamp": "2025-06-23T00:44:18.135087"
+  }
+]
