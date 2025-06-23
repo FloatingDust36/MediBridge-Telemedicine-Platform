@@ -1,0 +1,169 @@
+/* Reviews Page Specific Styles */
+
+.reviews-content-wrapper {
+  padding-top: 60px; /* Adjust based on navbar height */
+  padding-bottom: 20px; /* Space for the footer */
+  background-color: #f0f5fa; /* Light blue background as per image */
+  min-height: calc(100vh - 40px - 30px); /* Full height minus navbar and footer height */
+  display: flex;
+  flex-direction: column; /* Content flows in a column */
+  align-items: center; /* Center content horizontally */
+  box-sizing: border-box;
+}
+
+.reviews-page-title {
+  color: #000080; /* Dark blue color as seen in image */
+  margin-top: 20px;
+  margin-bottom: 30px;
+  font-size: 2rem; /* Larger font size for main title */
+  font-weight: bold;
+}
+
+.review-note {
+  background-color: #fffacd; /* Light yellow background */
+  border: 1px solid #ffeb8e; /* Yellow border */
+  border-radius: 8px;
+  padding: 15px 25px;
+  margin-bottom: 30px;
+  max-width: 800px;
+  width: 90%;
+  text-align: center;
+  color: #6a5a00; /* Darker yellow/brown text color */
+  font-size: 0.95rem;
+}
+
+.note-label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.note-link {
+  color: #000080; /* Dark blue for the sign in link */
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.note-link:hover {
+  color: #800000; /* Dark red on hover for link */
+}
+
+.what-users-saying {
+  color: #333;
+  font-size: 1.6rem;
+  margin-bottom: 25px;
+  font-weight: 600;
+  text-align: left; /* Align title to left within its potential container */
+  max-width: 800px; /* Match width of review cards for alignment */
+  width: 90%;
+}
+
+.review-card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  padding: 25px;
+  margin-bottom: 20px;
+  max-width: 800px; /* Max width for review cards */
+  width: 90%; /* Responsive width */
+  box-sizing: border-box;
+}
+
+.reviewer-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.reviewer-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #333;
+  margin-right: 15px; /* Space between name and stars */
+}
+
+.rating-stars {
+  font-size: 1.2rem;
+  color: #ffd700; /* Gold color for stars */
+  white-space: nowrap; /* Keep stars on one line */
+}
+
+.star {
+  margin-right: 2px;
+}
+
+.star.filled {
+  color: #ffd700; /* Filled star color */
+}
+
+.review-text {
+  color: #555;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .reviews-page-title {
+    font-size: 1.7rem;
+    margin-bottom: 25px;
+  }
+
+  .review-note,
+  .what-users-saying,
+  .review-card {
+    width: 95%; /* Increase width for better use of space */
+    padding: 15px;
+  }
+
+  .what-users-saying {
+    font-size: 1.4rem;
+  }
+
+  .reviewer-name {
+    font-size: 1rem;
+    margin-right: 10px;
+  }
+
+  .rating-stars {
+    font-size: 1.1rem;
+  }
+
+  .review-text {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviews-page-title {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+
+  .review-note {
+    padding: 10px 15px;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+  }
+
+  .what-users-saying {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+
+  .review-card {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+
+  .reviewer-name {
+    font-size: 0.95rem;
+  }
+
+  .rating-stars {
+    font-size: 1rem;
+  }
+
+  .review-text {
+    font-size: 0.9rem;
+  }
+}

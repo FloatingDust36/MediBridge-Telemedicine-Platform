@@ -1,0 +1,185 @@
+/* index.css or global.css */
+
+/* Tailwind CSS directives - these must always be at the top */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom layer for the 'all-unset' utility, if you are explicitly using it */
+@layer components {
+  .all-\[unset\] {
+    all: unset;
+  }
+}
+
+/* Base layer for custom styles and overrides, after Tailwind's preflight */
+@layer base {
+  /*
+   * COMBINED :root styles
+   * Preferring Tailwind's CSS variables for background/foreground colors
+   * and adding the font-family from your new snippet.
+   */
+  :root {
+    /* Tailwind's color variables (from your previous index.css) */
+    --background: 0 0% 100%; /* Light mode background default */
+    --foreground: 222.2 47.4% 11.2%; /* Light mode foreground default */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --card: transparent;
+    --card-foreground: 222.2 47.4% 11.2%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --ring: 215 20.2% 65.1%;
+    --radius: 0.5rem;
+
+    /* Styles from your new snippet, integrated carefully */
+    /*
+     * font-family will be handled by tailwind.config.js for `font-sans`
+     * line-height and font-weight can be handled by Tailwind utilities (e.g., `leading-normal`, `font-normal`)
+     * or remain here as global defaults if you prefer.
+     */
+    line-height: 1.5;
+    font-weight: 400;
+
+    /* `color-scheme` is good to keep for native browser behavior */
+    color-scheme: light dark;
+
+    /*
+     * These direct `color` and `background-color` settings for `:root`
+     * will largely be overridden by Tailwind's `--background` and `--foreground`
+     * applied to `body`.
+     * Keeping them here might cause subtle conflicts or be redundant.
+     * I've commented them out as Tailwind's CSS variables offer a more
+     * integrated way to handle dark/light mode with its utility classes.
+     */
+    /* color: rgba(255, 255, 255, 0.87); */
+    /* background-color: #292929; */
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Dark mode variables (from your previous index.css) */
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    --card: transparent;
+    --card-foreground: 213 31% 91%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 1.2%;
+    --secondary: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --ring: 216 34% 17%;
+    --radius: 0.5rem;
+  }
+
+  /*
+   * COMBINED body styles
+   * Tailwind's `preflight` usually handles `margin: 0`.
+   * `display: flex`, `place-items: center`, `min-width`, `min-height` are
+   * specific layout rules often applied to a root `div` or the `body`
+   * for centering content. You can keep them here if desired.
+   */
+  body {
+    @apply bg-background text-foreground; /* Use Tailwind's CSS variables for consistency */
+    font-feature-settings: "rlig" 1, "calt" 1;
+    margin: 0;
+    display: flex;
+    place-items: center;
+    min-width: 320px;
+    min-height: 100vh;
+  }
+
+  /* Styles from your new snippet for `a`, `h1`, `button` */
+  a {
+    font-weight: 500;
+    color: #646cff; /* Consider using Tailwind color utilities like `text-blue-600` */
+    text-decoration: inherit;
+  }
+  a:hover {
+    color: #535bf2; /* Consider using Tailwind hover utilities like `hover:text-blue-500` */
+  }
+
+  h1 {
+    font-size: 3.2em; /* Consider using Tailwind font size utilities like `text-5xl` */
+    line-height: 1.1; /* Consider using Tailwind line height utilities like `leading-tight` */
+  }
+
+  button {
+    border-radius: 8px; /* Tailwind's `rounded-lg` or specific pixel values */
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em; /* Tailwind's `p-2` or `px-4 py-2` */
+    font-size: 1em; /* Tailwind's `text-base` or `text-lg` */
+    font-weight: 500; /* Tailwind's `font-medium` */
+    font-family: inherit; /* Good to keep */
+    background-color: #1a1a1a; /* Tailwind's `bg-gray-900` or custom colors */
+    cursor: pointer;
+    transition: border-color 0.25s; /* Tailwind's `transition` and `duration-200` */
+  }
+  button:hover {
+    border-color: #646cff; /* Tailwind's `hover:border-blue-500` */
+  }
+  button:focus,
+  button:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color; /* Tailwind's `focus:ring-4` */
+  }
+
+  /*
+   * The following media query is for manual light mode adjustments from your snippet.
+   * If you are relying purely on Tailwind's dark mode toggle (by adding `dark:` prefix to classes),
+   * these might be redundant or conflict.
+   * However, `prefers-color-scheme` respects OS preference, which is good.
+   * The `color` and `background-color` here will conflict with Tailwind's CSS variables on `body`.
+   * I'm commenting out the conflicting parts and keeping the others.
+   */
+  @media (prefers-color-scheme: light) {
+    /* :root {
+      color: #213547;
+      background-color: #ffffff;
+    } */
+    a:hover {
+      color: #747bff;
+    }
+    button {
+      background-color: #f9f9f9;
+    }
+  }
+
+  /* Font imports. Ensure these fonts are available in your project. */
+  /* You typically load these via Google Fonts link in index.html or npm packages/local files. */
+  @font-face {
+    font-family: 'Roboto-Regular';
+    src: url('/fonts/Roboto-Regular.ttf') format('truetype'); /* Adjust path as needed */
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Roboto-Bold';
+    src: url('/fonts/Roboto-Bold.ttf') format('truetype'); /* Adjust path as needed */
+    font-weight: bold;
+    font-style: normal;
+  }
+}

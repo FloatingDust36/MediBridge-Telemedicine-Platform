@@ -1,0 +1,132 @@
+/* src/pages/MessagesPage.css */
+
+.messages-page-container {
+  padding: 20px 30px; /* Match main-content-area padding */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.messages-top-info-bar {
+  margin-bottom: 25px;
+  padding-left: 10px; /* Align with card content */
+  padding-right: 10px;
+}
+
+.messages-page-title {
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: bold;
+  color: #333;
+  font-size: 26px;
+  margin-bottom: 5px;
+  margin-top: 0;
+}
+
+.messages-description {
+  font-family: 'Segoe UI', sans-serif;
+  color: #666;
+  font-size: 15px;
+  margin-bottom: 15px;
+}
+
+/* Inbox Card Styling */
+.messages-inbox-card {
+  /* Inherits .card-base styles from Patientdash.css */
+}
+
+.messages-inbox-card .card-title {
+  /* Inherits .card-base h3 styles */
+}
+
+.messages-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.message-item {
+  background-color: #fefefe;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.message-item:hover {
+  background-color: #f0f8ff;
+  border-color: #a7d4ff;
+}
+
+.message-item:last-child {
+  margin-bottom: 0;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.message-sender {
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 600;
+  color: #007bff; /* Blue for sender */
+  font-size: 15px;
+}
+
+.message-time {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 13px;
+  color: #777;
+}
+
+.message-subject {
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 500;
+  color: #333;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.message-snippet {
+  font-family: 'Segoe UI', sans-serif;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* Keep snippet on one line */
+}
+
+.new-message-button {
+  display: block; /* Takes full width */
+  width: 100%;
+  padding: 10px 15px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.new-message-button:hover {
+  background-color: #0056b3;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .messages-top-info-bar {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .messages-page-title {
+    font-size: 22px;
+  }
+}

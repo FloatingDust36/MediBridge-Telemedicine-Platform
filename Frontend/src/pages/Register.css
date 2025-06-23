@@ -1,0 +1,183 @@
+/* Wrapper to ensure full-screen layout */
+.register-page-wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Container for the entire register page */
+.register-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  font-family: 'Roboto', sans-serif;
+  background-color: #1f1f1f;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  height: 32px;
+  margin-right: 8px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  padding: 0;
+}
+
+.nav-links li {
+  cursor: pointer;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+/* Form wrapper */
+.register-form-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 16px;
+}
+
+/* Register form card */
+.register-form {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.register-form h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Input group */
+.input-group {
+  margin-bottom: 16px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 6px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #f9fafb;
+  color: #111827; /* Make input text visible */
+}
+
+/* Password strength bar (custom inline styles are added in JSX) */
+
+/* Checkbox for show password */
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  margin-bottom: 16px;
+  color: #6b7280;
+}
+
+.checkbox-row input {
+  margin-right: 8px;
+}
+
+/* Role buttons */
+.role-selection {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.role-btn {
+  flex: 1;
+  margin: 0 5px;
+  padding: 10px 0;
+  border-radius: 9999px;
+  background: #e5e5e5;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.role-btn.active {
+  background: #10b981;
+  color: white;
+}
+
+/* Register submit button */
+.register-submit {
+  width: 100%;
+  padding: 12px;
+  background: #059669;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.register-submit:hover {
+  background: #047857;
+}
+
+/* Social login icons */
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.social-icons img {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.social-icons img:hover {
+  transform: scale(1.1);
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 16px;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 14px;
+}

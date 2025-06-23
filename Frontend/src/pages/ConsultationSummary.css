@@ -1,0 +1,253 @@
+/* ConsultationSummary.css */
+
+.consultation-summary-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f0f2f5; /* Light grey background */
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+.consultation-summary-content {
+  padding-top: 60px; /* Space for the fixed navbar */
+  padding: 30px 20px; /* Increased top/bottom padding for more breathing room */
+  margin: 0 auto;
+  width: 100%;
+  max-width: 960px; /* Constrain content width for readability on large screens */
+  box-sizing: border-box;
+  flex-grow: 1; /* Allow content to grow vertically */
+  display: flex;
+  flex-direction: column;
+  gap: 25px; /* Gap between sections */
+}
+
+/* Header Section */
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end; /* Align time/date to bottom of title */
+  margin-bottom: 20px; /* Space below header */
+  padding-bottom: 15px; /* Padding for border effect */
+  border-bottom: 2px solid #e0e0e0; /* Subtle separator line */
+}
+
+.summary-header h1 {
+  margin: 0;
+  font-size: 2.5em; /* Slightly larger title */
+  color: #263238;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.9em;
+  color: #607d8b;
+}
+
+.header-info .current-time {
+  font-weight: bold;
+  color: #455a64;
+}
+
+.header-info .current-date {
+  margin-top: 3px;
+}
+
+/* Recent Consultations Section */
+.recent-consultations-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Space between consultation cards */
+}
+
+.recent-consultations-section h2 {
+  font-size: 2em;
+  margin-bottom: 15px;
+  color: #37474f;
+  text-align: left;
+  position: relative; /* For underline effect */
+}
+
+.recent-consultations-section h2::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -8px; /* Position of the underline */
+  width: 80px; /* Length of the underline */
+  height: 4px;
+  background-color: #800000; /* Red underline for emphasis */
+  border-radius: 2px;
+}
+
+/* Individual Consultation Card */
+.consultation-card {
+  background-color: #ffffff; /* White background */
+  padding: 25px; /* More padding */
+  border-radius: 12px; /* More rounded corners */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Stronger shadow */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth hover effect */
+  border-left: 6px solid #800000; /* Left border accent */
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Gap between card sections */
+}
+
+.consultation-card:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
+}
+
+.consultation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #e0e0e0; /* Dashed separator */
+}
+
+.consultation-header h3 {
+  margin: 0;
+  font-size: 1.5em;
+  color: #007bff; /* Blue for doctor's name */
+}
+
+.consultation-status {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.consultation-status.completed {
+  background-color: #e6ffe6; /* Light green */
+  color: #28a745; /* Dark green */
+}
+
+/* Add more status styles if needed */
+/* .consultation-status.pending { ... } */
+/* .consultation-status.cancelled { ... } */
+
+
+.consultation-details p {
+  margin: 8px 0; /* Space between detail lines */
+  font-size: 1em;
+  color: #444;
+  line-height: 1.5;
+}
+
+.consultation-details strong {
+  color: #333; /* Darker bold text */
+}
+
+.consultation-actions {
+  display: flex;
+  justify-content: flex-end; /* Align button to the right */
+  margin-top: 10px;
+}
+
+.view-details-button {
+  padding: 10px 20px;
+  background-color: #800000; /* Your brand red */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.view-details-button:hover {
+  background-color: #6a0000; /* Darker red on hover */
+  transform: translateY(-2px); /* Slight lift on button hover */
+}
+
+.no-consultations {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .consultation-summary-content {
+    padding: 20px 15px; /* Adjust padding for smaller screens */
+    gap: 20px;
+  }
+
+  .summary-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 10px;
+  }
+
+  .summary-header h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+  }
+
+  .header-info {
+    align-items: flex-start;
+  }
+
+  .recent-consultations-section h2 {
+    font-size: 1.8em;
+  }
+
+  .consultation-card {
+    padding: 20px;
+  }
+
+  .consultation-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .consultation-header h3 {
+    font-size: 1.3em;
+  }
+
+  .consultation-status {
+    width: fit-content; /* Adjust width for smaller screens */
+  }
+
+  .view-details-button {
+    width: 100%; /* Full width button on smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .consultation-summary-content {
+    padding: 15px 10px;
+  }
+
+  .summary-header h1 {
+    font-size: 1.8em;
+  }
+
+  .recent-consultations-section h2 {
+    font-size: 1.6em;
+  }
+
+  .consultation-card {
+    padding: 15px;
+  }
+
+  .consultation-details p {
+    font-size: 0.9em;
+    margin: 5px 0;
+  }
+
+  .view-details-button {
+    font-size: 0.9em;
+    padding: 8px 15px;
+  }
+}

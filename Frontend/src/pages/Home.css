@@ -1,0 +1,281 @@
+/* General */
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.home-container {
+  width: 100vw; /* full viewport width */
+  min-height: 100vh; /* full viewport height */
+}
+
+html, body {
+  margin: 0;
+  padding: 100;
+  width: 100%;
+}
+
+/* Navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 40px; /* increased for better readability */
+  background: rgba(255, 255, 255, 0.7); /* transparent white */
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  z-index: 1000;
+  box-sizing: border-box;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Logo section */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.logo-img {
+  height: 24px;
+  width: auto;
+  object-fit: contain;
+}
+
+.logo-text {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #000;
+  line-height: 40px; /* vertically center text */
+}
+
+/* Navigation links */
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 3rem;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.nav-links li {
+  line-height: 40px; /* match navbar height */
+  white-space: nowrap;
+  cursor: pointer;
+  color: black;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links a {
+  color: black;
+  text-decoration: none;
+}
+
+.nav-links li:hover,
+.nav-links a:hover {
+  color: #800000;
+}
+
+/* Hero Section */
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-text {
+  position: relative;
+  z-index: 1;
+  color: #000;
+}
+
+.hero-text h1,
+.hero-text h2,
+.hero-text p {
+  color: #000; /* all hero text black */
+}
+
+.hero-section {
+  display: flex;
+  height: 260px;
+  flex-wrap: wrap;
+  background: linear-gradient(to bottom right, #f7f9fc, #ffffff);
+  padding: 3rem;
+  align-items: center;
+  border-bottom: 5px solid #b33838;
+}
+
+.hero-text {
+  flex: 1;
+  min-width: 300px;
+}
+
+.hero-text h1 {
+  font-size: 3rem;
+  margin: 0;
+}
+
+.hero-text .red {
+  color: #800000;
+}
+
+.hero-text h2 {
+  font-size: 1.5rem;
+  font-weight: normal;
+  margin-top: 0.5rem;
+}
+
+.hero-text p {
+  margin-top: 1rem;
+  font-size: 1rem;
+  max-width: 500px;
+}
+
+.hero-image img {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  border-radius: 10px;
+}
+
+/* How It Works */
+.how-it-works h2,
+.step h3,
+.step h4,
+.step p {
+  color: #000;
+}
+
+.how-it-works {
+  background: #f5f5f5;
+  padding: 2rem;
+  text-align: center;
+}
+
+.how-it-works h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.steps {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.step {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 220px;
+}
+
+.step h3 {
+  margin: 0;
+  color: #0077cc;
+}
+
+.step h4 {
+  margin: 0.5rem 0;
+}
+
+.step p {
+  font-size: 0.95rem;
+}
+
+/* Footer */
+.footer {
+  background: #e0e0e0;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+  height: 30px;
+}
+
+.footer p {
+  color:#000;
+}
+
+/* login popup */
+.login-popup {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  width: 300px;
+  background: #fff;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 999;
+}
+
+.login-toggle {
+  color: #000;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.checkbox-label {
+  font-size: 0.9rem;
+  margin-top: -0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.login-form input {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.login-form button {
+  padding: 0.5rem;
+  background: #800000;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.login-form h3 {
+  color: rgb(0, 0, 0);
+}
+
+/* icons */
+.social-img {
+  width: 32px;
+  height: 32px;
+  
+  margin: 0 0.5rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: space-evenly; /* or 'space-evenly' */
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.checkbox-label {
+  color: black;
+}
+.social-img:hover {
+  transform: scale(1.2);
+}

@@ -1,0 +1,277 @@
+/* OnlineConsultation.css */
+
+.online-consultation-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f0f2f5; /* Light grey background */
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+.online-consultation-content {
+  padding-top: 60px; /* Space for the fixed navbar */
+  /* No horizontal padding here, content fills almost full width */
+  margin: 0; /* Remove auto margin to allow full width usage */
+  width: 100%;
+  box-sizing: border-box;
+  flex-grow: 1;
+  display: flex; /* Key for video area and sidebar layout */
+  flex-direction: row; /* Default to row layout for video and sidebar */
+  min-height: calc(100vh - 60px); /* Fill remaining vertical space */
+  align-items: stretch; /* Make children fill vertical space */
+}
+
+/* Video Call Area */
+.video-call-area {
+  flex: 3; /* Video area takes more space */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px; /* Add padding inside video area */
+  background-color: #222; /* Dark background for video area */
+  color: #fff;
+  justify-content: center; /* Center video boxes vertically */
+  align-items: center; /* Center video boxes horizontally */
+  box-sizing: border-box;
+}
+
+.video-placeholder-top,
+.video-placeholder-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Space between text and video box */
+  width: 100%; /* Ensure placeholder div takes full width */
+  max-width: 800px; /* Max width for consistency */
+}
+
+.video-stream-box {
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio (height relative to width) */
+  height: 0; /* Important for padding-bottom aspect ratio trick */
+  background-color: #333; /* Darker grey for video stream box */
+  border: 2px solid #007bff; /* Blue border for highlighted stream */
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  position: relative; /* Needed for text overlay if adding later */
+}
+
+.video-stream-box.patient-video {
+  border-color: #fff; /* White border for other participant */
+}
+
+.video-placeholder-top p,
+.video-placeholder-bottom p {
+  margin: 0;
+  font-size: 0.9em;
+  color: #aaa;
+}
+
+
+/* Right Sidebar */
+.consultation-sidebar {
+  flex: 1; /* Sidebar takes less space */
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f8f8; /* Lighter background for sidebar */
+  border-left: 1px solid #e0e0e0;
+  box-sizing: border-box;
+  min-width: 320px; /* Minimum width for sidebar content */
+  max-width: 400px; /* Optional: Max width for very wide screens */
+  overflow-y: auto; /* Allow scrolling if content overflows vertically */
+}
+
+.panel-box-header {
+  background-color: #e0f7fa; /* Light blue header */
+  padding: 15px 20px;
+  border-bottom: 1px solid #b3e5fc;
+  color: #333;
+  text-align: right; /* Align text to the right as in screenshot */
+}
+
+.panel-box-header .details-text {
+  margin: 0;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.panel-box-header .name-info {
+  margin: 0;
+  font-size: 0.85em;
+  color: #555;
+}
+
+.patient-info,
+.doctor-info,
+.chat-box {
+  background-color: #ffffff;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+  box-shadow: none; /* Remove shadow for stacked panels */
+  border-radius: 0; /* Remove border-radius for stacked panels */
+}
+
+.patient-info {
+  background-color: #e6ffe6; /* Light green for patient info */
+  border-color: #a3e6a3;
+}
+
+.doctor-info {
+  background-color: #e6e6ff; /* Light blue for doctor info */
+  border-color: #a3a3e6;
+}
+
+.panel-box h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #37474f;
+  font-size: 1.2em;
+}
+
+.panel-box p {
+  margin: 5px 0;
+  font-size: 0.95em;
+  color: #444;
+}
+
+/* Chat Box Styling */
+.chat-box {
+  flex-grow: 1; /* Chat box fills remaining vertical space in sidebar */
+  display: flex;
+  flex-direction: column;
+  padding: 0; /* Remove direct padding, manage inside */
+  background-color: #ffe6e6; /* Light red for chat area */
+  border-color: #ffb3b3;
+  position: relative; /* For chat box here text */
+}
+
+.chat-messages {
+  flex-grow: 1;
+  overflow-y: auto; /* Enable scrolling for messages */
+  padding: 15px 20px; /* Padding for messages area */
+  border-bottom: 1px solid #ffcccc;
+}
+
+.chat-message {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.chat-message .sender-name {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.user-message {
+  text-align: right;
+  color: #007bff; /* Blue for user messages */
+}
+
+.other-message {
+  text-align: left;
+  color: #333; /* Darker for other messages */
+}
+
+.chat-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ccc;
+  font-size: 1.2em;
+  font-style: italic;
+  white-space: nowrap;
+}
+
+.chat-input-area {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ffcccc;
+  background-color: #fff;
+}
+
+.chat-input-area input {
+  flex-grow: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px; /* Rounded input */
+  margin-right: 10px;
+  font-size: 0.95em;
+}
+
+.chat-input-area input:focus {
+  outline: none;
+  border-color: #800000;
+}
+
+.chat-input-area button {
+  padding: 8px 15px;
+  background-color: #007bff; /* Send button blue */
+  color: white;
+  border: none;
+  border-radius: 20px; /* Rounded button */
+  cursor: pointer;
+  font-size: 0.95em;
+  transition: background-color 0.3s ease;
+}
+
+.chat-input-area button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .online-consultation-content {
+    flex-direction: column; /* Stack video area and sidebar */
+  }
+
+  .video-call-area {
+    padding: 15px;
+    height: 50vh; /* Give video area a fixed height when stacked */
+    min-height: 350px; /* Ensure a minimum height */
+  }
+
+  .consultation-sidebar {
+    min-width: unset; /* Allow sidebar to shrink */
+    max-width: 100%; /* Take full width */
+    width: 100%; /* Ensure it spans full width */
+    border-left: none; /* Remove left border when stacked */
+    border-top: 1px solid #e0e0e0; /* Add top border */
+  }
+
+  .panel-box-header,
+  .patient-info,
+  .doctor-info,
+  .chat-box {
+    border-radius: 0; /* Ensure no unwanted radius when stacked */
+  }
+}
+
+@media (max-width: 600px) {
+  .online-consultation-content {
+    padding: 10px;
+  }
+
+  .video-call-area {
+    height: 40vh; /* Further reduce video height on smaller mobiles */
+    min-height: 250px;
+    gap: 10px;
+  }
+
+  .video-placeholder-top p,
+  .video-placeholder-bottom p {
+    font-size: 0.8em;
+  }
+
+  .chat-input-area input {
+    padding: 6px 10px;
+    font-size: 0.9em;
+  }
+
+  .chat-input-area button {
+    padding: 6px 12px;
+    font-size: 0.9em;
+  }
+}

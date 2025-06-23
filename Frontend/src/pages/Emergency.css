@@ -1,0 +1,240 @@
+/* Emergency.css */
+
+.emergency-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f0f2f5; /* Light grey background */
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+.emergency-content {
+  padding-top: 60px; /* Space for the fixed navbar */
+  padding: 20px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  flex-grow: 1; /* Allow content to grow and fill available vertical space */
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+}
+
+.emergency-main-sections {
+  display: flex; /* This is key for the two-column layout */
+  gap: 20px;
+  flex-wrap: wrap; /* Allows sections to wrap on smaller screens */
+  align-items: flex-start; /* Aligns items to the top */
+  flex-grow: 1; /* Allow main-sections to take available vertical space */
+  width: 100%; /* Ensure it takes full available width within its parent */
+  min-width: 0; /* Crucial: allow flex items to shrink if needed */
+}
+
+.emergency-section-left {
+  flex: 2; /* Takes more space for the map */
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Gap between info and map */
+  min-width: 380px; /* Minimum width for the map section */
+  box-sizing: border-box;
+  background-color: #ffffff; /* Panel background */
+  padding: 20px; /* Panel padding */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative; /* For map overlay positioning */
+}
+
+.hospital-info {
+  margin: 0;
+  font-size: 1.1em;
+  color: #333;
+}
+
+.map-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 75%; /* 4:3 Aspect Ratio (adjust as needed) */
+  height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.map-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.map-error-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 230, 230, 0.95); /* Light red transparent background */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 1; /* Ensure it's above the iframe */
+  border: 1px solid #ff0000; /* Red border */
+  border-radius: 8px;
+}
+
+.error-text {
+  color: #ff0000;
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+.error-text.small-text {
+  font-size: 0.9em;
+  font-weight: normal;
+}
+
+
+.emergency-section-right {
+  flex: 1; /* Takes less space for hotlines */
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Gap between the right-side panels */
+  min-width: 300px; /* Minimum width for the right section */
+  box-sizing: border-box;
+}
+
+/* Reusable panel-box styling for consistent look */
+.panel-box {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex-grow: 1; /* Allow panels to grow within their section */
+  min-width: 0; /* Prevents content from forcing overflow */
+}
+
+.closest-hospital-alert {
+  background-color: #ffe6e6; /* Light red background */
+  border: 1px solid #ff0000; /* Red border */
+  color: #ff0000;
+  padding: 15px;
+  margin-bottom: 20px; /* Space below the alert */
+}
+
+.closest-hospital-alert p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.closest-hospital-alert .alert-message {
+  font-weight: bold;
+}
+
+.closest-hospital-alert .api-error-message {
+  font-size: 0.9em;
+}
+
+.draft-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 150px; /* Adjust height as needed */
+  background-color: #fcfcfc; /* Slightly different background for "Draft" */
+  border: 1px dashed #ccc; /* Dashed border for draft area */
+}
+
+.draft-text {
+  font-size: 1.5em;
+  color: #999;
+  font-style: italic;
+  margin: 0;
+}
+
+
+.emergency-hotlines h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #37474f;
+  font-size: 1.5em;
+}
+
+.hotline-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.hotline-item i {
+  color: #800000; /* Your brand red for icons */
+  font-size: 1.2em;
+}
+
+.hotline-item p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.hotline-item span {
+  font-size: 0.95em;
+  color: #555;
+}
+
+.hotline-disclaimer {
+  font-size: 0.85em;
+  color: #777;
+  margin-top: 15px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .emergency-main-sections {
+    flex-direction: column; /* Stack sections vertically */
+  }
+
+  .emergency-section-left,
+  .emergency-section-right {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .map-container {
+    padding-bottom: 60%; /* Adjust aspect ratio for smaller screens */
+  }
+}
+
+@media (max-width: 600px) {
+  .emergency-content {
+    padding: 15px; /* Smaller padding on very small screens */
+  }
+
+  .emergency-section-left,
+  .emergency-section-right {
+    gap: 15px;
+  }
+
+  .panel-box {
+    padding: 15px;
+  }
+
+  .emergency-hotlines h2 {
+    font-size: 1.3em;
+  }
+
+  .hotline-item {
+    flex-wrap: wrap; /* Allow hotline text to wrap if numbers are long */
+  }
+
+  .hotline-item span {
+    display: block; /* Force number to new line if wrapped */
+    margin-left: 30px; /* Indent number if it wraps */
+  }
+}

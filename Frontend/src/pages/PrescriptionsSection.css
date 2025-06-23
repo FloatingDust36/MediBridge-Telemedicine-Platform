@@ -1,0 +1,27 @@
+/* src/pages/PrescriptionsSection.css */
+/* Styles specific to PrescriptionsSection */
+
+/* The .prescriptions-title will inherit basic h3 styles from .card-base h3 in Patientdash.css */
+.prescriptions-title {
+  /* No specific styles needed here if defaults from Patientdash.css are sufficient */
+}
+
+.prescriptions-section .prescriptions-list {
+  list-style: none; /* No bullets */
+  padding-left: 0;
+  margin: 0;
+}
+.prescriptions-section .prescriptions-list li {
+  background-color: #f8f8f8;
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #444;
+}
+.prescriptions-section .prescriptions-list li:last-child {
+    margin-bottom: 0;
+}
+.prescriptions-section .prescriptions-list li:last-child {
+    margin-bottom: 0;
+}

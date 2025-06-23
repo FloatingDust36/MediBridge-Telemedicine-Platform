@@ -1,0 +1,158 @@
+/* src/pages/ChatbotPage.css */
+
+.chatbot-page-container {
+  display: flex;
+  justify-content: center; /* Center the chatbot card horizontally */
+  padding: 20px 30px; /* Consistent padding */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.chatbot-card {
+  width: 448px; /* Fixed width as per mockup */
+  height: 547px; /* Fixed height as per mockup */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Ensure content stays within bounds */
+  /* card-base provides background, border, shadow, etc. */
+  border-top-left-radius: 8px; /* Adjust if specific corner radii are needed */
+  border-top-right-radius: 8px;
+}
+
+.chatbot-header {
+  background-color: #3B82F6; /* Blue header from mockup */
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.chatbot-icon {
+  width: 32px;
+  height: 32px;
+  /* Add actual image for the icon if available */
+  background-color: white; /* Placeholder color if no icon image */
+  border-radius: 50%;
+}
+
+.chatbot-title {
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  margin: 0;
+  color: white;
+}
+
+.chatbot-tagline {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 12px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  flex-grow: 1; /* Pushes other elements to the sides */
+  text-align: right; /* Align tagline to the right if space allows */
+}
+
+.chatbot-messages {
+  flex-grow: 1; /* Takes up available space */
+  padding: 15px 20px;
+  overflow-y: auto; /* Scroll for messages */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #f7f7f7; /* Light background for message area */
+}
+
+.message-bubble {
+  padding: 10px 15px;
+  border-radius: 15px; /* Rounded bubbles */
+  max-width: 80%; /* Messages don't span full width */
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word; /* Wrap long words */
+}
+
+.message-bubble.bot {
+  background-color: #e0f2fe; /* Light blue for bot messages */
+  color: #333;
+  align-self: flex-start; /* Align to left */
+  border-bottom-left-radius: 4px; /* Sharper corner on sender side */
+}
+
+.message-bubble.user {
+  background-color: #007bff; /* Blue for user messages */
+  color: white;
+  align-self: flex-end; /* Align to right */
+  border-bottom-right-radius: 4px; /* Sharper corner on sender side */
+}
+
+.symptom-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  align-self: flex-start; /* Align suggestions with bot messages */
+}
+
+.suggestion-button {
+  padding: 8px 12px;
+  border: 1px solid #c0c0c0;
+  border-radius: 20px; /* Pill-shaped buttons */
+  background-color: white;
+  color: #555;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.suggestion-button:hover {
+  background-color: #f0f0f0;
+  border-color: #a0a0a0;
+}
+
+
+.chatbot-input-area {
+  display: flex;
+  padding: 15px 20px;
+  border-top: 1px solid #e0e0e0;
+  background-color: white;
+  flex-shrink: 0; /* Prevent input area from shrinking */
+}
+
+.chatbot-input {
+  flex-grow: 1; /* Takes up most space */
+  padding: 10px 15px;
+  border: 1px solid #c0c0c0;
+  border-radius: 20px; /* Rounded input field */
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 15px;
+  outline: none;
+  margin-right: 10px;
+}
+
+.chatbot-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.chatbot-send-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px; /* Rounded send button */
+  background-color: #007bff; /* Blue send button */
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chatbot-send-button:hover {
+  background-color: #0056b3;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
