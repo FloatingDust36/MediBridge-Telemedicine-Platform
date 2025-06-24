@@ -1,158 +1,216 @@
 /* src/pages/ChatbotPage.css */
 
 .chatbot-page-container {
-  display: flex;
-  justify-content: center; /* Center the chatbot card horizontally */
-  padding: 20px 30px; /* Consistent padding */
-  width: 100%;
-  box-sizing: border-box;
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+    align-items: center;   /* Center the card horizontally */
+    min-height: 100vh;      /* Full viewport height */
+    background-color: #eef2f5; /* Light background */
+    padding: 20px;          /* General padding around the card */
+    padding-top: 60px;      /* IMPORTANT: Space to clear fixed navbar (adjust if navbar height changes) */
+    box-sizing: border-box; /* Ensures padding is included in element's total width/height */
+    width: 100%;            /* Ensure it occupies full width, combined with body overflow-x hidden */
+    /* Remove justify-content: center; from here if you want content to start from top within its flex container */
+    /* If you want the card to be truly centered vertically, you might add justify-content: center; but then min-height: 100vh; on body is better for overall page scroll. */
 }
 
 .chatbot-card {
-  width: 448px; /* Fixed width as per mockup */
-  height: 547px; /* Fixed height as per mockup */
-  display: flex;
-  flex-direction: column;
-  overflow: hidden; /* Ensure content stays within bounds */
-  /* card-base provides background, border, shadow, etc. */
-  border-top-left-radius: 8px; /* Adjust if specific corner radii are needed */
-  border-top-right-radius: 8px;
+    width: 100%;            /* Make it responsive */
+    max-width: 700px;       /* Limit maximum width for larger screens */
+    height: calc(100vh - 100px); /* Fill remaining viewport height, adjust 100px for navbar + margin */
+    min-height: 500px;      /* Minimum height for usability */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;       /* Ensure content stays within bounds */
+    background-color: #fff; /* Assuming .card-base handles border, shadow etc. */
+    border-radius: 12px;    /* Consistent with other cards */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
 .chatbot-header {
-  background-color: #3B82F6; /* Blue header from mockup */
-  color: white;
-  padding: 15px 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  flex-shrink: 0; /* Prevent header from shrinking */
+    background-color: #3B82F6; /* Blue header from mockup */
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .chatbot-icon {
-  width: 32px;
-  height: 32px;
-  /* Add actual image for the icon if available */
-  background-color: white; /* Placeholder color if no icon image */
-  border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    /* Add actual image for the icon if available */
+    background-color: white; /* Placeholder color if no icon image */
+    border-radius: 50%;
+    /* You had /images/chatbot-icon.png in your TSX, ensure this path is correct or replace */
 }
 
 .chatbot-title {
-  font-family: 'Segoe UI', sans-serif;
-  font-weight: 600;
-  font-size: 18px;
-  margin: 0;
-  color: white;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    margin: 0;
+    color: white;
 }
 
 .chatbot-tagline {
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  margin: 0;
-  color: rgba(255, 255, 255, 0.8);
-  flex-grow: 1; /* Pushes other elements to the sides */
-  text-align: right; /* Align tagline to the right if space allows */
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 12px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+    flex-grow: 1; /* Pushes other elements to the sides */
+    text-align: right; /* Align tagline to the right if space allows */
 }
 
 .chatbot-messages {
-  flex-grow: 1; /* Takes up available space */
-  padding: 15px 20px;
-  overflow-y: auto; /* Scroll for messages */
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background-color: #f7f7f7; /* Light background for message area */
+    flex-grow: 1; /* Takes up available space */
+    padding: 15px 20px;
+    overflow-y: auto; /* Scroll for messages */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #f7f7f7; /* Light background for message area */
 }
 
 .message-bubble {
-  padding: 10px 15px;
-  border-radius: 15px; /* Rounded bubbles */
-  max-width: 80%; /* Messages don't span full width */
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 14px;
-  line-height: 1.4;
-  word-wrap: break-word; /* Wrap long words */
+    padding: 10px 15px;
+    border-radius: 15px; /* Rounded bubbles */
+    max-width: 80%; /* Messages don't span full width */
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word; /* Wrap long words */
 }
 
 .message-bubble.bot {
-  background-color: #e0f2fe; /* Light blue for bot messages */
-  color: #333;
-  align-self: flex-start; /* Align to left */
-  border-bottom-left-radius: 4px; /* Sharper corner on sender side */
+    background-color: #e0f2fe; /* Light blue for bot messages */
+    color: #333;
+    align-self: flex-start; /* Align to left */
+    border-bottom-left-radius: 4px; /* Sharper corner on sender side */
 }
 
 .message-bubble.user {
-  background-color: #007bff; /* Blue for user messages */
-  color: white;
-  align-self: flex-end; /* Align to right */
-  border-bottom-right-radius: 4px; /* Sharper corner on sender side */
+    background-color: #007bff; /* Blue for user messages */
+    color: white;
+    align-self: flex-end; /* Align to right */
+    border-bottom-right-radius: 4px; /* Sharper corner on sender side */
 }
 
 .symptom-suggestions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-  align-self: flex-start; /* Align suggestions with bot messages */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    align-self: flex-start; /* Align suggestions with bot messages */
 }
 
 .suggestion-button {
-  padding: 8px 12px;
-  border: 1px solid #c0c0c0;
-  border-radius: 20px; /* Pill-shaped buttons */
-  background-color: white;
-  color: #555;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+    padding: 8px 12px;
+    border: 1px solid #c0c0c0;
+    border-radius: 20px; /* Pill-shaped buttons */
+    background-color: white;
+    color: #555;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .suggestion-button:hover {
-  background-color: #f0f0f0;
-  border-color: #a0a0a0;
+    background-color: #f0f0f0;
+    border-color: #a0a0a0;
 }
 
-
 .chatbot-input-area {
-  display: flex;
-  padding: 15px 20px;
-  border-top: 1px solid #e0e0e0;
-  background-color: white;
-  flex-shrink: 0; /* Prevent input area from shrinking */
+    display: flex;
+    padding: 15px 20px;
+    border-top: 1px solid #e0e0e0;
+    background-color: white;
+    flex-shrink: 0; /* Prevent input area from shrinking */
+    gap: 10px; /* Space between input and button */
 }
 
 .chatbot-input {
-  flex-grow: 1; /* Takes up most space */
-  padding: 10px 15px;
-  border: 1px solid #c0c0c0;
-  border-radius: 20px; /* Rounded input field */
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 15px;
-  outline: none;
-  margin-right: 10px;
+    flex-grow: 1; /* Takes up most space */
+    padding: 10px 15px;
+    border: 1px solid #c0c0c0;
+    border-radius: 20px; /* Rounded input field */
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    outline: none;
+    /* margin-right: 10px; Removed, replaced by gap on parent */
 }
 
 .chatbot-input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
 .chatbot-send-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 20px; /* Rounded send button */
-  background-color: #007bff; /* Blue send button */
-  color: white;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px; /* Rounded send button */
+    background-color: #007bff; /* Blue send button */
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .chatbot-send-button:hover {
-  background-color: #0056b3;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #0056b3;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .chatbot-page-container {
+        padding-top: 80px; /* Adjust if navbar height changes on smaller screens */
+        padding: 15px;
+    }
+    .chatbot-card {
+        height: calc(100vh - 100px); /* Adjust height for smaller screens */
+        min-height: 400px;
+    }
+    .chatbot-input-area {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .chatbot-send-button {
+        width: 100%;
+    }
+    .message-bubble {
+        max-width: 90%; /* Allow messages to take more width */
+    }
+}
+
+@media (max-width: 480px) {
+    .chatbot-page-container {
+        padding-top: 100px; /* Further adjust for very small screens */
+        padding: 10px;
+    }
+    .chatbot-card {
+        height: calc(100vh - 120px);
+        min-height: 350px;
+    }
+    .chatbot-header {
+        padding: 15px;
+    }
+    .chatbot-title {
+        font-size: 1.5em;
+    }
+    .chatbot-messages {
+        padding: 15px;
+    }
+    .message-bubble {
+        font-size: 0.9em;
+    }
+    .chatbot-input {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
 }

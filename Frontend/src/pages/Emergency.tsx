@@ -45,6 +45,8 @@ const Emergency: React.FC = () => {
         </ul>
       </nav>
 
+      <div style={{ height: "60px" }}></div> {/* Spacer to offset fixed navbar */}
+
             <AnimatePresence>
         {showLogin && (
           <motion.div

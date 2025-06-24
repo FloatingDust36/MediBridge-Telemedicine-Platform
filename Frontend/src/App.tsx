@@ -12,6 +12,9 @@ import OnlineConsultation from './pages/OnlineConsultation'; // Assuming this is
 import ConsultationSummary from './pages/ConsultationSummary'; // Assuming this is a new page you added
 
 import PatientDashboard from './pages/PatientDashboard';
+import Appointments from "./pages/AppointmentsPage";
+import Messages from "./pages/MessagesPage";
+import Chatbot from "./pages/ChatbotPage";
 
 import AdminDashboard from './pages/AdminDashboard';   // Assuming this is a new page you added
 
@@ -34,6 +37,9 @@ function App() {
         <Route path="/summary" element={<ConsultationSummary />} />
 
         <Route path="/patientdashboard" element={<PatientDashboard />} />
+        <Route path="/appointments" element={<Appointments />} />
+        <Route path="/messages" element={<Messages />} />
+        <Route path="/chatbot" element={<Chatbot />} />
 
         <Route path="/admindashboard" element={<AdminDashboard />} />
 
