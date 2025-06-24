@@ -25,7 +25,7 @@ function App() {
           as that's where all the dashboard, appointments, messages, and chatbot logic resides.
           We'll also incorporate the new routes from 'JM-Branch'.
         */}
-        <Route path="/" element={<Patientdash />} /> {/* This is your primary dashboard, appointments, messages view */}
+        <Route path="/" element={<DoctorPanel />} /> {/* This is your primary dashboard, appointments, messages view */}
 
         {/* Keeping other core marketing/landing pages if you intend to use them */}
         <Route path="/home" element={<Home />} /> {/* If you want a separate /home route for the Home component */}
