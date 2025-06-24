@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import logo from '../assets/MediBridge_LogoClear.png'; // adjust the path as needed
-import './DoctorPanel.css'; // Import the new CSS file
+import './DoctorDashboard.css'; // Import the new CSS file
 import './Home.css'; // Assuming Home.css contains global styles like navbar
 import { Link } from 'react-router-dom';
 
-const DoctorPanel: React.FC = () => {
+const DoctorDashboard: React.FC = () => {
   const [selectedPatient, setSelectedPatient] = useState<string>('Juan Dela Cruz');
   const [consultationNotes, setConsultationNotes] = useState<string>('');
 
@@ -24,7 +24,7 @@ const DoctorPanel: React.FC = () => {
         </div>
         <ul className="nav-links">
           <li>Messages</li>
-          <li><Link to="/home">Logout</Link></li>
+          <li><Link to="/">Logout</Link></li>
         </ul>
       </nav>
 
@@ -113,4 +113,4 @@ const DoctorPanel: React.FC = () => {
   );
 };
 
-export default DoctorPanel;
+export default DoctorDashboard;

@@ -1,11 +1,11 @@
 import React from 'react';
-import './AdminPanel.css'; // Import the new CSS file
+import './AdminDashboard.css'; // Import the new CSS file
 import './Home.css'; // Assuming Home.css contains global styles like navbar
 import logo from '../assets/MediBridge_LogoClear.png'; // adjust the path as needed
 import admin1 from '../assets/pictures/Admin1.png'; // adjust the path as needed
 import { Link } from 'react-router-dom';
 
-const AdminPanel: React.FC = () => {
+const AdminDashboard: React.FC = () => {
   return (
     <div className="admin-panel-container">
       <nav className="navbar">
@@ -15,7 +15,7 @@ const AdminPanel: React.FC = () => {
         </div>
         <ul className="nav-links">
           <li>Messages</li>
-          <li><Link to="/home">Logout</Link></li>
+          <li><Link to="/">Logout</Link></li>
         </ul>
       </nav>
 
@@ -96,4 +96,4 @@ const AdminPanel: React.FC = () => {
   );
 };
 
-export default AdminPanel;
+export default AdminDashboard;

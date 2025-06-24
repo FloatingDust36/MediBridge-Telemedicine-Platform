@@ -19,7 +19,7 @@ const Home = () => {
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/patient-panel'); // 🧭 Redirect to PatientPanel after login
+    navigate('/admindashboard'); // 🧭 Redirect to PatientPanel after login
   };
 
   useEffect(() => {
