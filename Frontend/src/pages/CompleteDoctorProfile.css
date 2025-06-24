@@ -1,0 +1,159 @@
+/* src/pages/CompleteDoctorProfile.css */
+
+.doctor-profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f0f2f5; /* Light background for the whole page */
+  padding: 20px;
+}
+
+.doctor-profile-card {
+  width: 576px;
+  height: 677px; /* Specific to doctor profile */
+  position: relative;
+  background-color: #f5f5f5; /* bg-neutral-100 */
+  border-radius: 12px; /* rounded-xl */
+  box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.06), 0px 4px 6px -1px rgba(0,0,0,0.1); /* shadow-md */
+  overflow: hidden;
+}
+
+.profile-title {
+  position: absolute;
+  left: 32px;
+  top: 32px;
+  width: 256px; /* w-64 */
+  height: 32px; /* h-8 */
+  display: flex;
+  justify-content: center;
+  color: black;
+  font-size: 24px; /* text-2xl */
+  font-weight: bold;
+  font-family: 'Roboto', sans-serif;
+  line-height: 32px; /* leading-loose */
+}
+
+.doctor-form-area {
+  position: absolute;
+  left: 32px;
+  top: 75px; /* Specific to doctor profile */
+  width: 512px;
+  height: 602px; /* Specific to doctor profile */
+}
+
+.form-group {
+  position: absolute;
+  width: 100%;
+}
+
+.form-label {
+  height: 20px; /* h-5 */
+  color: black;
+  font-size: 14px; /* text-sm */
+  font-weight: normal;
+  font-family: 'Roboto', sans-serif;
+  line-height: 20px; /* leading-tight */
+}
+
+.form-input-container {
+  width: 512px;
+  height: 40px; /* h-10, except for doctor license */
+  background-color: white;
+  border-radius: 4px; /* rounded */
+  outline: 1px solid #e2e8f0; /* outline-1 outline-gray-200 */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 0 9px;
+}
+
+.form-input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: #4a5568; /* text-gray-700 */
+  font-size: 16px; /* text-base */
+  font-weight: normal;
+  font-family: 'Roboto', sans-serif;
+  line-height: 24px; /* leading-normal or normal */
+  padding: 0;
+}
+
+/* Specific positioning for each form group based on the design */
+.doctor-form-area .form-group:nth-child(1) { /* Last Name */
+  top: 0px;
+}
+.doctor-form-area .form-group:nth-child(1) .form-input-container {
+  top: 20px;
+}
+
+.doctor-form-area .form-group:nth-child(2) { /* First Name */
+  top: 75px;
+}
+.doctor-form-area .form-group:nth-child(2) .form-input-container {
+  top: 95px;
+}
+
+.doctor-form-area .form-group:nth-child(3) { /* Middle Name */
+  top: 150px;
+}
+.doctor-form-area .form-group:nth-child(3) .form-input-container {
+  top: 170px;
+}
+
+.doctor-form-area .form-group:nth-child(4) { /* Doctor License */
+  top: 225px;
+}
+.doctor-form-area .form-group:nth-child(4) .form-input-container {
+  height: 44px; /* h-11 specific for license input in design */
+  top: 245px;
+}
+
+.doctor-form-area .form-group:nth-child(5) { /* Speciality */
+  top: 302px;
+}
+.doctor-form-area .form-group:nth-child(5) .form-input-container {
+  top: 322px;
+}
+
+.doctor-form-area .form-group:nth-child(6) { /* Contact Number */
+  top: 377px;
+}
+.doctor-form-area .form-group:nth-child(6) .form-input-container {
+  top: 396px;
+}
+
+.doctor-form-area .form-group:nth-child(7) { /* Emergency Contact */
+  top: 451px;
+}
+.doctor-form-area .form-group:nth-child(7) .form-input-container {
+  top: 471px;
+}
+
+.submit-button {
+  width: 80px; /* w-20 */
+  height: 40px; /* h-10 */
+  position: absolute;
+  left: 1px; /* left-[1px] */
+  top: 545px; /* top-[545px] */
+  background-color: #2563eb; /* bg-blue-600 */
+  border-radius: 4px; /* rounded */
+  box-shadow: 0px 4px 4px 0px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px; /* text-base */
+  font-weight: normal;
+  font-family: 'Roboto', sans-serif;
+  line-height: 24px; /* leading-normal */
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #1d4ed8; /* Darker blue on hover */
+}
