@@ -1,3 +1,4 @@
+/* src/pages/Home.css */
 /* General */
 body {
   margin: 0;
@@ -7,11 +8,15 @@ body {
 .home-container {
   width: 100vw; /* full viewport width */
   min-height: 100vh; /* full viewport height */
+  padding-top: 40px; /* Added to push content below the fixed navbar */
+  /* If the hero-section is intended to be the full height minus navbar,
+     and you use background on home-container, this padding might show through.
+     Adjust min-height of hero-section or main content wrapper accordingly. */
 }
 
 html, body {
   margin: 0;
-  padding: 100;
+  padding: 0; /* Corrected from '100' to ensure no unwanted global padding */
   width: 100%;
 }
 
@@ -104,7 +109,8 @@ html, body {
 
 .hero-section {
   display: flex;
-  height: 260px;
+  /* height: 260px; Removed fixed height to allow minHeight and content control */
+  min-height: 220px; /* Adjust as needed for visual impact */
   flex-wrap: wrap;
   background: linear-gradient(to bottom right, #f7f9fc, #ffffff);
   padding: 3rem;
@@ -138,7 +144,7 @@ html, body {
   max-width: 500px;
 }
 
-.hero-image img {
+.hero-image img { /* This style is currently unused as image is background */
   width: 100%;
   max-width: 500px;
   height: auto;
@@ -205,9 +211,9 @@ html, body {
   color:#000;
 }
 
-/* login popup */
+/* --- LOGIN POPUP STYLES --- */
 .login-popup {
-  position: absolute;
+  position: fixed; /* Changed from absolute to fixed */
   top: 70px;
   right: 20px;
   width: 300px;
@@ -219,7 +225,7 @@ html, body {
   z-index: 999;
 }
 
-.login-toggle {
+.login-toggle { /* Style for the 'Login' link in the navbar */
   color: #000;
 }
 
@@ -229,18 +235,33 @@ html, body {
   gap: 0.5rem;
 }
 
-.checkbox-label {
-  font-size: 0.9rem;
-  margin-top: -0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
+.login-form h3 {
+  color: rgb(0, 0, 0);
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 .login-form input {
   padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.login-form .checkbox-label {
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: black;
+}
+
+.login-form .checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
 }
 
 .login-form button {
@@ -250,32 +271,143 @@ html, body {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s ease;
 }
 
-.login-form h3 {
-  color: rgb(0, 0, 0);
+.login-form button:hover {
+  background: #660000;
 }
 
-/* icons */
-.social-img {
+/* --- REGISTER POPUP STYLES --- */
+
+.register-popup {
+  position: fixed; /* Changed from absolute to fixed */
+  top: 70px;
+  right: 20px;
+  width: 300px;
+  background: #fff;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 999;
+}
+
+.register-toggle { /* Style for the 'Register' link in the navbar */
+  color: #000;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.register-form h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.register-form .input-group {
+  margin-bottom: 16px;
+}
+
+.register-form .input-group label {
+  display: block;
+  margin-bottom: 6px;
+  color: #374151;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.register-form .input-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #f9fafb;
+  color: #111827;
+  box-sizing: border-box;
+}
+
+.register-form .checkbox-row {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  margin-bottom: 16px;
+  color: #6b7280;
+}
+
+.register-form .checkbox-row input[type="checkbox"] {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+}
+
+.role-selection {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.role-btn {
+  flex: 1;
+  margin: 0 5px;
+  padding: 10px 0;
+  border-radius: 9999px;
+  background: #e5e5e5;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 14px;
+}
+
+.role-btn.active {
+  background: #10b981;
+  color: white;
+}
+
+.register-submit {
+  width: 100%;
+  padding: 12px;
+  background: #059669;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 8px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.register-submit:hover {
+  background: #047857;
+}
+
+/* Social icons (shared styles for both forms) */
+.social-icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+  gap: 16px;
+}
+
+.social-icons img {
   width: 32px;
   height: 32px;
-  
-  margin: 0 0.5rem;
+  border-radius: 50%;
   cursor: pointer;
   transition: transform 0.2s;
 }
 
-.social-icons {
-  display: flex;
-  justify-content: space-evenly; /* or 'space-evenly' */
-  align-items: center;
-  margin-top: 1rem;
-}
-
-.checkbox-label {
-  color: black;
-}
-.social-img:hover {
+.social-icons img:hover {
   transform: scale(1.2);
 }

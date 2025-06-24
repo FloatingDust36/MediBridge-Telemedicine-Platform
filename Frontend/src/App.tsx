@@ -5,7 +5,6 @@ import Home from './pages/Home';
 import Services from './pages/Services';
 import AboutUs from './pages/AboutUs';
 import Reviews from './pages/Reviews';
-import Register from './pages/Register';
 import Emergency from './pages/Emergency'; // Assuming this is a new page you added
 
 import DoctorPanel from './pages/DoctorPanel'; // Assuming this is a new page you added
@@ -25,14 +24,15 @@ function App() {
           as that's where all the dashboard, appointments, messages, and chatbot logic resides.
           We'll also incorporate the new routes from 'JM-Branch'.
         */}
-        <Route path="/" element={<Patientdash />} /> {/* This is your primary dashboard, appointments, messages view */}
+        <Route path="/" element={<Home />} /> {/* This is your primary dashboard, appointments, messages view */}
+        <Route path="/patientdash" element={<Patientdash />} /> {/* Keeping this route for the Patient Dashboard */}
 
+        {/* The following routes are from the 'main' branch */}
         {/* Keeping other core marketing/landing pages if you intend to use them */}
         <Route path="/home" element={<Home />} /> {/* If you want a separate /home route for the Home component */}
         <Route path="/services" element={<Services />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/reviews" element={<Reviews />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/emergency" element={<Emergency />} /> {/* New route from JM-Branch */}
 
         {/* New panel routes from JM-Branch */}
