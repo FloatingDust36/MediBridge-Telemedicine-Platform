@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MediBridge Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="auth-container">
+    <h2>Welcome to MediBridge!</h2>
+    <p>You are now logged in.</p>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+  <script>
+    async function logout() {
+      await supabase.auth.signOut();
+      alert("Logged out.");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
