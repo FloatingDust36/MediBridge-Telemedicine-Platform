@@ -1,23 +1,11 @@
 import React from 'react';
 import './AdminDashboard.css'; // Import the new CSS file
 import './Home.css'; // Assuming Home.css contains global styles like navbar
-import logo from '../assets/MediBridge_LogoClear.png'; // adjust the path as needed
 import admin1 from '../assets/pictures/Admin1.png'; // adjust the path as needed
-import { Link } from 'react-router-dom';
 
 const AdminDashboard: React.FC = () => {
   return (
     <div className="admin-panel-container">
-      <nav className="navbar">
-        <div className="logo">
-          <img src={logo} alt="MedBridge Logo" className="logo-img" /> {/* Replace with your logo path */}
-          <span className="logo-text">MedBridge</span>
-        </div>
-        <ul className="nav-links">
-          <li>Messages</li>
-          <li><Link to="/">Logout</Link></li>
-        </ul>
-      </nav>
 
       <div className="admin-panel-content">
         {/* Hero Section - Adapted for Admin Panel */}

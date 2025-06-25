@@ -1,30 +1,41 @@
-/* src/pages/ChatbotPage.css */
+.main-content-area.chatbot-page-wrapper {
+    /*
+       Layout's <main> provides padding-top: 60px.
+       This padding here (`padding: 20px;`) provides general internal spacing
+       around the chatbot card itself.
+    */
+    padding: 20px; /* General padding around the chatbot card */
+    padding-top: 25px; /* Add a bit more padding at the top for visual spacing below navbar */
 
-.chatbot-page-container {
-    display: flex;
-    flex-direction: column; /* Stack content vertically */
-    align-items: center;   /* Center the card horizontally */
-    min-height: 100vh;      /* Full viewport height */
-    background-color: #eef2f5; /* Light background */
-    padding: 20px;          /* General padding around the card */
-    padding-top: 60px;      /* IMPORTANT: Space to clear fixed navbar (adjust if navbar height changes) */
-    box-sizing: border-box; /* Ensures padding is included in element's total width/height */
-    width: 100%;            /* Ensure it occupies full width, combined with body overflow-x hidden */
-    /* Remove justify-content: center; from here if you want content to start from top within its flex container */
-    /* If you want the card to be truly centered vertically, you might add justify-content: center; but then min-height: 100vh; on body is better for overall page scroll. */
+    width: 100%; /* Ensures it takes full available width within Layout's <main> */
+    margin: 0 auto; /* Centers this wrapper horizontally */
+    box-sizing: border-box;
+
+    display: flex; /* Make this a flex container */
+    flex-direction: column; /* Stack its children (the chatbot card) vertically */
+    align-items: center; /* Horizontally center the chatbot card within this wrapper */
+
+    flex-grow: 1; /* CRUCIAL: Makes this container expand vertically to fill available space
+                     within its parent (<main> in Layout.tsx), thereby pushing the Footer to the bottom. */
+    background-color: #eef2f5; /* Apply the page-specific background color here */
+    justify-content: center; /* Vertically centers the chatbot card within this wrapper if there's extra space */
 }
 
 .chatbot-card {
-    width: 100%;            /* Make it responsive */
-    max-width: 700px;       /* Limit maximum width for larger screens */
-    height: calc(100vh - 100px); /* Fill remaining viewport height, adjust 100px for navbar + margin */
-    min-height: 500px;      /* Minimum height for usability */
+    width: 100%; /* Make it responsive */
+    max-width: 700px; /* Limit maximum width for larger screens */
+    height: 100%; /* Make the card take full available height within its flex parent */
+    /* REMOVE explicit calc(100vh - X) if using flex-grow; it's less flexible.
+       The flex-grow on .chatbot-messages will handle internal height. */
+    min-height: 700px; /* Minimum height for usability */
+    
     display: flex;
     flex-direction: column;
-    overflow: hidden;       /* Ensure content stays within bounds */
-    background-color: #fff; /* Assuming .card-base handles border, shadow etc. */
-    border-radius: 12px;    /* Consistent with other cards */
+    overflow: hidden;
+    background-color: #fff;
+    border-radius: 12px;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    /* Remove justify-content: center; from here if you want content to fill from top */
 }
 
 .chatbot-header {
@@ -41,10 +52,11 @@
 .chatbot-icon {
     width: 32px;
     height: 32px;
-    /* Add actual image for the icon if available */
+    /* Ensure this path is correct or provide a fallback if /images/chatbot-icon.png doesn't exist */
+    /* If you don't have a specific image, you can use a background color or a generic icon */
     background-color: white; /* Placeholder color if no icon image */
     border-radius: 50%;
-    /* You had /images/chatbot-icon.png in your TSX, ensure this path is correct or replace */
+    object-fit: cover; /* Ensure image scales correctly if it's an img tag */
 }
 
 .chatbot-title {
@@ -60,12 +72,12 @@
     font-size: 12px;
     margin: 0;
     color: rgba(255, 255, 255, 0.8);
-    flex-grow: 1; /* Pushes other elements to the sides */
+    flex-grow: 1; /* Pushes other elements (like icon/title) to the left */
     text-align: right; /* Align tagline to the right if space allows */
 }
 
 .chatbot-messages {
-    flex-grow: 1; /* Takes up available space */
+    flex-grow: 1; /* CRUCIAL: This makes the message area take all remaining vertical space in the card */
     padding: 15px 20px;
     overflow-y: auto; /* Scroll for messages */
     display: flex;
@@ -140,7 +152,6 @@
     font-family: 'Segoe UI', sans-serif;
     font-size: 15px;
     outline: none;
-    /* margin-right: 10px; Removed, replaced by gap on parent */
 }
 
 .chatbot-input:focus {
@@ -168,13 +179,13 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .chatbot-page-container {
-        padding-top: 80px; /* Adjust if navbar height changes on smaller screens */
-        padding: 15px;
+    .main-content-area.chatbot-page-wrapper {
+        padding: 15px; /* Adjust general padding */
+        padding-top: 20px; /* Internal top padding for mobile */
     }
     .chatbot-card {
-        height: calc(100vh - 100px); /* Adjust height for smaller screens */
-        min-height: 400px;
+        min-height: 400px; /* Adjust min height for mobile */
+        height: 100%; /* Keep 100% height relative to its parent */
     }
     .chatbot-input-area {
         flex-direction: column;
@@ -189,13 +200,12 @@
 }
 
 @media (max-width: 480px) {
-    .chatbot-page-container {
-        padding-top: 100px; /* Further adjust for very small screens */
-        padding: 10px;
+    .main-content-area.chatbot-page-wrapper {
+        padding: 10px; /* Further adjust general padding */
+        padding-top: 15px; /* Further adjust internal top padding for very small screens */
     }
     .chatbot-card {
-        height: calc(100vh - 120px);
-        min-height: 350px;
+        min-height: 350px; /* Adjust min height for very small screens */
     }
     .chatbot-header {
         padding: 15px;

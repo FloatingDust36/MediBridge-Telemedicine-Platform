@@ -1,8 +1,10 @@
-// src/pages/ChatbotPage.tsx
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+// Remove Link import if no internal links within the content are using it.
+// In this case, Link was only used in the removed Navbar, so it can be removed.
+// import { Link } from 'react-router-dom';
 import './ChatbotPage.css';
-import logo from '../assets/MediBridge_LogoClear.png';
+// Remove logo import as Navbar is no longer directly in this component
+// import logo from '../assets/MediBridge_LogoClear.png';
 
 const ChatbotPage = () => {
   const [messages, setMessages] = useState([
@@ -15,6 +17,7 @@ const ChatbotPage = () => {
       setMessages((prevMessages) => [...prevMessages, { type: 'user', text: input.trim() }]);
       setInput('');
 
+      // Simulate bot response
       setTimeout(() => {
         if (input.toLowerCase().includes('fever') || input.toLowerCase().includes('cough')) {
           setMessages((prevMessages) => [...prevMessages, { type: 'bot', text: 'Got it. Are you experiencing any of these?' }]);
@@ -33,26 +36,20 @@ const ChatbotPage = () => {
   };
 
   return (
-    <div className="chatbot-page-container">
-      {/* ✅ Consistent Navbar */}
-      <nav className="navbar">
-        <div className="logo">
-          <img src={logo} alt="MediBridge Logo" className="logo-img" />
-          <span className="logo-text">MediBridge</span>
-        </div>
-        <ul className="nav-links">
-          <li><Link to="/dashboard" className="nav-item-new">Dashboard</Link></li>
-          <li><Link to="/appointments" className="nav-item-new">Appointments</Link></li>
-          <li><Link to="/messages" className="nav-item-new">Messages</Link></li>
-          <li><Link to="/chatbot" className="nav-item-new">Chatbot</Link></li>
-          <li><Link to="/" className="nav-item-new">Logout</Link></li>
-        </ul>
-      </nav>
+    // This div now represents the main content area of the Chatbot page.
+    // It will be rendered inside the <main> tag of your Layout component,
+    // which already applies padding-top to clear the fixed Navbar.
+    <div className="main-content-area chatbot-page-wrapper"> {/* Renamed for consistency */}
+      {/*
+        The Navbar and Footer are now rendered by the Layout component in App.tsx.
+        Do NOT render them here.
+        Removed: <nav className="navbar">...</nav>
+      */}
 
       {/* 🧠 Chatbot UI */}
       <div className="chatbot-card card-base">
         <div className="chatbot-header">
-          <img src="/images/chatbot-icon.png" alt="Chatbot Icon" className="chatbot-icon" />
+          <img src="/images/chatbot-icon.png" alt="Chatbot Icon" className="chatbot-icon" /> {/* Ensure this path is correct */}
           <h3 className="chatbot-title">Symptom Checker</h3>
           <p className="chatbot-tagline">I'm MedBot. I'll help assess your symptoms.</p>
         </div>

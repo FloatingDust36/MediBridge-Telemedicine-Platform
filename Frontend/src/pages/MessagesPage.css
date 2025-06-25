@@ -28,15 +28,6 @@
   margin-bottom: 15px;
 }
 
-/* Inbox Card Styling */
-.messages-inbox-card {
-  /* Inherits .card-base styles from Patientdash.css */
-}
-
-.messages-inbox-card .card-title {
-  /* Inherits .card-base h3 styles */
-}
-
 .messages-list {
   list-style: none;
   padding: 0;

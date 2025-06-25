@@ -1,72 +1,114 @@
-/* Emergency.css */
+/* src/pages/Emergency.css */
 
-.emergency-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: #f0f2f5; /* Light grey background */
-  width: 100vw;
-  overflow-x: hidden;
+/* Global Box Sizing & Body Resets - IMPORTANT:
+   These should ideally be in a single global CSS file (e.g., index.css or App.css)
+   and NOT duplicated per page. Included here as comments for reference.
+*/
+/*
+html {
+  box-sizing: border-box;
 }
 
-.emergency-content {
-  /* Changed padding-top to give more space for the fixed navbar */
-  padding-top: 800px; /* Increased from 60px. Navbar is 40px, adding 40px for content clearance + visual space. */
-  padding: 20px; /* This will add 20px padding to left, right, and bottom */
-  margin: 0 auto;
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  background-color: #f0f2f5;
+
+  display: flex;
+  flex-direction: column;
+}
+*/
+
+/* This is the top-level container for the Emergency page content.
+   It ensures the page content stretches within the body's flex context. */
+.emergency-page-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Allows it to take up all available vertical space in the body */
+  width: 100%; /* Ensures it takes full available horizontal space */
+}
+
+/* This new wrapper is the main flex container that holds your main content and the footer as siblings */
+.main-content-and-footer-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Crucial: This makes it expand to fill available space within .emergency-page-container */
+  width: 100%; /* Ensure it takes full horizontal space */
+}
+
+/* This wrapper holds the main content of the Emergency page.
+   It gets padding-top to account for the fixed navbar. */
+.emergency-content-wrapper {
+  padding-top: 60px; /* Adjust this value (Navbar's height + desired spacing, e.g., 40px + 20px) */
+  flex-grow: 1; /* This makes the content fill available vertical space within its parent BEFORE the footer */
+  display: flex; /* Make it a flex container for its children */
+  flex-direction: column; /* Stack children vertically */
   width: 100%;
   box-sizing: border-box;
-  flex-grow: 1; /* Allow content to grow and fill available vertical space */
-  display: flex;
-  flex-direction: column; /* Stack children vertically */
+  background-color: #f0f5fa; /* Light background for the page */
+  padding-bottom: 20px; /* Space between content and footer */
+  align-items: center; /* Center content horizontally */
 }
 
 .emergency-main-sections {
-  display: flex; /* This is key for the two-column layout */
-  gap: 20px;
+  display: flex;
   flex-wrap: wrap; /* Allows sections to wrap on smaller screens */
-  align-items: flex-start; /* Aligns items to the top */
-  flex-grow: 1; /* Allow main-sections to take available vertical space */
-  width: 100%; /* Ensure it takes full available width within its parent */
-  min-width: 0; /* Crucial: allow flex items to shrink if needed */
+  justify-content: center; /* Center sections horizontally */
+  gap: 20px; /* Space between the left and right sections */
+  padding: 20px; /* Overall padding around the main sections */
+  max-width: 1200px; /* Max width for the entire content block */
+  width: 100%; /* Take full width up to max-width */
+  box-sizing: border-box;
 }
 
-.emergency-section-left {
-  flex: 2; /* Takes more space for the map */
+.emergency-section-left,
+.emergency-section-right {
+  flex: 1; /* Allow sections to grow and shrink */
+  min-width: 300px; /* Minimum width for each section before wrapping */
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Gap between info and map */
-  min-width: 380px; /* Minimum width for the map section */
-  box-sizing: border-box;
-  background-color: #ffffff; /* Panel background */
-  padding: 20px; /* Panel padding */
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: relative; /* For map overlay positioning */
+  gap: 20px; /* Space between elements within sections */
+}
+
+.panel-box {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  /* flex-grow: 1; /* Allow panels to grow within their section if needed */
 }
 
 .hospital-info {
-  margin: 0;
-  font-size: 1.1em;
+  font-size: 1.1rem;
   color: #333;
+  margin-bottom: 15px;
 }
 
 .map-container {
   position: relative;
   width: 100%;
-  padding-bottom: 75%; /* 4:3 Aspect Ratio (adjust as needed) */
-  height: 0;
-  overflow: hidden;
-  border-radius: 8px;
+  height: 400px; /* Fixed height for the map */
+  background-color: #e0e0e0; /* Placeholder background */
+  border-radius: 8px; /* Match panel box radius */
+  overflow: hidden; /* Ensure map corners are rounded */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #666;
 }
 
 .map-container iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
+  border: none; /* Remove default iframe border */
 }
 
 .map-error-overlay {
@@ -75,106 +117,75 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 230, 230, 0.95); /* Light red transparent background */
+  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white overlay */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 20px;
-  box-sizing: border-box;
-  z-index: 1; /* Ensure it's above the iframe */
-  border: 1px solid #ff0000; /* Red border */
-  border-radius: 8px;
+  color: #d9534f; /* Reddish error color */
+  font-weight: bold;
 }
 
 .error-text {
-  color: #ff0000;
-  font-weight: bold;
   margin: 5px 0;
+  font-size: 1.1rem;
 }
 
-.error-text.small-text {
-  font-size: 0.9em;
+.small-text {
+  font-size: 0.9rem;
   font-weight: normal;
-}
-
-
-.emergency-section-right {
-  flex: 1; /* Takes less space for hotlines */
-  display: flex;
-  flex-direction: column;
-  gap: 20px; /* Gap between the right-side panels */
-  min-width: 300px; /* Minimum width for the right section */
-  box-sizing: border-box;
-}
-
-/* Reusable panel-box styling for consistent look */
-.panel-box {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  flex-grow: 1; /* Allow panels to grow within their section */
-  min-width: 0; /* Prevents content from forcing overflow */
+  color: #777;
 }
 
 .closest-hospital-alert {
-  background-color: #ffe6e6; /* Light red background */
+  background-color: #ffebe6; /* Light red background */
   border: 1px solid #ff0000; /* Red border */
+}
+
+.alert-message {
   color: #ff0000;
-  padding: 15px;
-  margin-bottom: 20px; /* Space below the alert */
-}
-
-.closest-hospital-alert p {
-  margin: 0;
-  line-height: 1.4;
-}
-
-.closest-hospital-alert .alert-message {
   font-weight: bold;
+  font-size: 1.1rem;
 }
 
-.closest-hospital-alert .api-error-message {
-  font-size: 0.9em;
+.api-error-message {
+  color: #cc0000;
+  font-size: 0.9rem;
 }
 
 .draft-section {
+  min-height: 100px; /* Example height for draft section */
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 150px; /* Adjust height as needed */
-  background-color: #fcfcfc; /* Slightly different background for "Draft" */
-  border: 1px dashed #ccc; /* Dashed border for draft area */
+  justify-content: center;
 }
 
 .draft-text {
-  font-size: 1.5em;
-  color: #999;
+  font-size: 1.2rem;
+  color: #777;
   font-style: italic;
-  margin: 0;
 }
 
-
 .emergency-hotlines h2 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #37474f;
-  font-size: 1.5em;
+  font-size: 1.8rem;
+  color: #007bff;
+  margin-bottom: 1.5rem;
 }
 
 .hotline-item {
   display: flex;
   align-items: center;
+  justify-content: center; /* Center content */
   gap: 10px;
   margin-bottom: 10px;
+  font-size: 1.1rem;
   color: #333;
 }
 
-.hotline-item i {
-  color: #800000; /* Your brand red for icons */
-  font-size: 1.2em;
+.hotline-item i { /* Font Awesome icon styling */
+  color: #007bff;
+  font-size: 1.2rem;
 }
 
 .hotline-item p {
@@ -183,64 +194,54 @@
 }
 
 .hotline-item span {
-  font-size: 0.95em;
-  color: #555;
+  color: #000;
 }
 
 .hotline-disclaimer {
-  font-size: 0.85em;
-  color: #777;
-  margin-top: 15px;
-  border-top: 1px solid #eee;
-  padding-top: 10px;
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 1.5rem;
 }
 
 /* Responsive adjustments */
-@media (max-width: 992px) {
+@media (max-width: 768px) {
   .emergency-main-sections {
     flex-direction: column; /* Stack sections vertically */
+    padding: 15px;
   }
-
   .emergency-section-left,
   .emergency-section-right {
-    min-width: unset;
+    min-width: unset; /* Remove min-width to allow full width */
     width: 100%;
   }
-
   .map-container {
-    padding-bottom: 60%; /* Adjust aspect ratio for smaller screens */
+    height: 300px; /* Adjust map height for smaller screens */
   }
-  /* Adjust padding-top for smaller screens as well if navbar also stacks */
-  .emergency-content {
-      padding-top: 100px; /* Example: Increased for smaller screens if navbar height changes */
+  .emergency-content-wrapper {
+    padding-top: 100px; /* Adjust for mobile navbar height */
   }
 }
 
-@media (max-width: 600px) {
-  .emergency-content {
-    padding: 15px; /* Smaller padding on very small screens */
-    padding-top: 120px; /* Further increase for very small screens if navbar gets taller */
+@media (max-width: 480px) {
+  .emergency-main-sections {
+    padding: 10px;
   }
-
-  .emergency-section-left,
-  .emergency-section-right {
-    gap: 15px;
-  }
-
   .panel-box {
     padding: 15px;
   }
-
+  .hospital-info, .alert-message {
+    font-size: 1rem;
+  }
+  .map-container {
+    height: 250px;
+  }
   .emergency-hotlines h2 {
-    font-size: 1.3em;
+    font-size: 1.5rem;
   }
-
   .hotline-item {
-    flex-wrap: wrap; /* Allow hotline text to wrap if numbers are long */
+    font-size: 1rem;
   }
-
-  .hotline-item span {
-    display: block; /* Force number to new line if wrapped */
-    margin-left: 30px; /* Indent number if it wraps */
+  .emergency-content-wrapper {
+    padding-top: 120px; /* Further adjust for very small screens */
   }
 }

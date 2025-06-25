@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; // Keep Link if used for internal page navigation
 import React, { useState, useEffect } from "react";
 import "./PatientDashboard.css";
-import logo from "../assets/MediBridge_LogoClear.png";
+// Remove imports for Navbar, Footer, and logo as they are now handled by Layout
+// import logo from "../assets/MediBridge_LogoClear.png";
 
-// Subcomponents (same as before, no changes needed)
+// Subcomponents (no changes needed within these, they are self-contained)
 const PatientDashboardSection: React.FC = () => {
     const patientInfo = {
         name: "John Doe",
@@ -162,43 +163,28 @@ const PatientDashboard: React.FC = () => {
     });
 
     return (
-        <div className="patientdash-container">
-            {/* ✅ Home-style Navbar using Links */}
-            <nav className="navbar">
-                <div className="logo">
-                    <img src={logo} alt="MediBridge Logo" className="logo-img" />
-                    <span className="logo-text">MediBridge</span>
-                </div>
-                <ul className="nav-links">
-                    <li><Link to="/patientdashboard" className="nav-item-new">Dashboard</Link></li>
-                    <li><Link to="/appointments" className="nav-item-new">Appointments</Link></li>
-                    <li><Link to="/messages" className="nav-item-new">Messages</Link></li>
-                    <li><Link to="/chatbot" className="nav-item-new">Chatbot</Link></li>
-                    <li><Link to="/" className="nav-item-new">Logout</Link></li>
-                </ul>
-            </nav>
-
-            <main className="main-content-area">
-                <div className="top-info-bar">
-                    <h1 className="page-title">Patient Dashboard</h1>
-                    <div className="welcome-and-profile">
-                        <div className="profile-image-container">
-                            <img src="/images/patient-avatar.png" alt="Patient" className="profile-image" />
-                        </div>
-                        <div className="welcome-text-group">
-                            <span className="medical-profile-label">Medical Profile</span>
-                            <span className="welcome-message">Welcome, Ligma balls</span>
-                        </div>
+        // The main-content-area is now the top-level element for this component.
+        // It will be rendered inside Layout's <main> element, which provides the padding-top for the Navbar.
+        <div className="main-content-area"> {/* This will be your page's root container */}
+            <div className="top-info-bar">
+                <h1 className="page-title">Patient Dashboard</h1>
+                <div className="welcome-and-profile">
+                    <div className="profile-image-container">
+                        <img src="/images/patient-avatar.png" alt="Patient" className="profile-image" />
                     </div>
-                    <div className="current-timestamp">{`${formattedTime} · ${formattedDate}`}</div>
+                    <div className="welcome-text-group">
+                        <span className="medical-profile-label">Medical Profile</span>
+                        <span className="welcome-message">Welcome, Ligma balls</span>
+                    </div>
                 </div>
+                <div className="current-timestamp">{`${formattedTime} · ${formattedDate}`}</div>
+            </div>
 
-                <section className="dashboard-section card-margin-bottom"><PatientDashboardSection /></section>
-                <section className="notes-section card-margin-bottom"><NotesSection /></section>
-                <section className="consultation-section card-margin-bottom"><ConsultationAppointmentsSection /></section>
-                <section className="prescriptions-section card-margin-bottom"><PrescriptionsSection /></section>
-                <section className="medical-history-section card-margin-bottom"><MedicalHistorySection /></section>
-            </main>
+            <section className="dashboard-section card-margin-bottom"><PatientDashboardSection /></section>
+            <section className="notes-section card-margin-bottom"><NotesSection /></section>
+            <section className="consultation-section card-margin-bottom"><ConsultationAppointmentsSection /></section>
+            <section className="prescriptions-section card-margin-bottom"><PrescriptionsSection /></section>
+            <section className="medical-history-section card-margin-bottom"><MedicalHistorySection /></section>
         </div>
     );
 };
