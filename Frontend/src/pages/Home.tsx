@@ -7,6 +7,7 @@ import facebookIcon from '../assets/icons/Facebook.png';
 import googleIcon from '../assets/icons/Google.png';
 import discordIcon from '../assets/icons/Discord.png';
 import { Link, useNavigate } from 'react-router-dom';
+import supabase from '../lib/supabaseClient'; 
 
 const Home = () => {
   // Login State
@@ -40,12 +41,39 @@ const Home = () => {
   };
 
   // Login Submit Handler
-  const handleLoginSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // In a real app, send login credentials to a backend.
-    navigate('/patient-dashboard'); // Redirect to PatientDashboard after login
-    setShowLogin(false); // Close the popup after submission
-  };
+ const handleLoginSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const form = e.target as HTMLFormElement;
+  const email = (form[0] as HTMLInputElement).value;
+  const password = (form[1] as HTMLInputElement).value;
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    alert('Login failed: ' + error.message);
+  } else {
+    alert('Login successful!');
+    navigate('/patient-dashboard');
+    setShowLogin(false);
+  }
+};
+
+
+  const handleGoogleLogin = async () => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+  });
+
+  if (error) {
+    console.error('Google Login Error:', error.message);
+    alert('Google login failed: ' + error.message);
+  }
+};
+
 
   // Register Submit Handler
   const handleRegisterSubmit = (e: React.FormEvent) => {
@@ -149,12 +177,12 @@ const Home = () => {
 
               <div className="social-icons">
                 <img src={facebookIcon} alt="Facebook Login" className="social-img" />
-                <img src={googleIcon} alt="Google Login" className="social-img" />
+                <img src={googleIcon} alt="Google Login" className="social-img" onClick={handleGoogleLogin}/>
                 <img src={discordIcon} alt="Discord Login" className="social-img" />
               </div>
             </form>
           </motion.div>
-        )}
+        )}  
       </AnimatePresence>
 
       {/* Register Popup */}
@@ -173,7 +201,7 @@ const Home = () => {
 
               <div className="input-group">
                 <label>Email Address</label>
-                <input
+                <input 
                   type="email"
                   placeholder="Enter email"
                   value={registerEmail}
