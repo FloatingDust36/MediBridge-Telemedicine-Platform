@@ -4,8 +4,10 @@ import Home from './pages/Home';
 import Services from './pages/Services';
 import AboutUs from './pages/AboutUs';
 import Reviews from './pages/Reviews';
-import Register from './pages/Register';
-import Emergency from './pages/Emergency'; // Assuming this is a new page you added
+import Emergency from './pages/Emergency';
+
+import CompletePatientProfile from './pages/CompletePatientProfile';
+import CompleteDoctorProfile from './pages/CompleteDoctorProfile'; // IMPORT THIS LINE
 
 import DoctorDashboard from './pages/DoctorDashboard'; // Assuming this is a new page you added
 import OnlineConsultation from './pages/OnlineConsultation'; // Assuming this is a new page you added
@@ -25,10 +27,15 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/patientdash" element={<Patientdash />} />
+
+        {/* New route for Doctor Profile */}
+        <Route path="/complete-doctor-profile" element={<CompleteDoctorProfile />} /> {/* ADD THIS LINE */}
 
         <Route path="/services" element={<Services />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/reviews" element={<Reviews />} />
+
         <Route path="/register" element={<Register />} />
         <Route path="/emergency" element={<Emergency />} />
 
