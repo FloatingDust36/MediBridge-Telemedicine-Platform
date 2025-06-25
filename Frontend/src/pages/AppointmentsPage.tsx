@@ -1,17 +1,17 @@
-// src/pages/AppointmentsPage.tsx
-import React, { useState } from 'react';
-import './AppointmentsPage.css'; // Dedicated CSS for this page
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import './AppointmentsPage.css';
+import logo from '../assets/MediBridge_LogoClear.png';
 
-const AppointmentsPage = () => {
+const AppointmentsPage: React.FC = () => {
   const [selectedDoctor, setSelectedDoctor] = useState("Dr. Maria Santos – Pediatrics");
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState("Mon 9:00–12:00"); // Example state
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState("Mon 9:00–12:00");
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   const handleBookAppointment = () => {
     alert(`Appointment booked with ${selectedDoctor} for ${selectedTimeSlot}!`);
-    // In a real application, you would send this data to a backend.
   };
 
-  // For a real app, these would come from an API
   const doctors = [
     "Dr. Maria Santos – Pediatrics",
     "Dr. Alex Smith – General Medicine",
@@ -22,7 +22,6 @@ const AppointmentsPage = () => {
     "Mon 9:00–12:00",
     "Wed 1:00–4:00",
     "Fri 10:00–1:00",
-    // Add more time slots as needed
   ];
 
   const upcomingAppointmentsData = [
@@ -30,19 +29,44 @@ const AppointmentsPage = () => {
     { id: 2, doctor: "Dr. Kevin Reyes", date: "July 3, 2025", time: "2:00 PM" },
   ];
 
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formattedDate = currentTime.toLocaleDateString('en-US', {
+    day: '2-digit', month: 'long', year: 'numeric',
+  });
+  const formattedTime = currentTime.toLocaleTimeString('en-US', {
+    hour: '2-digit', minute: '2-digit', hour12: true,
+  });
+
   return (
     <div className="appointments-page-container">
-      {/* Top Info Bar - You might choose to reuse the one from Patientdash.tsx or simplify */}
-      {/* For now, let's include the title and timestamp for this page itself */}
+      <div className="appointments-inner-wrapper">
+      {/* ✅ Consistent navbar */}
+      <nav className="navbar">
+        <div className="logo">
+          <img src={logo} alt="MediBridge Logo" className="logo-img" />
+          <span className="logo-text">MediBridge</span>
+        </div>
+        <ul className="nav-links">
+          <li><Link to="/patientdashboard" className="nav-item-new">Dashboard</Link></li>
+          <li><Link to="/appointments" className="nav-item-new">Appointments</Link></li>
+          <li><Link to="/messages" className="nav-item-new">Messages</Link></li>
+          <li><Link to="/chatbot" className="nav-item-new">Chatbot</Link></li>
+          <li><Link to="/" className="nav-item-new">Logout</Link></li>
+        </ul>
+      </nav>
+
+      {/* Page Title and Timestamp */}
       <div className="appointments-top-info-bar">
         <h1 className="appointments-page-title">Appointments Dashboard</h1>
-        <span className="appointments-timestamp">
-          {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })} · {new Date().toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' })}
-        </span>
+        <span className="appointments-timestamp">{formattedTime} · {formattedDate}</span>
       </div>
 
       <div className="appointments-content-grid">
-        {/* Doctor Preference / Booking Card */}
+        {/* Booking Card */}
         <div className="card-base doctor-preference-card">
           <h3 className="card-title">️ Doctor Preference</h3>
           <div className="form-group">
@@ -80,7 +104,7 @@ const AppointmentsPage = () => {
           </button>
         </div>
 
-        {/* Upcoming Appointments Card */}
+        {/* Upcoming Appointments */}
         <div className="card-base upcoming-appointments-card">
           <h3 className="card-title">Upcoming Appointments</h3>
           <ul className="upcoming-appointments-list">
@@ -91,6 +115,7 @@ const AppointmentsPage = () => {
               </li>
             ))}
           </ul>
+          </div>
         </div>
       </div>
     </div>

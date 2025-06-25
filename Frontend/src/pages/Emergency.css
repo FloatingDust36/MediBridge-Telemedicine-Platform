@@ -10,8 +10,9 @@
 }
 
 .emergency-content {
-  padding-top: 60px; /* Space for the fixed navbar */
-  padding: 20px;
+  /* Changed padding-top to give more space for the fixed navbar */
+  padding-top: 800px; /* Increased from 60px. Navbar is 40px, adding 40px for content clearance + visual space. */
+  padding: 20px; /* This will add 20px padding to left, right, and bottom */
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
@@ -209,11 +210,16 @@
   .map-container {
     padding-bottom: 60%; /* Adjust aspect ratio for smaller screens */
   }
+  /* Adjust padding-top for smaller screens as well if navbar also stacks */
+  .emergency-content {
+      padding-top: 100px; /* Example: Increased for smaller screens if navbar height changes */
+  }
 }
 
 @media (max-width: 600px) {
   .emergency-content {
     padding: 15px; /* Smaller padding on very small screens */
+    padding-top: 120px; /* Further increase for very small screens if navbar gets taller */
   }
 
   .emergency-section-left,
