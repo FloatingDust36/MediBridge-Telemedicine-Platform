@@ -1,6 +1,8 @@
 // src/pages/ChatbotPage.tsx
-import React, { useState } from 'react';
-import './ChatbotPage.css'; // Dedicated CSS for the chatbot
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import './ChatbotPage.css';
+import logo from '../assets/MediBridge_LogoClear.png';
 
 const ChatbotPage = () => {
   const [messages, setMessages] = useState([
@@ -13,7 +15,6 @@ const ChatbotPage = () => {
       setMessages((prevMessages) => [...prevMessages, { type: 'user', text: input.trim() }]);
       setInput('');
 
-      // Simple chatbot logic (you can expand this significantly)
       setTimeout(() => {
         if (input.toLowerCase().includes('fever') || input.toLowerCase().includes('cough')) {
           setMessages((prevMessages) => [...prevMessages, { type: 'bot', text: 'Got it. Are you experiencing any of these?' }]);
@@ -26,7 +27,6 @@ const ChatbotPage = () => {
 
   const handleSuggestionClick = (suggestion: string) => {
     setMessages((prevMessages) => [...prevMessages, { type: 'user', text: suggestion }]);
-    // Simulate bot response
     setTimeout(() => {
       setMessages((prevMessages) => [...prevMessages, { type: 'bot', text: `You mentioned "${suggestion}". Please tell me more about it.` }]);
     }, 500);
@@ -34,9 +34,25 @@ const ChatbotPage = () => {
 
   return (
     <div className="chatbot-page-container">
-      <div className="chatbot-card card-base"> {/* Uses card-base for styling */}
+      {/* ✅ Consistent Navbar */}
+      <nav className="navbar">
+        <div className="logo">
+          <img src={logo} alt="MediBridge Logo" className="logo-img" />
+          <span className="logo-text">MediBridge</span>
+        </div>
+        <ul className="nav-links">
+          <li><Link to="/dashboard" className="nav-item-new">Dashboard</Link></li>
+          <li><Link to="/appointments" className="nav-item-new">Appointments</Link></li>
+          <li><Link to="/messages" className="nav-item-new">Messages</Link></li>
+          <li><Link to="/chatbot" className="nav-item-new">Chatbot</Link></li>
+          <li><Link to="/" className="nav-item-new">Logout</Link></li>
+        </ul>
+      </nav>
+
+      {/* 🧠 Chatbot UI */}
+      <div className="chatbot-card card-base">
         <div className="chatbot-header">
-          <img src="/images/chatbot-icon.png" alt="Chatbot Icon" className="chatbot-icon" /> {/* Placeholder icon */}
+          <img src="/images/chatbot-icon.png" alt="Chatbot Icon" className="chatbot-icon" />
           <h3 className="chatbot-title">Symptom Checker</h3>
           <p className="chatbot-tagline">I'm MedBot. I'll help assess your symptoms.</p>
         </div>
@@ -47,7 +63,6 @@ const ChatbotPage = () => {
               {msg.text}
             </div>
           ))}
-          {/* Example of conditional rendering for symptom suggestions */}
           {messages.some(msg => msg.text === 'Got it. Are you experiencing any of these?') && (
             <div className="symptom-suggestions">
               <button className="suggestion-button" onClick={() => handleSuggestionClick('Headache')}>Headache</button>

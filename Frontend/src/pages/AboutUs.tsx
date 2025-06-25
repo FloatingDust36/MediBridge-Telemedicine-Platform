@@ -1,28 +1,41 @@
-import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import logo from '../assets/MediBridge_LogoClear.png';
 import facebookIcon from '../assets/icons/facebook.png';
 import googleIcon from '../assets/icons/google.png';
 import discordIcon from '../assets/icons/discord.png';
+import { Link, useNavigate } from 'react-router-dom'; // 🧭 Added useNavigate
 
 // Import the new CSS file for About Us
 import './AboutUs.css'; // <--- ADD THIS LINE
 
 const About = () => { // Renamed from Services to About for clarity
   const [showLogin, setShowLogin] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const loginRef = useRef<HTMLDivElement>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate(); // 🧭 Hook for redirection
 
-  const toggleLogin = () => setShowLogin(prev => !prev);
+  const toggleLogin = () => {
+    setShowLogin(prev => !prev);
+  };
+
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigate('/patientdashboard'); // 🧭 Redirect to PatientPanel after login
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (loginRef.current && !loginRef.current.contains(event.target as Node)) {
+      if (
+        loginRef.current &&
+        !loginRef.current.contains(event.target as Node) &&
+        !(event.target as HTMLElement).closest('.login-toggle')
+      ) {
         setShowLogin(false);
       }
     };
-    if (showLogin) document.addEventListener('mousedown', handleClickOutside);
+
+    document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
@@ -44,6 +57,7 @@ const About = () => { // Renamed from Services to About for clarity
         </ul>
       </nav>
 
+      {/* Login */}
       <AnimatePresence>
         {showLogin && (
           <motion.div
@@ -54,7 +68,7 @@ const About = () => { // Renamed from Services to About for clarity
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.5 }}
           >
-            <form className="login-form">
+            <form className="login-form" onSubmit={handleLoginSubmit}>
               <h3>Login</h3>
               <input type="text" placeholder="Username" required />
               <input
@@ -62,18 +76,21 @@ const About = () => { // Renamed from Services to About for clarity
                 placeholder="Password"
                 required
               />
+
               <label className="checkbox-label">
                 <input
                   type="checkbox"
-                  onChange={() => setShowPassword(prev => !prev)}
+                  onChange={() => setShowPassword((prev) => !prev)}
                 />
                 Show password
               </label>
+
               <button type="submit">Submit</button>
+
               <div className="social-icons">
-                <img src={facebookIcon} alt="Facebook" className="social-img" />
-                <img src={googleIcon} alt="Google" className="social-img" />
-                <img src={discordIcon} alt="Instagram" className="social-img" />
+                <img src={facebookIcon} alt="Facebook Login" className="social-img" />
+                <img src={googleIcon} alt="Google Login" className="social-img" />
+                <img src={discordIcon} alt="Discord Login" className="social-img" />
               </div>
             </form>
           </motion.div>

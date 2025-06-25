@@ -11,11 +11,22 @@ body {
 
 html, body {
   margin: 0;
-  padding: 100;
+  padding: 0; /* <<<--- THIS WAS THE PROBLEM! Changed from '100' to '0' */
   width: 100%;
 }
 
 /* Navbar */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 60px; /* Make sure this matches the actual navbar height */
+  background-color: white; /* Prevent transparency glitches */
+}
+
 .navbar {
   position: fixed;
   top: 0;
@@ -70,17 +81,49 @@ html, body {
   color: black;
   font-weight: 500;
   transition: color 0.3s;
+  position: relative; /* Added for active underline */
 }
 
 .nav-links a {
   color: black;
   text-decoration: none;
+  display: block; /* Ensures the whole li area is clickable for the link */
+  line-height: inherit; /* Inherit line-height from parent li */
+  padding: 0 5px; /* Add some padding to the link for better hover area */
 }
 
 .nav-links li:hover,
 .nav-links a:hover {
   color: #800000;
 }
+
+/* Styles for the active navigation item */
+.nav-links li.active {
+    color: #007bff; /* Blue for active link */
+    font-weight: 600; /* Slightly bolder for active link */
+}
+
+.nav-links li.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0; /* Make the underline span the full width of the li */
+    bottom: 10px; /* Adjust this value to control how far below the text the underline appears */
+    height: 2px; /* Thickness of the underline */
+    background-color: #007bff; /* Blue color for the underline */
+    border-radius: 1px; /* Slightly rounded ends for the underline */
+    transform: scaleX(1); /* Ensure it's visible */
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Remove hover effect on active link if you don't want it to change color */
+.nav-links li.active:hover {
+    color: #007bff; /* Keep blue even on hover for active link */
+}
+.nav-links li.active a:hover {
+    color: #007bff; /* Keep blue even on hover for active link */
+}
+
 
 /* Hero Section */
 .hero-section::before {
@@ -110,6 +153,7 @@ html, body {
   padding: 3rem;
   align-items: center;
   border-bottom: 5px solid #b33838;
+  margin-top: 40px; /* <<<--- ADDED: Space for the fixed navbar on the Home page itself */
 }
 
 .hero-text {
@@ -260,7 +304,7 @@ html, body {
 .social-img {
   width: 32px;
   height: 32px;
-  
+
   margin: 0 0.5rem;
   cursor: pointer;
   transition: transform 0.2s;
