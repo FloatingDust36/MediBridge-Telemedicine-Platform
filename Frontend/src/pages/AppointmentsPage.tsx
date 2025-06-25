@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+// Remove Link import if no internal links within the content are using it.
+// Based on current code, Link is only used in the removed Navbar, so it can be removed.
+// import { Link } from 'react-router-dom';
 import './AppointmentsPage.css';
-import logo from '../assets/MediBridge_LogoClear.png';
+// Remove logo import as Navbar is no longer directly in this component
+// import logo from '../assets/MediBridge_LogoClear.png';
 
 const AppointmentsPage: React.FC = () => {
   const [selectedDoctor, setSelectedDoctor] = useState("Dr. Maria Santos – Pediatrics");
@@ -9,7 +12,7 @@ const AppointmentsPage: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   const handleBookAppointment = () => {
-    alert(`Appointment booked with ${selectedDoctor} for ${selectedTimeSlot}!`);
+    alert(`Appointment booked with ${selectedDoctor} for ${selectedTimeSlot}!`); // Consider a custom modal instead of alert
   };
 
   const doctors = [
@@ -42,22 +45,15 @@ const AppointmentsPage: React.FC = () => {
   });
 
   return (
-    <div className="appointments-page-container">
-      <div className="appointments-inner-wrapper">
-      {/* ✅ Consistent navbar */}
-      <nav className="navbar">
-        <div className="logo">
-          <img src={logo} alt="MediBridge Logo" className="logo-img" />
-          <span className="logo-text">MediBridge</span>
-        </div>
-        <ul className="nav-links">
-          <li><Link to="/patientdashboard" className="nav-item-new">Dashboard</Link></li>
-          <li><Link to="/appointments" className="nav-item-new">Appointments</Link></li>
-          <li><Link to="/messages" className="nav-item-new">Messages</Link></li>
-          <li><Link to="/chatbot" className="nav-item-new">Chatbot</Link></li>
-          <li><Link to="/" className="nav-item-new">Logout</Link></li>
-        </ul>
-      </nav>
+    // The main-content-area is now the top-level element for this component.
+    // It will be rendered inside the <main> tag of your Layout component,
+    // which already applies padding-top to clear the fixed Navbar.
+    <div className="main-content-area appointments-page-wrapper"> {/* Renamed for consistency */}
+      {/*
+        The Navbar and Footer are now rendered by the Layout component in App.tsx.
+        Do NOT render them here.
+        Removed: <nav className="navbar">...</nav>
+      */}
 
       {/* Page Title and Timestamp */}
       <div className="appointments-top-info-bar">
@@ -115,7 +111,6 @@ const AppointmentsPage: React.FC = () => {
               </li>
             ))}
           </ul>
-          </div>
         </div>
       </div>
     </div>

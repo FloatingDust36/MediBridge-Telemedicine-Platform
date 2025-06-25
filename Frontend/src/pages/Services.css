@@ -1,15 +1,15 @@
 /* Services Page Specific Styles */
 
-/* This wrapper helps push content down to account for the fixed navbar */
 .services-content-wrapper {
-  padding-top: 60px; /* Adjust this value based on your navbar's height + desired spacing */
-  padding-bottom: 20px; /* Space for the footer */
-  background-color: #f0f5fa; /* Light blue background for the page content area */
-  min-height: calc(100vh - 40px - 30px); /* Full height minus navbar and footer height */
+  padding-top: 80px; /* Adjust this value based on your navbar's height + desired spacing */
+  padding-bottom: 60px; /* Space for the footer */
+  background-color: #f0f5fa;
+  /* Change height to min-height */
+  min-height: calc(100vh - 40px - [footer-height]); /* 100vh - navbar-height - footer-height */
   display: flex;
   justify-content: center;
   align-items: center;
-  box-sizing: border-box; /* Include padding in the element's total width and height */
+  box-sizing: border-box;
 }
 
 .services-grid {

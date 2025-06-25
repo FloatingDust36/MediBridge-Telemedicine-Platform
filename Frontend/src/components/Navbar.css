@@ -1,0 +1,394 @@
+/* src/components/Navbar/Navbar.css */
+
+/* Navbar Base */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px; /* Consistent navbar height */
+  background: rgba(255, 255, 255, 0.9); /* Opaque background with slight transparency */
+  backdrop-filter: blur(8px); /* Less aggressive blur */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  z-index: 1000;
+  box-sizing: border-box;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05); /* Very subtle bottom border */
+  transition: background-color 0.3s ease; /* Smooth transition for background on user type change */
+}
+
+/* User-Type specific Navbar backgrounds (Examples) */
+.guest-navbar {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.patient-navbar {
+  background: rgba(230, 247, 255, 0.9); /* Light blueish for patient */
+  border-bottom: 1px solid #a8d7f7;
+}
+
+.doctor-navbar {
+  background: rgba(230, 255, 230, 0.9); /* Light greenish for doctor */
+  border-bottom: 1px solid #a8f7a8;
+}
+
+.admin-navbar {
+  background: rgba(255, 240, 240, 0.9); /* Light reddish for admin */
+  border-bottom: 1px solid #f7a8a8;
+}
+
+
+/* Logo section */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.logo-img {
+  height: 30px; /* Slightly larger logo */
+  width: auto;
+  object-fit: contain;
+}
+
+.logo-text {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333; /* Darker text for better contrast */
+  line-height: 40px; /* Vertically center text */
+}
+
+/* Navigation links */
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 2.5rem; /* Adjusted gap */
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.nav-links li {
+  line-height: 40px; /* Match navbar height */
+  white-space: nowrap;
+  cursor: pointer;
+  color: #555; /* Default link color */
+  font-weight: 500;
+  transition: all 0.3s ease; /* Smooth transitions for all properties */
+  position: relative;
+}
+
+.nav-links a {
+  color: inherit; /* Inherit color from parent li */
+  text-decoration: none;
+  display: block;
+  line-height: inherit;
+  padding: 0 5px; /* Adds clickable area */
+}
+
+.nav-links li:hover,
+.nav-links a:hover {
+  color: #007bff; /* Blue on hover */
+}
+
+/* Active Navigation Item */
+.nav-links li.active {
+    color: #800000; /* Blue for active link */
+    font-weight: 600; /* Slightly bolder for active link */
+}
+
+.nav-links li.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 5px; /* Adjust distance from text */
+    height: 3px; /* Thickness of the underline */
+    background-color: #800000; /* Blue underline */
+    border-radius: 1.5px; /* Rounded ends */
+    transform: scaleX(1);
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Highlight for toggled popups */
+.login-toggle.active-popup,
+.register-toggle.active-popup {
+  color: #800000;
+  font-weight: 600;
+  /* You can add a subtle background or border too if desired */
+}
+
+.logout-button {
+  background-color: #dc3545; /* Red logout button */
+  color: white !important; /* Important to override default link color */
+  padding: 5px 15px;
+  border-radius: 5px;
+  font-weight: 600;
+  text-align: center;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  line-height: normal; /* Override line-height from .nav-links li */
+}
+
+.logout-button:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+.logout-button:active {
+  transform: translateY(0);
+}
+
+
+/* Login & Register Popup Base Styles */
+.login-popup,
+.register-popup {
+  position: fixed; /* Keep fixed so they stay in place on scroll */
+  top: 70px; /* Navbar height (40px) + 30px margin */
+  right: 20px;
+  width: 320px; /* Slightly wider */
+  background: #fff;
+  padding: 1.5rem; /* More generous padding */
+  border: 1px solid #e0e0e0; /* Softer border */
+  border-radius: 12px; /* More rounded corners */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Stronger, more diffused shadow */
+  z-index: 1001; /* Above navbar */
+}
+
+.login-form,
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem; /* Consistent spacing */
+}
+
+.login-form h3,
+.register-form h2 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #555; /* Make sure label text is visible */
+  font-weight: 500;
+  font-size: 0.9em;
+}
+
+.login-form input,
+.register-form input {
+  padding: 0.75rem 1rem; /* More padding for inputs */
+  border: 1px solid #ccc;
+  border-radius: 8px; /* Rounded inputs */
+  width: 100%;
+  font-size: 1em;
+  box-sizing: border-box; /* Inherited but good to keep in mind */
+  background-color: #fcfcfc;
+  color: #333; /* Dark gray for input text */
+}
+
+/* Placeholder text color */
+.login-form input::placeholder,
+.register-form input::placeholder {
+  color: #888; /* A lighter gray for placeholder text */
+  opacity: 1; /* Ensures it's not transparent in some browsers */
+}
+
+.login-form input:focus,
+.register-form input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.checkbox-label {
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #555;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px; /* Larger checkbox */
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.login-form button[type="submit"],
+.register-submit {
+  padding: 0.75rem;
+  background: #800000; /* Primary button color */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: 600;
+  margin-top: 1rem;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.login-form button[type="submit"]:hover,
+.register-submit:hover {
+  background: #660000;
+  transform: translateY(-1px);
+}
+.login-form button[type="submit"]:active,
+.register-submit:active {
+  transform: translateY(0);
+}
+
+
+/* Register Specific Styles */
+.register-form .input-group {
+  margin-bottom: 1rem;
+}
+
+.register-form .checkbox-row {
+  display: flex;
+  align-items: center;
+  font-size: 0.85em;
+  margin-bottom: 1rem;
+  color: #6b7280;
+}
+
+.role-selection {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  gap: 10px; /* Space between role buttons */
+}
+
+.role-btn {
+  flex: 1;
+  padding: 0.6rem 0;
+  border-radius: 20px; /* Pill shape */
+  background: #e9e9e9;
+  border: 1px solid #ccc; /* Subtle border */
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9em;
+  color: #444;
+}
+
+.role-btn.active {
+  background: #10b981; /* Green for active role */
+  color: white;
+  border-color: #10b981;
+  box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2);
+}
+
+.role-btn:not(.active):hover {
+  background: #f0f0f0;
+  border-color: #a0a0a0;
+}
+
+/* Social icons (shared styles for both forms) */
+.social-icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem; /* More space */
+  gap: 20px; /* Wider gap between icons */
+  padding-top: 1rem; /* Space above icons */
+  border-top: 1px solid #eee; /* Separator line */
+}
+
+.social-icons img {
+  width: 36px; /* Slightly larger icons */
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.social-icons img:hover {
+  transform: scale(1.15); /* More pronounced hover effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments for Navbar and Popups */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    height: auto;
+    padding: 10px 1rem;
+    gap: 10px;
+  }
+  .logo-text {
+    line-height: normal;
+  }
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+  }
+  .nav-links li {
+    line-height: normal;
+  }
+  .nav-links li.active::after {
+    bottom: 0px; /* Adjust for stacked navbar */
+  }
+
+  .login-popup,
+  .register-popup {
+    top: 100px; /* Adjust top position for smaller screens */
+    right: 50%;
+    transform: translateX(50%); /* Center horizontally */
+    width: 90%; /* Wider on small screens */
+    max-width: 350px; /* Limit max width */
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 8px 0.5rem;
+  }
+  .logo-img {
+    height: 25px;
+  }
+  .logo-text {
+    font-size: 1rem;
+  }
+  .nav-links {
+    gap: 10px;
+  }
+  .nav-links li {
+    font-size: 14px;
+  }
+  .login-popup,
+  .register-popup {
+    top: 90px; /* Further adjustment for very small screens */
+    width: 95%;
+  }
+  .login-form h3,
+  .register-form h2 {
+    font-size: 1.3em;
+  }
+  .login-form input,
+  .register-form input {
+    padding: 0.6rem;
+  }
+  .login-form button[type="submit"],
+  .register-submit {
+    font-size: 1em;
+    padding: 0.6rem;
+  }
+  .social-icons img {
+    width: 30px;
+    height: 30px;
+  }
+}
