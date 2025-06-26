@@ -1,0 +1,46 @@
+{
+  "john_18_male": {
+    "name": "john",
+    "age": "18",
+    "sex": "male",
+    "visits": 20,
+    "symptom_history": [
+      "fever",
+      "cough",
+      "fatigue",
+      "fever",
+      "cough",
+      "fatigue",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "fever",
+      "headache"
+    ],
+    "last_seen": "2025-06-26T16:43:26.110909"
+  },
+  "john_19_male": {
+    "name": "john",
+    "age": "19",
+    "sex": "male",
+    "visits": 1,
+    "symptom_history": [
+      "fever"
+    ],
+    "last_seen": "2025-06-26T11:40:26.008829"
+  }
+}
