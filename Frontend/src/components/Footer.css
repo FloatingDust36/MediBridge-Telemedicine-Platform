@@ -1,0 +1,16 @@
+/* footer.css or global.css */
+.footer {
+  background: #e0e0e0;
+  text-align: center;
+  font-size: 10px;
+  height: 30px; /* Keep fixed height if desired */
+  width: 100%;
+  margin-top: auto; /* This will push it to the bottom of its flex parent */
+}
+
+.footer p {
+  color: #000;
+  /* Vertically center text if not already */
+  line-height: 30px; /* Matches footer height */
+  margin: 0;
+}

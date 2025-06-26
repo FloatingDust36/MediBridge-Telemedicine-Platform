@@ -1,6 +1,10 @@
-// src/pages/ChatbotPage.tsx
-import React, { useState } from 'react';
-import './ChatbotPage.css'; // Dedicated CSS for the chatbot
+import { useState } from 'react';
+// Remove Link import if no internal links within the content are using it.
+// In this case, Link was only used in the removed Navbar, so it can be removed.
+// import { Link } from 'react-router-dom';
+import './ChatbotPage.css';
+// Remove logo import as Navbar is no longer directly in this component
+// import logo from '../assets/MediBridge_LogoClear.png';
 
 const ChatbotPage = () => {
   const [messages, setMessages] = useState([
@@ -13,7 +17,7 @@ const ChatbotPage = () => {
       setMessages((prevMessages) => [...prevMessages, { type: 'user', text: input.trim() }]);
       setInput('');
 
-      // Simple chatbot logic (you can expand this significantly)
+      // Simulate bot response
       setTimeout(() => {
         if (input.toLowerCase().includes('fever') || input.toLowerCase().includes('cough')) {
           setMessages((prevMessages) => [...prevMessages, { type: 'bot', text: 'Got it. Are you experiencing any of these?' }]);
@@ -26,17 +30,26 @@ const ChatbotPage = () => {
 
   const handleSuggestionClick = (suggestion: string) => {
     setMessages((prevMessages) => [...prevMessages, { type: 'user', text: suggestion }]);
-    // Simulate bot response
     setTimeout(() => {
       setMessages((prevMessages) => [...prevMessages, { type: 'bot', text: `You mentioned "${suggestion}". Please tell me more about it.` }]);
     }, 500);
   };
 
   return (
-    <div className="chatbot-page-container">
-      <div className="chatbot-card card-base"> {/* Uses card-base for styling */}
+    // This div now represents the main content area of the Chatbot page.
+    // It will be rendered inside the <main> tag of your Layout component,
+    // which already applies padding-top to clear the fixed Navbar.
+    <div className="main-content-area chatbot-page-wrapper"> {/* Renamed for consistency */}
+      {/*
+        The Navbar and Footer are now rendered by the Layout component in App.tsx.
+        Do NOT render them here.
+        Removed: <nav className="navbar">...</nav>
+      */}
+
+      {/* 🧠 Chatbot UI */}
+      <div className="chatbot-card card-base">
         <div className="chatbot-header">
-          <img src="/images/chatbot-icon.png" alt="Chatbot Icon" className="chatbot-icon" /> {/* Placeholder icon */}
+          <img src="/images/chatbot-icon.png" alt="Chatbot Icon" className="chatbot-icon" /> {/* Ensure this path is correct */}
           <h3 className="chatbot-title">Symptom Checker</h3>
           <p className="chatbot-tagline">I'm MedBot. I'll help assess your symptoms.</p>
         </div>
@@ -47,7 +60,6 @@ const ChatbotPage = () => {
               {msg.text}
             </div>
           ))}
-          {/* Example of conditional rendering for symptom suggestions */}
           {messages.some(msg => msg.text === 'Got it. Are you experiencing any of these?') && (
             <div className="symptom-suggestions">
               <button className="suggestion-button" onClick={() => handleSuggestionClick('Headache')}>Headache</button>

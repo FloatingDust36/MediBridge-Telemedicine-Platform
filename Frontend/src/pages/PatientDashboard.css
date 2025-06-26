@@ -1,0 +1,418 @@
+/* src/pages/PatientDashboard.css */
+
+/* General */
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background-color: #e6e9ed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.patientdash-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100vw;
+    min-height: 100vh;
+    background-color: #e6e9ed;
+}
+
+/* Styles for the new navigation items */
+.nav-item-new {
+    line-height: 60px; /* Match navbar height for vertical centering */
+    white-space: nowrap;
+    cursor: pointer;
+    color: #555; /* Default color */
+    font-weight: 500;
+    transition: color 0.3s ease, border-bottom 0.3s ease;
+    position: relative;
+    /* No text-decoration here by default */
+}
+
+.nav-item-new.active {
+    color: #007bff; /* Active color */
+    font-weight: 600;
+    /* Text decoration for the active item */
+    text-decoration: underline; /* Add underline directly */
+    text-decoration-color: #007bff; /* Match active color */
+    text-decoration-thickness: 3px; /* Adjust thickness */
+    text-underline-offset: 8px; /* Offset the underline from the text */
+}
+
+/* Remove the ::after pseudo-element that caused the strikethrough */
+/* .nav-item-new.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 15px;
+    width: 100%;
+    height: 3px;
+    background-color: #007bff;
+    border-radius: 2px;
+} */
+
+
+.nav-item-new:hover {
+    color: #007bff; /* Hover color */
+}
+
+/* No specific button styles for logout, it now inherits .nav-item-new styles */
+/* Remove .logout-button-new styles completely or adapt if you want a subtle difference */
+/* If you want logout to have a distinct look, but not a button style: */
+.nav-links .nav-item-new:last-child { /* Targets the Logout item */
+    margin-left: 10px; /* Add some spacing from the last nav item */
+    /* You could add a subtle background or a different text color here if desired */
+    /* For example: background-color: #f0f0f0; border-radius: 5px; padding: 0 10px; */
+}
+
+
+/* --- END NEW NAVBAR STYLES --- */
+
+
+.patientdash-wrapper { /* This wrapper is not needed if navbar is fixed */
+    width: 100%;
+    max-width: 1200px;
+    background-color: #e6e9ed;
+    position: relative;
+    padding-bottom: 50px;
+}
+
+/* Main Content Area - Adjust padding-top to clear fixed navbar */
+.main-content-area {
+    padding: 20px 30px;
+    width: 100%;
+    box-sizing: border-box;
+    padding-top: 80px; /* Space for the fixed navbar (navbar height + some margin) */
+}
+
+.top-info-bar {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 25px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.page-title {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    color: #333;
+    font-size: 26px;
+    margin-bottom: 10px;
+    margin-top: 0;
+}
+
+.welcome-and-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.profile-image-container {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid white;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.welcome-text-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.medical-profile-label {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 600;
+    color: #007bff;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.welcome-message {
+    font-family: 'Segoe UI', sans-serif;
+    color: #444;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.current-timestamp {
+    font-family: 'Segoe UI', sans-serif;
+    color: #777;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+/* Card Base Styles (for all dashboard sections) */
+.card-base {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-sizing: border-box;
+    border: 1px solid #c0c0c0;
+}
+
+.card-margin-bottom {
+    margin-bottom: 25px;
+}
+
+/* Common Header/Title Styling for all Sections (inside cards) */
+.card-base h3 {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 600;
+    color: #333;
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+/* Common List Item Styling for all Sections */
+.card-base ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.card-base li {
+    color: #555;
+    font-size: 15px;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+.card-base li:last-child {
+    margin-bottom: 0;
+}
+
+
+/* --- Styles specific to PatientDashboardSection --- */
+.patient-dashboard-section-content p {
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: #444;
+}
+.patient-dashboard-section-content p strong {
+    color: #000;
+    font-weight: 600;
+}
+
+/* --- Styles specific to NotesSection --- */
+.notes-section .notes-list {
+    max-height: 120px;
+    overflow-y: auto;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.notes-section .notes-list li {
+    background-color: #fcfcfc;
+    padding: 8px 12px;
+    border-radius: 5px;
+    margin-bottom: 6px;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.3;
+}
+
+.notes-section .add-note-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 14px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    min-height: 60px;
+}
+
+.notes-section .add-note-textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+.notes-section .add-note-button {
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.notes-section .add-note-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+.notes-section .add-note-button:active {
+    transform: translateY(0);
+}
+
+/* --- Styles specific to ConsultationAppointmentsSection --- */
+.consultation-section h4 {
+    font-size: 1.1em;
+    color: #333;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.consultation-section .consultation-list {
+    list-style: disc;
+    padding-left: 20px;
+}
+
+.consultation-section .consultation-list li {
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #555;
+}
+.consultation-section .consultation-list li strong {
+    color: #333;
+}
+
+
+/* --- Styles specific to PrescriptionsSection --- */
+.prescriptions-section .prescriptions-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+.prescriptions-section .prescriptions-list li {
+    background-color: #f8f8f8;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #444;
+}
+.prescriptions-section .prescriptions-list li:last-child {
+    margin-bottom: 0;
+}
+
+/* --- Styles specific to MedicalHistorySection --- */
+.medical-history-section .medical-history-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.medical-history-section .medical-history-item {
+    background-color: #f8f8f8;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #444;
+}
+.medical-history-section .medical-history-item strong {
+    font-weight: 600;
+    color: #000;
+}
+.medical-history-section .medical-history-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 15px;
+        gap: 10px;
+    }
+    .logo-text {
+        line-height: normal;
+    }
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        width: 100%;
+    }
+    .nav-item-new {
+        line-height: normal;
+    }
+    /* No more .logout-button-new specific styles */
+
+    .main-content-area {
+        padding: 20px;
+        padding-top: 150px; /* Adjust for stacked navbar */
+    }
+    .top-info-bar {
+        padding-left: 0;
+        padding-right: 0;
+        align-items: flex-start;
+    }
+    .page-title {
+        font-size: 22px;
+    }
+    .welcome-and-profile {
+        flex-direction: row;
+        align-items: center;
+    }
+    .profile-image-container {
+        width: 40px;
+        height: 40px;
+    }
+    .card-base {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        padding: 8px 10px;
+    }
+    .logo-img {
+        height: 30px;
+    }
+    .logo-text {
+        font-size: 1rem;
+    }
+    .nav-links {
+        gap: 10px;
+    }
+    .nav-item-new {
+        font-size: 14px;
+    }
+    .main-content-area {
+        padding: 15px;
+        padding-top: 160px;
+    }
+    .page-title {
+        font-size: 20px;
+    }
+    .welcome-message {
+        font-size: 16px;
+    }
+    .current-timestamp {
+        font-size: 12px;
+    }
+    .card-base h3 {
+        font-size: 16px;
+    }
+    .card-base p, .card-base li {
+        font-size: 14px;
+    }
+    .notes-section .add-note-button {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+}

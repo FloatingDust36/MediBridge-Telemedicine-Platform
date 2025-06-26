@@ -1,158 +1,226 @@
-/* src/pages/ChatbotPage.css */
+.main-content-area.chatbot-page-wrapper {
+    /*
+       Layout's <main> provides padding-top: 60px.
+       This padding here (`padding: 20px;`) provides general internal spacing
+       around the chatbot card itself.
+    */
+    padding: 20px; /* General padding around the chatbot card */
+    padding-top: 25px; /* Add a bit more padding at the top for visual spacing below navbar */
 
-.chatbot-page-container {
-  display: flex;
-  justify-content: center; /* Center the chatbot card horizontally */
-  padding: 20px 30px; /* Consistent padding */
-  width: 100%;
-  box-sizing: border-box;
+    width: 100%; /* Ensures it takes full available width within Layout's <main> */
+    margin: 0 auto; /* Centers this wrapper horizontally */
+    box-sizing: border-box;
+
+    display: flex; /* Make this a flex container */
+    flex-direction: column; /* Stack its children (the chatbot card) vertically */
+    align-items: center; /* Horizontally center the chatbot card within this wrapper */
+
+    flex-grow: 1; /* CRUCIAL: Makes this container expand vertically to fill available space
+                     within its parent (<main> in Layout.tsx), thereby pushing the Footer to the bottom. */
+    background-color: #eef2f5; /* Apply the page-specific background color here */
+    justify-content: center; /* Vertically centers the chatbot card within this wrapper if there's extra space */
 }
 
 .chatbot-card {
-  width: 448px; /* Fixed width as per mockup */
-  height: 547px; /* Fixed height as per mockup */
-  display: flex;
-  flex-direction: column;
-  overflow: hidden; /* Ensure content stays within bounds */
-  /* card-base provides background, border, shadow, etc. */
-  border-top-left-radius: 8px; /* Adjust if specific corner radii are needed */
-  border-top-right-radius: 8px;
+    width: 100%; /* Make it responsive */
+    max-width: 700px; /* Limit maximum width for larger screens */
+    height: 100%; /* Make the card take full available height within its flex parent */
+    /* REMOVE explicit calc(100vh - X) if using flex-grow; it's less flexible.
+       The flex-grow on .chatbot-messages will handle internal height. */
+    min-height: 700px; /* Minimum height for usability */
+    
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    /* Remove justify-content: center; from here if you want content to fill from top */
 }
 
 .chatbot-header {
-  background-color: #3B82F6; /* Blue header from mockup */
-  color: white;
-  padding: 15px 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  flex-shrink: 0; /* Prevent header from shrinking */
+    background-color: #3B82F6; /* Blue header from mockup */
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .chatbot-icon {
-  width: 32px;
-  height: 32px;
-  /* Add actual image for the icon if available */
-  background-color: white; /* Placeholder color if no icon image */
-  border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    /* Ensure this path is correct or provide a fallback if /images/chatbot-icon.png doesn't exist */
+    /* If you don't have a specific image, you can use a background color or a generic icon */
+    background-color: white; /* Placeholder color if no icon image */
+    border-radius: 50%;
+    object-fit: cover; /* Ensure image scales correctly if it's an img tag */
 }
 
 .chatbot-title {
-  font-family: 'Segoe UI', sans-serif;
-  font-weight: 600;
-  font-size: 18px;
-  margin: 0;
-  color: white;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    margin: 0;
+    color: white;
 }
 
 .chatbot-tagline {
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  margin: 0;
-  color: rgba(255, 255, 255, 0.8);
-  flex-grow: 1; /* Pushes other elements to the sides */
-  text-align: right; /* Align tagline to the right if space allows */
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 12px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+    flex-grow: 1; /* Pushes other elements (like icon/title) to the left */
+    text-align: right; /* Align tagline to the right if space allows */
 }
 
 .chatbot-messages {
-  flex-grow: 1; /* Takes up available space */
-  padding: 15px 20px;
-  overflow-y: auto; /* Scroll for messages */
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background-color: #f7f7f7; /* Light background for message area */
+    flex-grow: 1; /* CRUCIAL: This makes the message area take all remaining vertical space in the card */
+    padding: 15px 20px;
+    overflow-y: auto; /* Scroll for messages */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #f7f7f7; /* Light background for message area */
 }
 
 .message-bubble {
-  padding: 10px 15px;
-  border-radius: 15px; /* Rounded bubbles */
-  max-width: 80%; /* Messages don't span full width */
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 14px;
-  line-height: 1.4;
-  word-wrap: break-word; /* Wrap long words */
+    padding: 10px 15px;
+    border-radius: 15px; /* Rounded bubbles */
+    max-width: 80%; /* Messages don't span full width */
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word; /* Wrap long words */
 }
 
 .message-bubble.bot {
-  background-color: #e0f2fe; /* Light blue for bot messages */
-  color: #333;
-  align-self: flex-start; /* Align to left */
-  border-bottom-left-radius: 4px; /* Sharper corner on sender side */
+    background-color: #e0f2fe; /* Light blue for bot messages */
+    color: #333;
+    align-self: flex-start; /* Align to left */
+    border-bottom-left-radius: 4px; /* Sharper corner on sender side */
 }
 
 .message-bubble.user {
-  background-color: #007bff; /* Blue for user messages */
-  color: white;
-  align-self: flex-end; /* Align to right */
-  border-bottom-right-radius: 4px; /* Sharper corner on sender side */
+    background-color: #007bff; /* Blue for user messages */
+    color: white;
+    align-self: flex-end; /* Align to right */
+    border-bottom-right-radius: 4px; /* Sharper corner on sender side */
 }
 
 .symptom-suggestions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-  align-self: flex-start; /* Align suggestions with bot messages */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    align-self: flex-start; /* Align suggestions with bot messages */
 }
 
 .suggestion-button {
-  padding: 8px 12px;
-  border: 1px solid #c0c0c0;
-  border-radius: 20px; /* Pill-shaped buttons */
-  background-color: white;
-  color: #555;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+    padding: 8px 12px;
+    border: 1px solid #c0c0c0;
+    border-radius: 20px; /* Pill-shaped buttons */
+    background-color: white;
+    color: #555;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .suggestion-button:hover {
-  background-color: #f0f0f0;
-  border-color: #a0a0a0;
+    background-color: #f0f0f0;
+    border-color: #a0a0a0;
 }
 
-
 .chatbot-input-area {
-  display: flex;
-  padding: 15px 20px;
-  border-top: 1px solid #e0e0e0;
-  background-color: white;
-  flex-shrink: 0; /* Prevent input area from shrinking */
+    display: flex;
+    padding: 15px 20px;
+    border-top: 1px solid #e0e0e0;
+    background-color: white;
+    flex-shrink: 0; /* Prevent input area from shrinking */
+    gap: 10px; /* Space between input and button */
 }
 
 .chatbot-input {
-  flex-grow: 1; /* Takes up most space */
-  padding: 10px 15px;
-  border: 1px solid #c0c0c0;
-  border-radius: 20px; /* Rounded input field */
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 15px;
-  outline: none;
-  margin-right: 10px;
+    flex-grow: 1; /* Takes up most space */
+    padding: 10px 15px;
+    border: 1px solid #c0c0c0;
+    border-radius: 20px; /* Rounded input field */
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    outline: none;
 }
 
 .chatbot-input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
 .chatbot-send-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 20px; /* Rounded send button */
-  background-color: #007bff; /* Blue send button */
-  color: white;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px; /* Rounded send button */
+    background-color: #007bff; /* Blue send button */
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .chatbot-send-button:hover {
-  background-color: #0056b3;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #0056b3;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-content-area.chatbot-page-wrapper {
+        padding: 15px; /* Adjust general padding */
+        padding-top: 20px; /* Internal top padding for mobile */
+    }
+    .chatbot-card {
+        min-height: 400px; /* Adjust min height for mobile */
+        height: 100%; /* Keep 100% height relative to its parent */
+    }
+    .chatbot-input-area {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .chatbot-send-button {
+        width: 100%;
+    }
+    .message-bubble {
+        max-width: 90%; /* Allow messages to take more width */
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content-area.chatbot-page-wrapper {
+        padding: 10px; /* Further adjust general padding */
+        padding-top: 15px; /* Further adjust internal top padding for very small screens */
+    }
+    .chatbot-card {
+        min-height: 350px; /* Adjust min height for very small screens */
+    }
+    .chatbot-header {
+        padding: 15px;
+    }
+    .chatbot-title {
+        font-size: 1.5em;
+    }
+    .chatbot-messages {
+        padding: 15px;
+    }
+    .message-bubble {
+        font-size: 0.9em;
+    }
+    .chatbot-input {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
 }

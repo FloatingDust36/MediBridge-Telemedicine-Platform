@@ -1,10 +1,4 @@
-import { Link } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
-import logo from '../assets/MediBridge_LogoClear.png';
-import facebookIcon from '../assets/icons/facebook.png';
-import googleIcon from '../assets/icons/google.png';
-import discordIcon from '../assets/icons/discord.png';
 
 // Import the new CSS file for Reviews
 import './Reviews.css';
@@ -18,14 +12,23 @@ const Reviews = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (loginRef.current && !loginRef.current.contains(event.target as Node)) {
+      // Ensure we don't close the popup if clicking the toggle button itself
+      if (
+        loginRef.current &&
+        !loginRef.current.contains(event.target as Node) &&
+        !(event.target as HTMLElement).closest('.login-toggle') // Keep this part
+      ) {
         setShowLogin(false);
       }
     };
-    if (showLogin) document.addEventListener('mousedown', handleClickOutside);
-    // Corrected typo here from handleClickAllSide to handleClickOutside
+    // Add/remove event listener based on showLogin state
+    if (showLogin) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [showLogin]); // Dependency array includes showLogin
 
   // Helper for rendering stars based on a rating
   const renderStars = (rating: number) => {
@@ -41,108 +44,59 @@ const Reviews = () => {
   };
 
   return (
-    <div className="home-container">
-      <nav className="navbar">
-        <div className="logo">
-          <img src={logo} alt="MediBridge Logo" className="logo-img" />
-          <span className="logo-text">MediBridge</span>
-        </div>
-        <ul className="nav-links">
-          <li><Link to="/emergency">EMERGENCY</Link></li>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/services">Services</Link></li>
-          <li><Link to="/about">About Us</Link></li>
-          <li><Link to="/reviews">Reviews</Link></li>
-          <li onClick={toggleLogin} className="login-toggle">Login</li>
-          <li><Link to="/register">Register</Link></li>
-        </ul>
-      </nav>
+    // This is the outer-most container for the page content, consistent with other pages
+    <div className="reviews-page-container"> {/* Consistent naming: reviews-page-container */}
 
-      <AnimatePresence>
-        {showLogin && (
-          <motion.div
-            className="login-popup"
-            ref={loginRef}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.5 }}
-          >
-            <form className="login-form">
-              <h3>Login</h3>
-              <input type="text" placeholder="Username" required />
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                required
-              />
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  onChange={() => setShowPassword(prev => !prev)}
-                />
-                Show password
-              </label>
-              <button type="submit">Submit</button>
-              <div className="social-icons">
-                <img src={facebookIcon} alt="Facebook" className="social-img" />
-                <img src={googleIcon} alt="Google" className="social-img" />
-                <img src={discordIcon} alt="Instagram" className="social-img" />
+      {/* This is the main flex container that holds all scrollable content and the footer */}
+      <div className="main-content-and-footer-wrapper">
+        {/* Main Page Content Wrapper - This div ensures content sits below fixed navbar */}
+        <div className="reviews-content-wrapper">
+          <h1 className="reviews-page-title">Website Reviews</h1>
+
+          <div className="review-note">
+            <span className="note-label">Note:</span> You must
+            <span className="note-link" onClick={toggleLogin} style={{ cursor: 'pointer' }}> login </span>
+            to leave a review. Below are public reviews from our users.
+          </div>
+
+          <h2 className="what-users-saying">What Users Are Saying</h2>
+
+          <div className="reviews-list"> {/* New wrapper for review cards for better centering/layout */}
+            <div className="review-card">
+              <div className="reviewer-info">
+                <span className="reviewer-name">Juan Dela Cruz</span>
+                {renderStars(4)}
               </div>
-            </form>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <p className="review-text">
+                The MediBridge website made it super easy to consult with a doctor even from my province. Great service!
+              </p>
+            </div>
 
-      {/* Main content for Reviews page */}
-      <div className="reviews-content-wrapper">
-        <h1 className="reviews-page-title">Website Reviews</h1>
+            <div className="review-card">
+              <div className="reviewer-info">
+                <span className="reviewer-name">Maria Santos</span>
+                {renderStars(3)}
+              </div>
+              <p className="review-text">
+                Very helpful during the pandemic! The emergency map and hotline features are life-saving.
+              </p>
+            </div>
 
-        <div className="review-note">
-          <span className="note-label">Note:</span> You must
-          {/* Changed Link to a span with an onClick handler */}
-          <span className="note-link" onClick={toggleLogin} style={{ cursor: 'pointer' }}> login </span>
-          to leave a review. Below are public reviews from our users.
-        </div>
+            <div className="review-card">
+              <div className="reviewer-info">
+                <span className="reviewer-name">Carlos Mendoza</span>
+                {renderStars(2)}
+              </div>
+              <p className="review-text">
+                Decent platform, but I wish there were more doctors available during off-hours.
+              </p>
+            </div>
+            {/* Add more review cards as needed */}
+          </div> {/* End reviews-list */}
 
-        <h2 className="what-users-saying">What Users Are Saying</h2>
-
-        <div className="review-card">
-          <div className="reviewer-info">
-            <span className="reviewer-name">Juan Dela Cruz</span>
-            {renderStars(4)}
-          </div>
-          <p className="review-text">
-            The MediBridge website made it super easy to consult with a doctor even from my province. Great service!
-          </p>
-        </div>
-
-        <div className="review-card">
-          <div className="reviewer-info">
-            <span className="reviewer-name">Maria Santos</span>
-            {renderStars(3)}
-          </div>
-          <p className="review-text">
-            Very helpful during the pandemic! The emergency map and hotline features are life-saving.
-          </p>
-        </div>
-
-        <div className="review-card">
-          <div className="reviewer-info">
-            <span className="reviewer-name">Carlos Mendoza</span>
-            {renderStars(2)}
-          </div>
-          <p className="review-text">
-            Decent platform, but I wish there were more doctors available during off-hours.
-          </p>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="footer">
-        <p>© 2025 MediBridge. All rights reserved.</p>
-      </footer>
-    </div>
+        </div> {/* End reviews-content-wrapper */}
+      </div> {/* End main-content-and-footer-wrapper */}
+    </div> // End reviews-page-container
   );
 };
 

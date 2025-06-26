@@ -1,129 +1,89 @@
-/* General */
+/* src/pages/Home.css - Now only contains Home-specific styles and global utilities */
+
+/* Global Box Sizing & Body Resets - IMPORTANT, ensure these are NOT duplicated elsewhere */
+html {
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
 body {
   margin: 0;
-  font-family: "Segoe UI", sans-serif;
-}
-
-.home-container {
-  width: 100vw; /* full viewport width */
-  min-height: 100vh; /* full viewport height */
-}
-
-html, body {
-  margin: 0;
-  padding: 100;
-  width: 100%;
-}
-
-/* Navbar */
-.navbar {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 40px; /* increased for better readability */
-  background: rgba(255, 255, 255, 0.7); /* transparent white */
-  backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 2rem;
-  z-index: 1000;
-  box-sizing: border-box;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-/* Logo section */
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0;
-}
-
-.logo-img {
-  height: 24px;
-  width: auto;
-  object-fit: contain;
-}
-
-.logo-text {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #000;
-  line-height: 40px; /* vertically center text */
-}
-
-/* Navigation links */
-.nav-links {
-  display: flex;
-  list-style: none;
-  gap: 3rem;
-  margin: 0;
   padding: 0;
-  flex-wrap: wrap;
-}
-
-.nav-links li {
-  line-height: 40px; /* match navbar height */
-  white-space: nowrap;
-  cursor: pointer;
-  color: black;
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.nav-links a {
-  color: black;
-  text-decoration: none;
-}
-
-.nav-links li:hover,
-.nav-links a:hover {
-  color: #800000;
-}
-
-/* Hero Section */
-.hero-section::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.hero-text {
+  font-family: "Segoe UI", sans-serif;
+  width: 100vw;
+  min-height: 100vh; /* Ensures the body is at least viewport height */
+  overflow-x: hidden;
   position: relative;
-  z-index: 1;
-  color: #000;
+  background-color: #f0f2f5;
+
+  /* This is the key: Make body a flex container for its children */
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
 }
 
-.hero-text h1,
-.hero-text h2,
-.hero-text p {
-  color: #000; /* all hero text black */
+/* If you have a separate div like .main-app-container wrapping content and footer: */
+.main-app-container { /* You might call this .home-container or something similar */
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Makes this container take up all available space within body */
+  width: 100%;
+  /* No min-height: 100vh here, as body handles it and flex-grow expands it */
 }
 
+/* Home Page Container - now acts as a wrapper for the page content */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  /* No padding-top here directly, as it's handled by .page-content-wrapper */
+}
+
+/* NEW: Global Page Content Wrapper (for content below fixed navbar) */
+.page-content-wrapper {
+  flex-grow: 1; /* Allows content to fill available vertical space */
+  display: flex; /* Makes it a flex container for its children */
+  flex-direction: column; /* Stacks children vertically */
+  width: 100%; /* Ensures it takes full width */
+  box-sizing: border-box; /* Inherited, but explicit is fine */
+}
+
+/* Hero Section (Home page specific) */
 .hero-section {
   display: flex;
-  height: 260px;
   flex-wrap: wrap;
   background: linear-gradient(to bottom right, #f7f9fc, #ffffff);
   padding: 3rem;
   align-items: center;
   border-bottom: 5px solid #b33838;
+  /* margin-top is no longer needed here if using .page-content-wrapper */
+  /* min-height is set in Home.tsx inline style for demo, consider moving to CSS if consistent */
 }
 
 .hero-text {
   flex: 1;
   min-width: 300px;
+  position: relative;
+  z-index: 1;
+  padding-right: 20px; /* Added for spacing on desktop */
+}
+
+.hero-text h1,
+.hero-text h2,
+.hero-text p {
+  color: #000;
+}
+
+.hero-text .red {
+  color: #800000;
 }
 
 .hero-text h1 {
   font-size: 3rem;
   margin: 0;
-}
-
-.hero-text .red {
-  color: #800000;
 }
 
 .hero-text h2 {
@@ -138,25 +98,20 @@ html, body {
   max-width: 500px;
 }
 
-.hero-image img {
+/* How It Works */
+.how-it-works {
+  background: #f5f5f5;
+  padding: 2rem;
+  text-align: center;
   width: 100%;
-  max-width: 500px;
-  height: auto;
-  border-radius: 10px;
+  margin: 0 auto; /* Center content */
 }
 
-/* How It Works */
 .how-it-works h2,
 .step h3,
 .step h4,
 .step p {
   color: #000;
-}
-
-.how-it-works {
-  background: #f5f5f5;
-  padding: 2rem;
-  text-align: center;
 }
 
 .how-it-works h2 {
@@ -176,7 +131,7 @@ html, body {
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  width: 220px;
+  width: 300px;
 }
 
 .step h3 {
@@ -192,90 +147,52 @@ html, body {
   font-size: 0.95rem;
 }
 
-/* Footer */
-.footer {
-  background: #e0e0e0;
-  text-align: center;
-  padding: 1rem;
-  font-size: 0.9rem;
-  height: 30px;
+/* Responsive adjustments for Home page content */
+@media (max-width: 768px) {
+  .hero-section {
+    flex-direction: column;
+    padding: 2rem;
+    min-height: unset; /* Remove min-height */
+    height: auto; /* Auto height */
+  }
+  .hero-text {
+    padding-right: 0;
+    text-align: center;
+    min-width: unset;
+    width: 100%;
+  }
+  .hero-text h1 {
+    font-size: 2.5rem;
+  }
+  .how-it-works {
+    padding: 1.5rem;
+  }
+  .steps {
+    flex-direction: column;
+    align-items: center;
+  }
+  .step {
+    width: 80%; /* Make steps wider on small screens */
+    max-width: 300px;
+  }
+  .page-content-wrapper {
+    padding-top: 100px; /* Adjust if navbar height increases on mobile */
+  }
 }
-
-.footer p {
-  color:#000;
-}
-
-/* login popup */
-.login-popup {
-  position: absolute;
-  top: 70px;
-  right: 20px;
-  width: 300px;
-  background: #fff;
-  padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  z-index: 999;
-}
-
-.login-toggle {
-  color: #000;
-}
-
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.checkbox-label {
-  font-size: 0.9rem;
-  margin-top: -0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.login-form input {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.login-form button {
-  padding: 0.5rem;
-  background: #800000;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.login-form h3 {
-  color: rgb(0, 0, 0);
-}
-
-/* icons */
-.social-img {
-  width: 32px;
-  height: 32px;
-  
-  margin: 0 0.5rem;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.social-icons {
-  display: flex;
-  justify-content: space-evenly; /* or 'space-evenly' */
-  align-items: center;
-  margin-top: 1rem;
-}
-
-.checkbox-label {
-  color: black;
-}
-.social-img:hover {
-  transform: scale(1.2);
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 1.5rem;
+  }
+  .hero-text h1 {
+    font-size: 2rem;
+  }
+  .hero-text h2 {
+    font-size: 1.2rem;
+  }
+  .how-it-works {
+    padding: 1rem;
+  }
+  .page-content-wrapper {
+    padding-top: 120px; /* Further adjustment for very small screens */
+  }
 }
