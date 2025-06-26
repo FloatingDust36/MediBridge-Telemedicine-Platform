@@ -1,0 +1,31 @@
+{
+  "critical": [
+    "chest pain and shortness of breath",
+    "seizure",
+    "difficulty breathing",
+    "loss of consciousness",
+    "severe bleeding",
+    "suicidal thoughts"
+  ],
+  "urgent": [
+    "high fever and vomiting",
+    "severe headache",
+    "severe abdominal pain",
+    "sudden weakness",
+    "uncontrolled pain"
+  ],
+  "moderate": [
+    "persistent cough",
+    "sore throat",
+    "fever for 3+ days",
+    "mild abdominal pain",
+    "skin infection"
+  ],
+  "mild": [
+    "runny nose",
+    "mild sore throat",
+    "minor rash",
+    "body aches",
+    "mild cough"
+  ]
+}

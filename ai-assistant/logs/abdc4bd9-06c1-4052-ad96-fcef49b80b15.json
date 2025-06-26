@@ -1,0 +1,24 @@
+{
+  "session_id": "abdc4bd9-06c1-4052-ad96-fcef49b80b15",
+  "start_time": "2025-06-26T22:32:54.341790",
+  "entries": [
+    {
+      "timestamp": "2025-06-26T22:33:25.820712",
+      "user_input": "You: I have chest pain and shortness of breath",
+      "ai_reply": "I understand you're experiencing chest pain and shortness of breath. These are symptoms that require immediate medical attention as they can be signs of a serious condition.\n\n**This is a critical red flag.**\n\nPlease call your local emergency number (like 911 if you are in the U.S.) or have someone take you to the nearest emergency room right away. Do not delay seeking help. It's crucial to have these symptoms evaluated by medical professionals without delay.\n\nMy priority is your safety, and these symptoms need urgent, in-person assessment.\n\nPlease remember, I am an AI health assistant and not a substitute for professional medical advice, diagnosis, or treatment from a qualified healthcare provider.",
+      "symptoms": {
+        "symptoms": [
+          "chest pain"
+        ],
+        "severity": null,
+        "duration": null
+      },
+      "triage_result": {
+        "level": 5,
+        "reason": "Symptoms unclear or not recognized",
+        "recommendation": "General advice and follow-up questions needed."
+      },
+      "reasoning": "I cannot suggest any likely cause based on the current symptoms. More detail may help."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "session_id": "4829b312-7c54-41f0-ac14-3a7253275232",
+  "start_time": "2025-06-26T23:30:22.956838",
+  "entries": [
+    {
+      "timestamp": "2025-06-26T23:30:26.304656",
+      "user_input": "test_images/rash.jpg",
+      "ai_reply": "\ud83d\uddbc\ufe0f Based on the image:\n- Detected: sunscreen, sunblock, sun blocker\n- Confidence: 31.2%\n\u26a0\ufe0f This is not a clinical diagnosis. Please consult a medical professional for an official assessment.",
+      "symptoms": {
+        "symptoms": [
+          "(image analysis)"
+        ],
+        "severity": null,
+        "duration": null
+      },
+      "triage_result": {
+        "level": 3,
+        "reason": "Visual symptom detected: sunscreen, sunblock, sun blocker",
+        "recommendation": "Consider follow-up if matching user's concern."
+      },
+      "reasoning": "Classified image suggests: sunscreen, sunblock, sun blocker with 31.2% confidence."
+    }
+  ]
+}
