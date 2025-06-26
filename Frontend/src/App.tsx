@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'; // Import useNavigate
 import supabase from './lib/supabaseClient';
 
-import Layout from './components/layout'; // Ensure correct path for Layout
+import Layout from './components/Layout'; // Ensure correct path for Layout
 
 // Import your pages
 import Home from './pages/Home';
