@@ -29,6 +29,7 @@ def main():
     
     history = []
     session_log = create_session_log(profile)
+    followup_mode = False
 
     while True:
         user_input = input("👤 You: ")
@@ -38,6 +39,23 @@ def main():
             generate_pdf(session_log)
             print("👋 Session ended.")
             break
+        if followup_mode:
+            reply, history = send_user_message(user_input, history)
+            print(f"🤖 MediBridge AI: {reply}\n")
+
+            log_entry(
+                session_log,
+                user_input=user_input,
+                ai_reply=reply,
+                symptom_info={"symptoms": ["(follow-up)"], "severity": None, "duration": None},
+                triage={
+                    "level": "-",
+                    "reason": "Follow-up conversation (no triage)",
+                    "recommendation": "General Q&A after triage"
+                },
+                reasoning="This was a post-triage conversation for clarification or general info."
+            )
+            continue
         elif user_input.startswith("image:"):
             image_path = user_input.replace("image:", "").strip()
             result = classify_image(image_path)
@@ -58,7 +76,7 @@ def main():
             # Add to log
             log_entry(
                 session_log,
-                user_input=image_path,
+                user_input=user_input,
                 ai_reply=reply,
                 symptom_info={"symptoms": ["(image analysis)"], "severity": None, "duration": None},  # ✅ fixed key
                 triage={
@@ -78,6 +96,10 @@ def main():
         triage_result = classify_triage(info, profile)
         print(f"🧠 Triage Result: Level {triage_result['level']} — {triage_result['reason']}")
 
+        
+        # Determine if it's a critical emergency
+        is_critical = triage_result["level"] == 1
+
         # Reasoning engine (possible explanation)
         reason = suggest_condition(info, profile)
         print(f"📚 Possible Cause: {reason}")
@@ -87,7 +109,15 @@ def main():
         print(f"🤖 MediBridge AI: {reply}\n")
 
         # Log the session entry
-        log_entry(session_log, user_input, reply, info, triage_result, reason)
+        log_entry(session_log, user_input, reply, info, triage_result, reason, critical_flag=is_critical)
+
+        # Offer to enter follow-up mode
+        followup = input("💬 Would you like to continue with general health Q&A? (yes/no): ").strip().lower()
+        if followup in ["yes", "y"]:
+            followup_mode = True
+            print("🔁 Entering Follow-Up Q&A Mode. Type 'exit' to end the session.\n")
+            print("💬 You can now ask general health-related questions or clarifications.\n")
+
 
 if __name__ == "__main__":
     main()

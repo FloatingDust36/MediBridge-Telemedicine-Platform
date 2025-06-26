@@ -1,0 +1,37 @@
+{
+  "session_id": "53625c00-1514-4d75-8e83-f008eaec1da0",
+  "start_time": "2025-06-27T00:03:19.639175",
+  "user_profile": {
+    "user_id": "john_elder",
+    "name": "John Elder",
+    "age": 68,
+    "chronic_conditions": [
+      "hypertension",
+      "type 2 diabetes"
+    ],
+    "risk_factors": [
+      "smoker"
+    ],
+    "past_symptoms": []
+  },
+  "entries": [
+    {
+      "timestamp": "2025-06-27T00:03:33.929274",
+      "user_input": "I feel chest pain and lightheaded",
+      "ai_reply": "I understand you're experiencing chest pain and lightheadedness. These symptoms are concerning and require immediate medical attention.\n\nPlease call emergency services (like 911 or your local emergency number) right away, or have someone take you to the nearest emergency room. This is a medical emergency.\n\nThis AI assistant cannot provide medical diagnoses or treatment. It's crucial that you get these symptoms checked by a healthcare professional as soon as possible.",
+      "symptoms": {
+        "symptoms": [
+          "chest pain"
+        ],
+        "severity": null,
+        "duration": null
+      },
+      "triage_result": {
+        "level": 1,
+        "reason": "Possible cardiac or respiratory issue (escalated due to chronic cardiac risk)",
+        "recommendation": "Go to emergency room immediately."
+      },
+      "reasoning": "I cannot suggest any likely cause based on the current symptoms. More detail may help."
+    }
+  ]
+}

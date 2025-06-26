@@ -17,7 +17,7 @@ def create_session_log(profile=None):
         "entries": []
     }
 
-def log_entry(session_log: dict, user_input: str, ai_reply: str, symptom_info: dict, triage: dict, reasoning: str):
+def log_entry(session_log: dict, user_input: str, ai_reply: str, symptom_info: dict, triage: dict, reasoning: str, critical_flag=False):
     """Add a new interaction to the log"""
     session_log["entries"].append({
         "timestamp": datetime.now().isoformat(),
@@ -25,7 +25,8 @@ def log_entry(session_log: dict, user_input: str, ai_reply: str, symptom_info: d
         "ai_reply": ai_reply,
         "symptoms": symptom_info,
         "triage_result": triage,
-        "reasoning": reasoning
+        "reasoning": reasoning,
+        "critical_flag": critical_flag
     })
 
 def save_session_log(session_log: dict):
