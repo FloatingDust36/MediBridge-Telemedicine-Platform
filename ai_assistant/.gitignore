@@ -1,0 +1,11 @@
+# Python virtual environment
+venv/
+
+# Python cache files
+__pycache__/
+
+# Secret keys file - DO NOT COMMIT THIS
+.env
+
+# My large datasets and models
+# (Add any large files you found here)
