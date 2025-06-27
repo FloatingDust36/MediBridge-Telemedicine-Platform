@@ -1,8 +1,0 @@
-{
-  "user_id": "john_elder",
-  "name": "John Elder",
-  "age": 68,
-  "chronic_conditions": ["hypertension", "type 2 diabetes"],
-  "risk_factors": ["smoker"],
-  "past_symptoms": []
-}
