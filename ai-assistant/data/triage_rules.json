@@ -1,31 +1,31 @@
-{
-  "critical": [
-    "chest pain and shortness of breath",
-    "seizure",
-    "difficulty breathing",
-    "loss of consciousness",
-    "severe bleeding",
-    "suicidal thoughts"
-  ],
-  "urgent": [
-    "high fever and vomiting",
-    "severe headache",
-    "severe abdominal pain",
-    "sudden weakness",
-    "uncontrolled pain"
-  ],
-  "moderate": [
-    "persistent cough",
-    "sore throat",
-    "fever for 3+ days",
-    "mild abdominal pain",
-    "skin infection"
-  ],
-  "mild": [
-    "runny nose",
-    "mild sore throat",
-    "minor rash",
-    "body aches",
-    "mild cough"
-  ]
-}
+[
+  {
+    "symptom": "chest pain",
+    "default_level": 2,
+    "modifiers": {
+      "severe": 1,
+      "radiating": 1,
+      "with shortness of breath": 1,
+      "mild": 3
+    },
+    "risk_factors": {
+      "cardiac history": -1,
+      "smoker": -1,
+      "age_over_65": -1
+    },
+    "recommendation": "Seek emergency care immediately if severe or combined with other symptoms."
+  },
+  {
+    "symptom": "headache",
+    "default_level": 3,
+    "modifiers": {
+      "sudden onset": 2,
+      "visual disturbance": 2,
+      "mild": 5
+    },
+    "risk_factors": {
+      "hypertension": -1
+    },
+    "recommendation": "Monitor if mild; escalate if sudden or worsening."
+  }
+]
