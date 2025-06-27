@@ -69,25 +69,26 @@ def log_message(session_id: str, sender: str, message_content: str, image_url: s
     except Exception as e:
         print(f"Error logging message to database: {e}")
 
-
-def update_session(session_id: str, esi_level: int, summary_text: str):
-    """
-    Updates a session record with the final ESI level and a text summary.
-
-    Args:
-        session_id: The ID of the session to update.
-        esi_level: The final ESI level determined by the AI.
-        summary_text: The AI-generated summary of the conversation.
-    """
+def update_session_esi_level(session_id: str, esi_level: int):
+    """Updates a session record with only the final ESI level."""
     if not supabase_client:
-        print("Database client not initialized.")
         return
-
     try:
         supabase_client.table("sessions").update({
-            "final_esi_level": esi_level,
-            "session_summary": summary_text
+            "final_esi_level": esi_level
         }).eq("id", session_id).execute()
         print(f"Updated session {session_id} with ESI level {esi_level}.")
     except Exception as e:
-        print(f"Error updating session in database: {e}")
+        print(f"Error updating session ESI level in database: {e}")
+
+def update_session_summary(session_id: str, summary_text: str):
+    """Updates a session record with only the final text summary."""
+    if not supabase_client:
+        return
+    try:
+        supabase_client.table("sessions").update({
+            "session_summary": summary_text
+        }).eq("id", session_id).execute()
+        print(f"Updated session {session_id} with summary.")
+    except Exception as e:
+        print(f"Error updating session summary in database: {e}")
