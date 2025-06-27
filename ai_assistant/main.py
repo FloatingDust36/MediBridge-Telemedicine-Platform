@@ -1,9 +1,11 @@
 # ai_assistant/main.py
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from pydantic import BaseModel
 import uvicorn
 from ai_service import AIService
+import pdf_service
+import database_service as db # Add alias to db for consistency
 
 # --- 1. Initialize FastAPI Application ---
 app = FastAPI(
@@ -87,6 +89,29 @@ async def end_chat(request: SendMessageRequest):
 
     return EndSessionResponse(session_id=request.session_id, summary_text=summary)
 
+
+@app.get("/session/{session_id}/summary/pdf")
+async def get_pdf_summary(session_id: str):
+    """
+    Retrieves the summary for a given session and returns it as a PDF file.
+    """
+    # 1. Fetch session details from the database
+    session_details = db.get_session_details(session_id)
+    if not session_details or not session_details.get("session_summary"):
+        raise HTTPException(status_code=404, detail="Summary not found for this session.")
+
+    # 2. Generate the PDF using the PDF service
+    pdf_bytes = pdf_service.create_summary_pdf(
+        summary_text=session_details["session_summary"],
+        session_id=session_id,
+        user_id=str(session_details["user_id"])
+    )
+
+    # 3. Return the PDF as a downloadable file
+    headers = {
+        'Content-Disposition': f'attachment; filename="summary_{session_id}.pdf"'
+    }
+    return Response(content=pdf_bytes, media_type='application/pdf', headers=headers)
 
 # --- 5. Run the Application ---
 # This block allows you to run the API directly from the command line

@@ -92,3 +92,17 @@ def update_session_summary(session_id: str, summary_text: str):
         print(f"Updated session {session_id} with summary.")
     except Exception as e:
         print(f"Error updating session summary in database: {e}")
+
+def get_session_details(session_id: str) -> dict | None:
+    """Retrieves a session's details from the database."""
+    if not supabase_client:
+        return None
+    try:
+        response = supabase_client.table("sessions").select(
+            "session_summary, user_id"
+        ).eq("id", session_id).single().execute()
+
+        return response.data
+    except Exception as e:
+        print(f"Error fetching session details: {e}")
+        return None
