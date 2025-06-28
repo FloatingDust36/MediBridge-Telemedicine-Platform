@@ -71,6 +71,31 @@ const ChatbotPage = () => {
     }
   };
 
+  const handleDeleteSession = async (sessionIdToDelete: string) => {
+      // Ask for confirmation before deleting
+      if (!window.confirm("Are you sure you want to delete this conversation?")) {
+          return;
+      }
+
+      try {
+          const response = await fetch(`${API_URL}/session/${sessionIdToDelete}`, { method: 'DELETE' });
+          if (response.ok) {
+              // If the deletion was successful, update the UI instantly
+              console.log(`Session ${sessionIdToDelete} deleted successfully.`);
+              setSessions(prev => prev.filter(s => s.id !== sessionIdToDelete));
+
+              // If we deleted the currently active chat, clear the chat window
+              if (activeSessionId === sessionIdToDelete) {
+                setActiveSessionId(null);
+              } 
+          } else {
+              console.error("Failed to delete session on the server.");
+          }
+      } catch (error) {
+        console.error("An error occurred while deleting the session:", error);
+      }
+  };
+
   return (
     <div className="chatbot-page-wrapper">
       <HistorySidebar
@@ -78,6 +103,7 @@ const ChatbotPage = () => {
         activeSessionId={activeSessionId}
         onSelectSession={handleSelectSession}
         onNewChat={handleNewChat}
+        onDeleteSession={handleDeleteSession}
       />
       <ChatWindow sessionId={activeSessionId} />
     </div>

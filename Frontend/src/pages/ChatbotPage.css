@@ -2,6 +2,7 @@
 
 /* --- Main Page Layout --- */
 .chatbot-page-wrapper {
+  padding-top: 40px;
   display: flex;
   width: 100%;
   /* Full viewport height minus a typical navbar height (e.g., 60px) */
