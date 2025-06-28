@@ -1,192 +1,187 @@
-import { Link } from "react-router-dom"; // Keep Link if used for internal page navigation
+import { Link } from "react-router-dom";
+import supabase from '../lib/supabaseClient';
 import React, { useState, useEffect } from "react";
 import "./PatientDashboard.css";
-// Remove imports for Navbar, Footer, and logo as they are now handled by Layout
-// import logo from "../assets/MediBridge_LogoClear.png";
 
-// Subcomponents (no changes needed within these, they are self-contained)
-const PatientDashboardSection: React.FC = () => {
-    const patientInfo = {
-        name: "John Doe",
-        age: 45,
-        gender: "Male",
-        lastVisit: "June 20, 2025",
-        nextAppointment: "July 5, 2025",
-    };
+const PatientDashboardSection: React.FC<{ data: any }> = ({ data }) => {
+  if (!data) return <div>Loading patient info...</div>;
 
-    return (
-        <div className="card-base patient-dashboard-section">
-            <h3 className="patient-dashboard-section-title">📈 Patient Overview</h3>
-            <div className="card-content patient-dashboard-section-content">
-                <p><strong>Name:</strong> {patientInfo.name}</p>
-                <p><strong>Age:</strong> {patientInfo.age}</p>
-                <p><strong>Gender:</strong> {patientInfo.gender}</p>
-                <p><strong>Last Visit:</strong> {patientInfo.lastVisit}</p>
-                <p><strong>Next Appointment:</strong> {patientInfo.nextAppointment}</p>
-            </div>
-        </div>
-    );
+  return (
+    <div className="card-base patient-dashboard-section">
+      <h3 className="patient-dashboard-section-title">📈 Patient Overview</h3>
+      <div className="card-content patient-dashboard-section-content">
+        <p><strong>Name:</strong> {data.full_name}</p>
+        <p><strong>Age:</strong> {
+          data.date_of_birth
+            ? `${Math.floor((new Date().getTime() - new Date(data.date_of_birth).getTime()) / (1000 * 60 * 60 * 24 * 365.25))} years`
+            : 'N/A'
+        }</p>
+        <p><strong>Address:</strong> {data.address}</p>
+        <p><strong>Contact:</strong> {data.contact_number}</p>
+        <p><strong>Emergency Contact:</strong> {data.emergency_contact}</p>
+        <p><strong>Allergies:</strong> {data.allergies || 'None reported'}</p>
+      </div>
+    </div>
+  );
 };
 
 const NotesSection: React.FC = () => {
-    const [patientNotes, setPatientNotes] = useState([
-        "The patient wants to get off manual chart",
-        "Treatment should continue with glucose plan",
-        "Allergy: sensitive to penicillin",
-    ]);
-    const [newNote, setNewNote] = useState("");
+  const [patientNotes, setPatientNotes] = useState<string[]>([]);
+  const [newNote, setNewNote] = useState("");
 
-    const handleAddNote = () => {
-        if (newNote.trim() !== "") {
-            setPatientNotes([...patientNotes, newNote.trim()]);
-            setNewNote("");
-        }
-    };
+  const handleAddNote = () => {
+    if (newNote.trim() !== "") {
+      setPatientNotes([...patientNotes, newNote.trim()]);
+      setNewNote("");
+    }
+  };
 
-    return (
-        <div className="card-base notes-section">
-            <h3 className="notes-title">📝 Patient Notes</h3>
-            <div className="card-content">
-                <ul className="notes-list">
-                    {patientNotes.map((note, index) => (
-                        <li key={index}>{note}</li>
-                    ))}
-                </ul>
-                <textarea
-                    className="add-note-textarea"
-                    placeholder="Add a new note..."
-                    value={newNote}
-                    onChange={(e) => setNewNote(e.target.value)}
-                    rows={3}
-                ></textarea>
-                <button className="add-note-button" onClick={handleAddNote}>Add Note</button>
-            </div>
-        </div>
-    );
+  return (
+    <div className="card-base notes-section">
+      <h3 className="notes-title">📝 Patient Notes</h3>
+      <div className="card-content">
+        <ul className="notes-list">
+          {patientNotes.map((note, index) => (
+            <li key={index}>{note}</li>
+          ))}
+        </ul>
+        <textarea
+          className="add-note-textarea"
+          placeholder="Add a new note..."
+          value={newNote}
+          onChange={(e) => setNewNote(e.target.value)}
+          rows={3}
+        ></textarea>
+        <button className="add-note-button" onClick={handleAddNote}>Add Note</button>
+      </div>
+    </div>
+  );
 };
 
 const ConsultationAppointmentsSection: React.FC = () => {
-    const upcomingAppointments = [
-        { id: 1, date: "July 5, 2025", time: "10:00 AM", doctor: "Dr. Alex Smith", type: "Video Call" },
-        { id: 2, date: "July 12, 2025", time: "02:30 PM", doctor: "Dr. Sarah Lee", type: "In-person" },
-    ];
-
-    const pastAppointments = [
-        { id: 3, date: "June 20, 2025", time: "11:00 AM", doctor: "Dr. Jane Doe", type: "Video Call" },
-        { id: 4, date: "May 15, 2025", time: "09:00 AM", doctor: "Dr. John Brown", type: "Video Call" },
-    ];
-
-    return (
-        <div className="card-base consultation-section">
-            <h3 className="consultation-section-title">🗓️ Consultation Appointments</h3>
-            <div className="card-content">
-                <h4>Upcoming Appointments:</h4>
-                <ul className="consultation-list">
-                    {upcomingAppointments.map(app => (
-                        <li key={app.id}>
-                            <strong>{app.date} at {app.time}</strong> with {app.doctor} ({app.type})
-                        </li>
-                    ))}
-                </ul>
-                <h4>Past Appointments:</h4>
-                <ul className="consultation-list">
-                    {pastAppointments.map(app => (
-                        <li key={app.id}>
-                            <strong>{app.date} at {app.time}</strong> with {app.doctor} ({app.type})
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </div>
-    );
+  return (
+    <div className="card-base consultation-section">
+      <h3 className="consultation-section-title">🗓️ Consultation Appointments</h3>
+      <div className="card-content">
+        <p>No appointments to display.</p>
+      </div>
+    </div>
+  );
 };
 
 const PrescriptionsSection: React.FC = () => {
-    const prescriptions = [
-        "Amlodipine 5mg 💊 1x daily (morning)",
-        "Losartan 50mg 💊 1x daily (evening)",
-        "Metformin 500mg 💊 2x daily (with meals)",
-        "Insulin Glargine 10 units 💉 1x daily (bedtime)",
-        "Vitamin D3 1000 IU 💊 1x daily",
-    ];
-
-    return (
-        <div className="card-base prescriptions-section">
-            <h3 className="prescriptions-title">💊 Prescriptions</h3>
-            <div className="card-content">
-                <ul className="prescriptions-list">
-                    {prescriptions.map((item, index) => (
-                        <li key={index}>{item}</li>
-                    ))}
-                </ul>
-            </div>
-        </div>
-    );
+  return (
+    <div className="card-base prescriptions-section">
+      <h3 className="prescriptions-title">💊 Prescriptions</h3>
+      <div className="card-content">
+        <p>No prescriptions found.</p>
+      </div>
+    </div>
+  );
 };
 
 const MedicalHistorySection: React.FC = () => {
-    const history = [
-        { date: "April 10, 2025", doctor: "Dr. Reyes", diagnosis: "Diagnosed with flu. Prescribed medication and rest." },
-        { date: "March 5, 2025", doctor: "Dr. Cruz", diagnosis: "Routine check-up. All vitals normal." },
-    ];
-
-    return (
-        <div className="card-base medical-history-section">
-            <h3 className="medical-history-title">🩺 Medical History</h3>
-            <div className="card-content">
-                <ul className="medical-history-list">
-                    {history.map((entry, index) => (
-                        <li key={index} className="medical-history-item">
-                            <strong>{entry.date} – {entry.doctor}</strong><br />
-                            {entry.diagnosis}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </div>
-    );
+  return (
+    <div className="card-base medical-history-section">
+      <h3 className="medical-history-title">🩺 Medical History</h3>
+      <div className="card-content">
+        <p>No medical history available.</p>
+      </div>
+    </div>
+  );
 };
 
 const PatientDashboard: React.FC = () => {
-    const [currentTime, setCurrentTime] = useState(new Date());
+  const [patientData, setPatientData] = useState<any>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-    useEffect(() => {
-        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-        return () => clearInterval(timer);
-    }, []);
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
 
-    const formattedDate = currentTime.toLocaleDateString('en-US', {
-        day: '2-digit', month: 'long', year: 'numeric',
-    });
-    const formattedTime = currentTime.toLocaleTimeString('en-US', {
-        hour: '2-digit', minute: '2-digit', hour12: true,
-    });
+      if (!userId) {
+        console.error('No user session found');
+        return;
+      }
 
-    return (
-        // The main-content-area is now the top-level element for this component.
-        // It will be rendered inside Layout's <main> element, which provides the padding-top for the Navbar.
-        <div className="main-content-area"> {/* This will be your page's root container */}
-            <div className="top-info-bar">
-                <h1 className="page-title">Patient Dashboard</h1>
-                <div className="welcome-and-profile">
-                    <div className="profile-image-container">
-                        <img src="/images/patient-avatar.png" alt="Patient" className="profile-image" />
-                    </div>
-                    <div className="welcome-text-group">
-                        <span className="medical-profile-label">Medical Profile</span>
-                        <span className="welcome-message">Welcome, Ligma balls</span>
-                    </div>
-                </div>
-                <div className="current-timestamp">{`${formattedTime} · ${formattedDate}`}</div>
-            </div>
+      const { data: patient, error: patientError } = await supabase
+        .from('patients')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
 
-            <section className="dashboard-section card-margin-bottom"><PatientDashboardSection /></section>
-            <section className="notes-section card-margin-bottom"><NotesSection /></section>
-            <section className="consultation-section card-margin-bottom"><ConsultationAppointmentsSection /></section>
-            <section className="prescriptions-section card-margin-bottom"><PrescriptionsSection /></section>
-            <section className="medical-history-section card-margin-bottom"><MedicalHistorySection /></section>
+      if (patientError) {
+        console.error('Error fetching patient:', patientError.message);
+        return;
+      }
+
+      const { data: user, error: userError } = await supabase
+        .from('users')
+        .select('full_name')
+        .eq('user_id', userId)
+        .single();
+
+      if (userError) {
+        console.error('Error fetching user info:', userError.message);
+        return;
+      }
+
+      setPatientData({
+        ...patient,
+        full_name: user.full_name,
+      });
+    };
+
+    fetchPatientData();
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formattedDate = currentTime.toLocaleDateString('en-US', {
+    day: '2-digit', month: 'long', year: 'numeric',
+  });
+
+  const formattedTime = currentTime.toLocaleTimeString('en-US', {
+    hour: '2-digit', minute: '2-digit', hour12: true,
+  });
+
+  return (
+    <div className="main-content-area">
+      <div className="top-info-bar">
+        <h1 className="page-title">Patient Dashboard</h1>
+        <div className="welcome-and-profile">
+          <div className="profile-image-container">
+            <img src="/images/patient-avatar.png" alt="Patient" className="profile-image" />
+          </div>
+          <div className="welcome-text-group">
+            <span className="medical-profile-label">Medical Profile</span>
+            <span className="welcome-message">Welcome, {patientData?.full_name || 'Patient'}</span>
+          </div>
         </div>
-    );
+        <div className="current-timestamp">{`${formattedTime} · ${formattedDate}`}</div>
+      </div>
+
+      <section className="dashboard-section card-margin-bottom">
+        <PatientDashboardSection data={patientData} />
+      </section>
+      <section className="notes-section card-margin-bottom">
+        <NotesSection />
+      </section>
+      <section className="consultation-section card-margin-bottom">
+        <ConsultationAppointmentsSection />
+      </section>
+      <section className="prescriptions-section card-margin-bottom">
+        <PrescriptionsSection />
+      </section>
+      <section className="medical-history-section card-margin-bottom">
+        <MedicalHistorySection />
+      </section>
+    </div>
+  );
 };
 
 export default PatientDashboard;
