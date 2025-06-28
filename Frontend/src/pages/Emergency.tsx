@@ -1,107 +1,42 @@
 import React, { useState, useEffect, useRef } from 'react';
-// Import Leaflet components and CSS
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css'; // IMPORTANT: Import Leaflet's CSS
-import L from 'leaflet'; // Import Leaflet itself for custom icon fix
+// Import Leaflet components and CSS, including GeoJSON for routes
+import { MapContainer, TileLayer, Marker, Popup, useMap, GeoJSON } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 
-import './Emergency.css'; // Import the new CSS file
+import './Emergency.css';
 
 // Fix for default Leaflet marker icons not showing in Webpack/Vite
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png', // This is the default red/orange pin for hospitals
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png', // Default red/orange for hospitals
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
 });
 
 
 // Define a type for your emergency locations
 interface EmergencyLocation {
-  id: number; // Will use OSM ID or a generated one
+  id: number;
   lat: number;
   lng: number;
   name: string;
   address: string;
   phone: string;
-  type: string; // Will primarily be 'hospital' now
+  type: string;
 }
 
 // Initial hardcoded facilities (as a fallback or for areas Overpass might miss/slowly load)
-// IMPORTANT: Updated this list to primarily contain hospitals or major medical centers
 const INITIAL_EMERGENCY_FACILITIES: EmergencyLocation[] = [
-  // --- Major Hospitals in Cebu City ---
+  // Keeping a robust set of major hospitals as a fallback
   { id: 1, lat: 10.3157, lng: 123.8854, name: 'Cebu Doctors\' University Hospital', address: 'Osmeña Blvd, Cebu City', phone: '(032) 255 5555', type: 'hospital' },
   { id: 2, lat: 10.3344, lng: 123.9056, name: 'Perpetual Succour Hospital', address: 'Gorordo Ave, Cebu City', phone: '(032) 233 8620', type: 'hospital' },
   { id: 3, lat: 10.3015, lng: 123.8967, name: 'Vicente Sotto Memorial Medical Center', address: 'B. Rodriguez St, Cebu City', phone: '(032) 253 9891', type: 'hospital' },
   { id: 4, lat: 10.3000, lng: 123.8800, name: 'Chong Hua Hospital (Cebu City)', address: 'Don Mariano Cui St, Cebu City', phone: '(032) 255 8000', type: 'hospital' },
-  { id: 5, lat: 10.3205, lng: 123.8950, name: 'Adventist Hospital Cebu', address: 'Tres de Abril St, Cebu City', phone: '(032) 261 2100', type: 'hospital' },
-  { id: 6, lat: 10.3005, lng: 123.8880, name: 'ACE Medical Center Cebu', address: 'Natalio Bacalso Ave, Cebu City', phone: '(032) 383 3454', type: 'hospital' },
-  { id: 7, lat: 10.3160, lng: 123.8990, name: 'Cebu (Velez) General Hospital', address: 'F. Ramos St, Cebu City', phone: '(032) 255 0243', type: 'hospital' },
-  { id: 8, lat: 10.3550, lng: 123.9000, name: 'Cebu North General Hospital', address: 'Talamban, Cebu City', phone: '(032) 343 0000', type: 'hospital' },
-  { id: 9, lat: 10.2980, lng: 123.8930, name: 'Cebu City Medical Center', address: 'Natalio Bacalso Ave, Cebu City', phone: '(032) 255 1234', type: 'hospital' },
-  { id: 10, lat: 10.2950, lng: 123.8900, name: 'Southwestern University Medical Center', address: 'Urgello St, Cebu City', phone: '(032) 416 5555', type: 'hospital' },
-  { id: 15, lat: 10.3185, lng: 123.8920, name: 'Cebu Puericulture and Maternity House', address: 'F. Ramos St, Cebu City', phone: '(032) 255 2555', type: 'hospital' },
-  { id: 16, lat: 10.3080, lng: 123.9010, name: 'Arcenas Hospital', address: 'A. Lopez St, Labangon, Cebu City', phone: '(032) 261 0313', type: 'hospital' },
-
-  // --- Major Hospitals in Mandaue City ---
-  { id: 20, lat: 10.3580, lng: 123.9550, name: 'Chong Hua Hospital Mandaue', address: 'Mantawi Int\'l Drive, Mandaue City', phone: '(032) 233 8000', type: 'hospital' },
-  { id: 21, lat: 10.3200, lng: 123.9650, name: 'University of Cebu Medical Center (UCMed)', address: 'Ouano Ave, Mandaue City', phone: '(032) 888 2662', type: 'hospital' },
-  { id: 22, lat: 10.3205, lng: 123.9640, name: 'The Hospital at Maayo Well', address: 'UN Ave, Corner DM Cortes St, Mandaue City', phone: '+63 (32) 888 2662', type: 'hospital' },
-  { id: 24, lat: 10.3450, lng: 123.9350, name: 'St. Vincent General Hospital (Mandaue)', address: 'S.B. Cabahug St, Mandaue City', phone: '(032) 346 0888', type: 'hospital' },
-
-  // --- Major Hospitals in Lapu-Lapu City ---
-  { id: 30, lat: 10.3100, lng: 123.9780, name: 'Mactan Doctors\' Hospital', address: 'Basak, Lapu-Lapu City', phone: '(032) 340 0000', type: 'hospital' },
-  { id: 31, lat: 10.3050, lng: 123.9850, name: 'Allegiant Regional Care Hospitals (ARC)', address: 'Bagumbayan, Lapu-Lapu City', phone: '(032) 236 7890', type: 'hospital' },
-  { id: 32, lat: 10.3180, lng: 123.9550, name: 'Lapu-Lapu City Hospital', address: 'Gun-ob, Lapu-Lapu City', phone: '(032) 340 1111', type: 'hospital' },
-  { id: 33, lat: 10.3200, lng: 123.9700, name: 'Tojong Inc. Maternity and General Hospital', address: 'Pajo, Lapu-Lapu City', phone: '(032) 340 2222', type: 'hospital' },
-  { id: 34, lat: 10.3150, lng: 123.9600, name: 'Ouano Hospital', address: 'Humay-Humay Rd, Lapu-Lapu City', phone: '(032) 340 7318', type: 'hospital' },
-
-  // --- Talisay City ---
   { id: 40, lat: 10.2500, lng: 123.8400, name: 'Cebu South Medical Center (Talisay District Hospital)', address: 'San Isidro, Talisay City', phone: '(032) 273 3713', type: 'hospital' },
-
-  // --- Minglanilla ---
-  { id: 50, lat: 10.2050, lng: 123.7900, name: 'Minglanilla District Hospital', address: 'Tungkil, Minglanilla', phone: '(032) 254 0328', type: 'hospital' },
-  { id: 51, lat: 10.2100, lng: 123.7950, name: 'San Lucas Medical Center', address: 'Tungkil, Minglanilla', phone: '(032) 231 3898', type: 'hospital' },
-
-  // --- Consolacion ---
   { id: 60, lat: 10.4000, lng: 123.9800, name: 'Mendero Medical Center, Inc.', address: 'Poblacion, Consolacion', phone: '(032) 423 3333', type: 'hospital' },
-  { id: 61, lat: 10.4100, lng: 123.9850, name: 'Consolacion Community Hospital', address: 'Poblacion, Consolacion', phone: '(032) 424 0000', type: 'hospital' },
-
-  // --- Danao City ---
   { id: 70, lat: 10.5200, lng: 124.0400, name: 'Danao District Hospital', address: 'Poblacion, Danao City', phone: '(032) 200 3300', type: 'hospital' },
-
-  // --- Carcar City ---
-  { id: 80, lat: 10.1000, lng: 123.6300, name: 'Cebu Provincial Hospital (Carcar City)', address: 'Poblacion, Carcar City', phone: '(032) 487 8120', type: 'hospital' },
-
-  // --- Bogo City ---
-  { id: 90, lat: 11.0500, lng: 124.0000, name: 'Cebu Provincial Hospital (Bogo City)', address: 'National Road, Bogo City', phone: '(032) 434 9128', type: 'hospital' },
-
-  // --- Toledo City ---
-  { id: 100, lat: 10.3700, lng: 123.6300, name: 'Toledo City General Hospital', address: 'Magsaysay Hills, Toledo City', phone: '(032) 465 8000', type: 'hospital' },
-
-  // --- Balamban ---
-  { id: 110, lat: 10.3600, lng: 123.7200, name: 'Cebu Provincial Hospital (Balamban)', address: 'Poblacion, Balamban', phone: '(032) 333 2273', type: 'hospital' },
-
-  // --- Sibonga ---
-  { id: 120, lat: 10.0200, lng: 123.5900, name: 'Deiparine Community Hospital Sibonga', address: 'C. Delos Cientos, Sibonga', phone: '0922-382-7595', type: 'hospital' },
-
-  // --- Argao ---
-  { id: 130, lat: 10.2000, lng: 123.5800, name: 'Isidro Kintanar Memorial Hospital (Argao)', address: 'Poblacion, Argao', phone: '(032) 367 7500', type: 'hospital' },
-
-  // --- Daanbantayan ---
-  { id: 140, lat: 11.2700, lng: 124.0000, name: 'Daanbantayan District Hospital', address: 'Poblacion, Daanbantayan', phone: '(032) 437 5500', type: 'hospital' },
-
-  // --- Medellin ---
-  { id: 150, lat: 11.1600, lng: 123.9500, name: 'Medellin Hospital (Example)', address: 'Poblacion, Medellin', phone: '(032) 436 2000', type: 'hospital' },
-
-  // --- Barili ---
-  { id: 160, lat: 10.1500, lng: 123.5500, name: 'Barili District Hospital', address: 'Poblacion, Barili', phone: '0922-382-7595', type: 'hospital' },
-
-  // --- Oslob ---
-  { id: 170, lat: 9.7500, lng: 123.3800, name: 'Oslob District Hospital', address: 'Poblacion, Oslob', phone: '(032) 481 9900', type: 'hospital' },
-
-  // --- Malabuyoc ---
-  { id: 180, lat: 9.8000, lng: 123.3600, name: 'Mariano Jesus Cuenco Memorial Hospital (Malabuyoc)', address: 'Poblacion, Malabuyoc', phone: '(032) 516 1400', type: 'hospital' },
+  // ... you can add more critical hardcoded hospitals here for robustness ...
 ];
 
 // Helper function to calculate distance
@@ -118,21 +53,27 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
   return distance;
 };
 
+
+// OpenRouteService API Key (REPLACE WITH YOUR ACTUAL KEY!)
+const ORS_API_KEY = '5b3ce3597851110001cf6248550434e639e24cdfaca90049a9b5e306'; // <-- REMEMBER TO REPLACE THIS!
+
+
 // Sub-component to manage map interactions and dynamic markers.
 const LocationMarker: React.FC<{
   onClosestFacilityFound: (facility: EmergencyLocation | null, error?: string) => void;
   onDynamicFacilitiesLoaded: (facilities: EmergencyLocation[]) => void;
+  onRouteLoaded: (routeGeoJson: any | null) => void;
   panToUser: boolean;
-}> = ({ onClosestFacilityFound, onDynamicFacilitiesLoaded, panToUser }) => {
+}> = ({ onClosestFacilityFound, onDynamicFacilitiesLoaded, onRouteLoaded, panToUser }) => {
   const map = useMap();
   const [userLocation, setUserLocation] = useState<L.LatLngExpression | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const watchIdRef = useRef<number | null>(null);
 
-  // MODIFIED: User icon changed to green for better distinction
+  // User icon set to green for clear distinction
   const userIcon = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-    iconRetinaUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+    iconRetinaUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
@@ -140,12 +81,9 @@ const LocationMarker: React.FC<{
     shadowSize: [41, 41]
   });
 
-  // --- Function to fetch ONLY hospitals from Overpass API ---
+  // Function to fetch ONLY hospitals from Overpass API
   const fetchFacilitiesFromOverpass = async (centerLat: number, centerLng: number, radiusKm: number = 50) => {
-    // Overpass API endpoint (using the main public instance)
     const overpassUrl = 'https://overpass-api.de/api/interpreter';
-
-    // MODIFIED Overpass Query: only search for amenity=hospital or healthcare=hospital
     const query = `
       [out:json];
       (
@@ -171,29 +109,85 @@ const LocationMarker: React.FC<{
       }
 
       const data = await response.json();
-      console.log("Overpass API response (hospitals only):", data);
-
       const fetchedFacilities: EmergencyLocation[] = data.elements
-        .filter((el: any) => el.lat && el.lon && el.tags && el.tags.name) // Ensure essential data exists
+        .filter((el: any) => el.lat && el.lon && el.tags && el.tags.name)
         .map((el: any, index: number) => ({
-          id: el.id || index, // Use OSM ID if available, otherwise array index
+          id: el.id || index,
           lat: el.lat,
           lng: el.lon,
           name: el.tags.name,
           address: el.tags['addr:full'] || el.tags['addr:street'] || el.tags['addr:housenumber'] || 'Address not available',
           phone: el.tags.phone || 'N/A',
-          type: 'hospital' // Explicitly set type to 'hospital' as that's what we're querying
+          type: 'hospital'
         }));
       
       onDynamicFacilitiesLoaded(fetchedFacilities);
-      console.log("Fetched hospitals:", fetchedFacilities);
       return fetchedFacilities;
 
     } catch (error) {
       console.error("Failed to fetch hospitals from Overpass API:", error);
       setLocationError("Could not load nearby hospitals. Data might be unavailable or network issue.");
-      onDynamicFacilitiesLoaded([]); // Clear dynamic facilities on error
+      onDynamicFacilitiesLoaded([]);
       return [];
+    }
+  };
+
+  // Function to fetch route from ORS API
+  const fetchRoute = async (startLat: number, startLng: number, endLat: number, endLng: number) => {
+    if (!ORS_API_KEY || ORS_API_KEY === '5b3ce3597851110001cf6248550434e639e24cdfaca90049a9b5e306') {
+      console.error("ERROR: OpenRouteService API Key is NOT set or is default. Cannot fetch route.");
+      onRouteLoaded(null);
+      return;
+    }
+
+    const routeUrl = `https://api.openrouteservice.org/v2/directions/driving-car/geojson`;
+    const body = {
+      coordinates: [
+        [startLng, startLat], // ORS API expects coordinates as [longitude, latitude]
+        [endLng, endLat]     
+      ]
+    };
+
+    try {
+      const response = await fetch(routeUrl, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json, application/geo+json, application/gpx+xml, application/zipped-pbf, application/json',
+          'Content-Type': 'application/json',
+          'Authorization': ORS_API_KEY
+        },
+        body: JSON.stringify(body)
+      });
+
+      // --- CRITICAL DEBUGGING POINT 1: Check HTTP response status ---
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("ORS API Request Failed (HTTP Error):", response.status, response.statusText, errorData);
+        throw new Error(`ORS API error: ${response.status} - ${JSON.stringify(errorData)}`);
+      }
+
+      const data = await response.json();
+      // --- CRITICAL DEBUGGING POINT 2: Log the full ORS response data ---
+      console.log("ORS Route response (raw data):", data); 
+
+      if (data.features && data.features.length > 0) {
+          // Check if the feature is indeed a LineString
+          if (data.features[0].geometry && data.features[0].geometry.type === 'LineString') {
+            // --- CRITICAL DEBUGGING POINT 3: Log the specific GeoJSON feature being passed ---
+            console.log("ORS Route GeoJSON feature being passed:", data.features[0]);
+            onRouteLoaded(data.features[0]); // Pass the GeoJSON feature (the route) to parent
+          } else {
+            console.warn("ORS API returned feature, but it's not a LineString geometry:", data.features[0]);
+            onRouteLoaded(null); // Clear route if geometry type is unexpected
+          }
+      } else {
+          console.warn("ORS API returned no route features for the given coordinates. Check coordinates or network.");
+          onRouteLoaded(null); // Clear route if no features found
+      }
+    } catch (error) {
+      console.error("Failed to fetch route from ORS API (Catch Block):", error);
+      setLocationError("Could not calculate route. Please check your API key, coordinates, or try again later.");
+      onRouteLoaded(null); // Clear route on error
     }
   };
 
@@ -209,11 +203,8 @@ const LocationMarker: React.FC<{
       map.flyTo(currentUserLoc, 14); // flyTo for smooth animation
     }
 
-    // --- Fetch dynamic hospitals based on user's location ---
-    const dynamicHospitals = await fetchFacilitiesFromOverpass(lat, lng, 50); // Search within 50km radius
+    const dynamicHospitals = await fetchFacilitiesFromOverpass(lat, lng, 50);
 
-    // Combine hardcoded and dynamic hospitals for closest search
-    // Filter hardcoded to ensure only 'hospital' types are included in this combined list for finding closest
     const allFacilities = [
       ...INITIAL_EMERGENCY_FACILITIES.filter(f => f.type === 'hospital'),
       ...dynamicHospitals
@@ -233,11 +224,22 @@ const LocationMarker: React.FC<{
       }
     });
 
-    if (closestFacility && minDistance < 50) { // Still use a threshold for "nearby"
+    if (closestFacility && minDistance < 50) {
       onClosestFacilityFound(closestFacility);
+      
+      const confirmedClosestFacility: EmergencyLocation = closestFacility; // TypeScript fix
+
+      if (ORS_API_KEY !== '5b3ce3597851110001cf6248550434e639e24cdfaca90049a9b5e306') {
+        // Log coordinates sent to ORS for debugging
+        console.log(`Attempting to fetch route from [${lng}, ${lat}] to [${confirmedClosestFacility.lng}, ${confirmedClosestFacility.lat}]`);
+        await fetchRoute(lat, lng, confirmedClosestFacility.lat, confirmedClosestFacility.lng); 
+      } else {
+        onRouteLoaded(null);
+        console.warn("ORS API key is not configured, skipping route fetch.");
+      }
     } else {
-      // MODIFIED message to reflect only hospitals
       onClosestFacilityFound(null, "No hospitals detected nearby (within 50 km).");
+      onRouteLoaded(null); // Clear any previous route if no hospital found
     }
   };
 
@@ -253,6 +255,7 @@ const LocationMarker: React.FC<{
     }
     setLocationError(errorMessage);
     onClosestFacilityFound(null, errorMessage);
+    onRouteLoaded(null); // Clear any previous route on location error
   };
 
   useEffect(() => {
@@ -260,6 +263,7 @@ const LocationMarker: React.FC<{
       const msg = "Geolocation is not supported by your browser.";
       setLocationError(msg);
       onClosestFacilityFound(null, msg);
+      onRouteLoaded(null);
       return;
     }
 
@@ -278,7 +282,7 @@ const LocationMarker: React.FC<{
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
     };
-  }, [map, panToUser]); // Dependencies: map and panToUser
+  }, [map, panToUser, ORS_API_KEY]);
 
   const handleManualUpdate = () => {
     if (!navigator.geolocation) {
@@ -298,7 +302,7 @@ const LocationMarker: React.FC<{
   return (
     <>
       {userLocation && (
-        <Marker position={userLocation} icon={userIcon}> {/* Uses the green userIcon */}
+        <Marker position={userLocation} icon={userIcon}>
           <Popup>Your Current Location</Popup>
         </Marker>
       )}
@@ -320,6 +324,28 @@ const Emergency: React.FC = () => {
   const [closestFacility, setClosestFacility] = useState<EmergencyLocation | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [dynamicFacilities, setDynamicFacilities] = useState<EmergencyLocation[]>([]);
+  // --- TEMPORARY: Hardcoded test route for GeoJSON component ---
+  // This route is from Cebu Doctors' to Vicente Sotto, hardcoded to test if GeoJSON component renders.
+  // REMOVE OR COMMENT OUT THIS SECTION AFTER DEBUGGING!
+  const [routeGeoJson, setRouteGeoJson] = useState<any | null>(
+    // This is a simplified GeoJSON LineString. If this displays, ORS fetching is the problem.
+    // If this does NOT display, the GeoJSON component or its style is the problem.
+    // Example coordinates (long, lat) for a simple path in Cebu City
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [123.8854, 10.3157], // Cebu Doctors (lng, lat)
+          [123.8870, 10.3120],
+          [123.8885, 10.3080],
+          [123.8900, 10.3050],
+          [123.8967, 10.3015]  // Vicente Sotto (lng, lat)
+        ]
+      }
+    }
+  );
 
   const handleClosestFacilityUpdate = (facility: EmergencyLocation | null, error?: string) => {
     setClosestFacility(facility);
@@ -330,15 +356,24 @@ const Emergency: React.FC = () => {
     setDynamicFacilities(facilities);
   };
 
-  // Default center for Cebu Province, zoomed out
+  const handleRouteLoaded = (geoJson: any | null) => {
+    console.log("Route data received by Emergency component:", geoJson); // Confirm data is reaching here
+    setRouteGeoJson(geoJson);
+  };
+
   const defaultMapCenter: L.LatLngExpression = [10.35, 123.95];
   const defaultMapZoom = 10;
 
-  // Combine initial hardcoded hospitals with dynamically loaded hospitals for display
   const facilitiesToDisplay = [
     ...INITIAL_EMERGENCY_FACILITIES.filter(f => f.type === 'hospital'),
     ...dynamicFacilities
   ];
+
+  const routeStyle = {
+    color: '#007bff', // Blue color for the route
+    weight: 5,
+    opacity: 0.7
+  };
 
   return (
     <div className="emergency-page-container">
@@ -365,9 +400,8 @@ const Emergency: React.FC = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
 
-                  {/* Render only hospitals on the map (they use the default red/orange pin) */}
                   {facilitiesToDisplay.map(loc => (
-                    <Marker key={loc.id} position={[loc.lat, loc.lng]}> {/* Hospitals use L.Icon.Default */}
+                    <Marker key={loc.id} position={[loc.lat, loc.lng]}>
                       <Popup>
                         <strong>{loc.name} ({loc.type})</strong><br />
                         {loc.address}<br />
@@ -376,9 +410,19 @@ const Emergency: React.FC = () => {
                     </Marker>
                   ))}
 
+                  {/* Render the route GeoJSON if available */}
+                  {routeGeoJson && (
+                    <>
+                        {/* --- CRITICAL DEBUGGING POINT 4: Log routeGeoJson immediately before rendering --- */}
+                        {console.log("GeoJSON data attempting to render in MapContainer:", routeGeoJson)}
+                        <GeoJSON data={routeGeoJson} style={routeStyle} />
+                    </>
+                  )}
+
                   <LocationMarker
                     onClosestFacilityFound={handleClosestFacilityUpdate}
                     onDynamicFacilitiesLoaded={handleDynamicFacilitiesLoaded}
+                    onRouteLoaded={handleRouteLoaded}
                     panToUser={true}
                   />
                 </MapContainer>
@@ -387,7 +431,7 @@ const Emergency: React.FC = () => {
               <div className="closest-hospital-info-panel panel-box">
                 {closestFacility ? (
                   <>
-                    <h3 className="hospital-found-title">Closest Hospital:</h3> {/* Title changed */}
+                    <h3 className="hospital-found-title">Closest Hospital:</h3>
                     <p className="hospital-name-display">{closestFacility.name}</p>
                     <p className="hospital-address-display">{closestFacility.address}</p>
                     <p className="hospital-phone-display">Call: {closestFacility.phone}</p>
@@ -417,7 +461,6 @@ const Emergency: React.FC = () => {
                   <p>National Emergency Hotline</p>
                   <span>911</span>
                 </div>
-                {/* Dynamically generate hotline items based on facilities that are explicitly 'hospital' type */}
                 {facilitiesToDisplay.filter(f => f.type === 'hospital').map(f => (
                   <div className="hotline-item" key={`hotline-${f.id}`}>
                     <i className="fas fa-phone-alt"></i>
