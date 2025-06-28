@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// Remove Link import if no internal links within the content are using it.
-// Based on current code, Link is only used in the removed Navbar, so it can be removed.
-// import { Link } from 'react-router-dom';
 import './AppointmentsPage.css';
-// Remove logo import as Navbar is no longer directly in this component
-// import logo from '../assets/MediBridge_LogoClear.png';
 
 const AppointmentsPage: React.FC = () => {
   const [selectedDoctor, setSelectedDoctor] = useState("Dr. Maria Santos – Pediatrics");
@@ -12,7 +7,25 @@ const AppointmentsPage: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   const handleBookAppointment = () => {
-    alert(`Appointment booked with ${selectedDoctor} for ${selectedTimeSlot}!`); // Consider a custom modal instead of alert
+    // More functional booking logic
+    const appointmentDetails = {
+      doctor: selectedDoctor,
+      timeSlot: selectedTimeSlot,
+      date: new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    };
+
+    // Here you would typically make an API call to book the appointment
+    console.log('Booking appointment:', appointmentDetails);
+    
+    // Show confirmation
+    alert(`✅ Appointment successfully booked!\n\nDoctor: ${selectedDoctor}\nTime: ${selectedTimeSlot}\nDate: ${appointmentDetails.date}`);
+    
+    // You could also update the upcoming appointments list here
+    // or redirect to a confirmation page
   };
 
   const doctors = [
@@ -45,16 +58,7 @@ const AppointmentsPage: React.FC = () => {
   });
 
   return (
-    // The main-content-area is now the top-level element for this component.
-    // It will be rendered inside the <main> tag of your Layout component,
-    // which already applies padding-top to clear the fixed Navbar.
-    <div className="main-content-area appointments-page-wrapper"> {/* Renamed for consistency */}
-      {/*
-        The Navbar and Footer are now rendered by the Layout component in App.tsx.
-        Do NOT render them here.
-        Removed: <nav className="navbar">...</nav>
-      */}
-
+    <div className="main-content-area appointments-page-wrapper">
       {/* Page Title and Timestamp */}
       <div className="appointments-top-info-bar">
         <h1 className="appointments-page-title">Appointments Dashboard</h1>
@@ -63,9 +67,10 @@ const AppointmentsPage: React.FC = () => {
 
       <div className="appointments-content-grid">
         {/* Booking Card */}
-        <div className="card-base doctor-preference-card">
-          <h3 className="card-title">️ Doctor Preference</h3>
-          <div className="form-group">
+        <div className="doctor-preference-card">
+          <h3 className="card-title">Doctor Preference</h3>
+
+          <div className="doctor-selection-section">
             <label htmlFor="doctor-select">Select a Doctor:</label>
             <select
               id="doctor-select"
@@ -74,28 +79,44 @@ const AppointmentsPage: React.FC = () => {
               onChange={(e) => setSelectedDoctor(e.target.value)}
             >
               {doctors.map((doctor, index) => (
-                <option key={index} value={doctor}>{doctor}</option>
+                <option key={index} value={doctor}>
+                  {doctor}
+                </option>
               ))}
             </select>
           </div>
 
-          <div className="form-group">
+          <div className="time-slot-section">
             <h4 className="select-time-title">Select an Available Time Slot:</h4>
             <div className="time-slot-grid">
               {timeSlots.map((slot, index) => (
                 <button
                   key={index}
-                  className={`time-slot-button ${selectedTimeSlot === slot ? 'active' : ''}`}
-                  onClick={() => setSelectedTimeSlot(slot)}
+                  type="button"
+                  className={`time-slot-button ${selectedTimeSlot === slot ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Time slot clicked:', slot);
+                    setSelectedTimeSlot(slot);
+                  }}
                 >
                   {slot}
                 </button>
               ))}
             </div>
-            <p className="time-slot-note">Note: Doctor schedules are fixed. Please choose accordingly.</p>
+            <p className="time-slot-note">
+              Note: Doctor schedules are fixed. Please choose accordingly.
+            </p>
           </div>
 
-          <button className="book-appointment-button" onClick={handleBookAppointment}>
+          {/* Book Appointment Button - Now outside form groups */}
+          <button
+            type="button"
+            className="book-appointment-button"
+            onClick={handleBookAppointment}
+            disabled={!selectedDoctor || !selectedTimeSlot}
+          >
             Book Appointment
           </button>
         </div>
