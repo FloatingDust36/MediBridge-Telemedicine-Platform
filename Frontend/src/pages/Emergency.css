@@ -137,7 +137,7 @@ body {
 /* --- Map Controls (placed inside .map-container) --- */
 .location-control-panel {
     position: absolute;
-    top: 15px;
+    top: 340px;
     left: 15px;
     z-index: 1000; /* Ensure it's above the map controls */
     display: flex;
@@ -151,8 +151,8 @@ body {
     align-items: center;
     gap: 8px;
     padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
+    background-color: #800000;
+    color: rgb(255, 255, 255);
     border: none;
     border-radius: 8px;
     cursor: pointer;

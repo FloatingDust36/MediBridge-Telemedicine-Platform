@@ -86,8 +86,28 @@
 
 
 /* --- Styles specific to Doctor Preference Card (Booking) --- */
+.doctor-preference-card {
+max-width: 100%;
+height: 55vh;
+background-color: #f0f0f0;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #e0e0e0;
+padding: 20px;
+box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
 .doctor-preference-card .form-group {
     margin-bottom: 20px;
+    margin-top: 15px;
+    max-width: 32.5%;
+    padding-top: 100px;
+    display: flex;
+}
+
+.form-group2 {
+    margin-bottom: 20px;
+    max-width: 500px;
+    display: flex;
 }
 
 .doctor-preference-card label {
@@ -100,7 +120,7 @@
 }
 
 .doctor-preference-card .doctor-select {
-    width: 100%;
+    width: 90%;
     padding: 10px 15px;
     border: 1px solid #c0c0c0;
     border-radius: 4px;
@@ -129,12 +149,13 @@
 .doctor-preference-card .time-slot-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Flexible columns */
-    gap: 10px;
-    margin-bottom: 10px;
+    gap: 5px;
+    margin-bottom: 5px;
+  
 }
 
 .doctor-preference-card .time-slot-button {
-    padding: 10px 15px;
+    padding: 5px 5px;
     border: 1px solid #c0c0c0;
     border-radius: 4px;
     background-color: #f0f0f0;
@@ -171,7 +192,7 @@
     border: none;
     border-radius: 4px;
     background-color: #059669; /* Green from your mockup */
-    color: white;
+    color: rgb(255, 255, 255);
     font-family: 'Segoe UI', sans-serif;
     font-size: 16px;
     font-weight: 600;
@@ -218,6 +239,13 @@
     font-family: 'Segoe UI', sans-serif;
     color: #555;
     font-size: 14px;
+}
+.time-slot-section {
+    margin-bottom: 20px;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
 }
 
 /* Responsive Adjustments */
@@ -268,6 +296,6 @@
     }
     .doctor-preference-card .book-appointment-button {
         font-size: 15px;
-        padding: 10px 15px;
+        margin-top: 0px;
     }
 }

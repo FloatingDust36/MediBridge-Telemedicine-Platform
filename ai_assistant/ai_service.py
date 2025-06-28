@@ -29,11 +29,14 @@ class AIService:
         )
         self.chat = self.model.start_chat(history=[])
         self.session_id = db.create_session(self.user_id)
+
+        # If the session was created successfully, log the initial greeting from the bot
+        if self.session_id:
+            initial_greeting = "Welcome to the MediBridge AI Health Assistant. I can help you assess your symptoms and guide you to the appropriate next steps.\n\nPlease note: I am an AI assistant, not a medical doctor. I cannot provide a diagnosis. \n\nTo begin, please describe the main symptom you are concerned about."
+            db.log_message(self.session_id, 'bot', initial_greeting)
+            
         print(f"New AI Service initialized for user {self.user_id} with session {self.session_id}")
 
-    # This is the full function that should be in your AIService class in ai_service.py
-
-    # Replace the existing function with this DEBUG version in ai_service.py
 
     def process_user_message(self, user_message: str, image_bytes: bytes | None = None, image_content_type: str | None = None) -> dict:
         """

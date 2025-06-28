@@ -1,0 +1,77 @@
+/* Frontend/src/components/HistorySidebar.css */
+
+.history-sidebar {
+  width: 260px;
+  background-color: #f0f4f8;
+  border-right: 1px solid #d1d9e0;
+  flex-shrink: 0;
+  /* Use Flexbox to structure the sidebar's content */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-header {
+  padding: 10px;
+  flex-shrink: 0; /* Prevent this section from shrinking */
+  border-bottom: 1px solid #d1d9e0;
+}
+
+.new-chat-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #d1d9e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.new-chat-button:hover {
+  background-color: #eef2f5;
+}
+
+.recent-label {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 15px 12px 5px 12px;
+    margin: 0;
+}
+
+.session-list {
+  flex-grow: 1; /* This makes the list take up all remaining space */
+  overflow-y: auto; /* Adds a scrollbar if the list is too long */
+  padding: 5px 10px;
+}
+
+.session-item {
+  padding: 10px 12px;
+  margin-bottom: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #4a5568;
+}
+
+.session-item:hover {
+  background-color: #e2e8f0;
+}
+
+.session-item.active {
+  background-color: #3B82F6;
+  color: white;
+  font-weight: 600;
+}
