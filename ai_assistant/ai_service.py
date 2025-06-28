@@ -2,6 +2,8 @@
 
 import google.generativeai as genai
 import re
+import json
+import io
 from PIL import Image
 
 import config
@@ -22,43 +24,78 @@ class AIService:
         """Initializes a new AI service instance for a user."""
         self.user_id = user_id
         self.model = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
+            model_name="gemini-1.5-flash-latest",
             system_instruction=TRIAGE_SYSTEM_PROMPT
         )
         self.chat = self.model.start_chat(history=[])
         self.session_id = db.create_session(self.user_id)
         print(f"New AI Service initialized for user {self.user_id} with session {self.session_id}")
 
-    def process_user_message(self, user_message: str, image: Image.Image | None = None) -> dict:
+    # This is the full function that should be in your AIService class in ai_service.py
+
+    # Replace the existing function with this DEBUG version in ai_service.py
+
+    def process_user_message(self, user_message: str, image_bytes: bytes | None = None, image_content_type: str | None = None) -> dict:
         """
-        Processes a user's message, gets a response, and checks if the
-        initial triage has been completed.
+        Processes a user's message, with added print statements for debugging.
         """
+        print("\n--- [DEBUG] Inside process_user_message ---")
         if not self.session_id:
+            print("[DEBUG] Aborting: Session ID is missing.")
             return {"error": "Failed to create or retrieve a database session."}
 
-        db.log_message(self.session_id, 'user', user_message)
+        # 1. Check if image data was successfully received by this function
+        print(f"[DEBUG] Raw image bytes received by service? {'Yes' if image_bytes else 'No'}")
 
+        pil_image = None
+        if image_bytes and image_content_type:
+            print("[DEBUG] Attempting to create PIL Image from bytes...")
+            try:
+                pil_image = Image.open(io.BytesIO(image_bytes))
+                print(f"[DEBUG] PIL Image created successfully. Format: {pil_image.format}, Size: {pil_image.size}")
+            except Exception as e:
+                print(f"[DEBUG] CRITICAL ERROR: Failed to create PIL Image: {e}")
+                pil_image = None
+
+        # 2. Upload to storage
+        image_url = None
+        if image_bytes and image_content_type:
+            image_url = db.upload_image(image_bytes, image_content_type)
+
+        db.log_message(self.session_id, 'user', user_message, image_url)
+
+        # 3. Prepare the final prompt for Gemini
         try:
             chat_input = [user_message]
-            if image:
-                chat_input.append(image)
+            if pil_image:
+                print("[DEBUG] Appending PIL Image to chat_input.")
+                chat_input.append(pil_image)
+            else:
+                print("[DEBUG] No PIL Image to append to chat_input.")
 
+            print(f"[DEBUG] Final chat_input being sent to Gemini: {chat_input}")
             response = self.chat.send_message(chat_input)
             ai_response_text = response.text
 
         except Exception as e:
-            print(f"Error communicating with Gemini API: {e}")
-            ai_response_text = "I'm sorry, I'm having connection issues at the moment. Please try again shortly."
+            print(f"[DEBUG] CRITICAL ERROR communicating with Gemini API: {e}")
+            return {"response": "I'm sorry, I'm having trouble connecting right now. Please try again.", "esi_level": None}
 
-        db.log_message(self.session_id, 'ai', ai_response_text)
-
-        esi_level = self._parse_and_log_esi_level(ai_response_text)
-
-        return {
-            "response": ai_response_text,
-            "esi_level": esi_level  # This will be the number (e.g., 3) or None
-        }
+        # The rest of the function remains the same...
+        try:
+            triage_data = json.loads(ai_response_text)
+            esi_level = triage_data.get("esi_level")
+            patient_response = triage_data.get("patient_response")
+            clinical_summary = triage_data.get("clinical_summary")
+            if not all([isinstance(esi_level, int), patient_response, clinical_summary]):
+                raise json.JSONDecodeError("Missing required keys in JSON response.")
+            db.log_message(self.session_id, 'ai', patient_response)
+            db.update_session_esi_level(self.session_id, esi_level)
+            db.update_session_summary(self.session_id, clinical_summary)
+            return {"response": patient_response, "esi_level": esi_level}
+        except json.JSONDecodeError:
+            db.log_message(self.session_id, 'ai', ai_response_text)
+            return {"response": ai_response_text, "esi_level": None}
 
     def _parse_and_log_esi_level(self, text: str) -> int | None:
         """

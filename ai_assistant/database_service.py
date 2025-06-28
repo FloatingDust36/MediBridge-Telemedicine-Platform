@@ -1,6 +1,7 @@
 # ai_assistant/database_service.py
 
 import supabase
+import uuid
 from config import SUPABASE_URL, SUPABASE_KEY  # Import our credentials
 
 # --- Initialize the Supabase Client ---
@@ -105,4 +106,40 @@ def get_session_details(session_id: str) -> dict | None:
         return response.data
     except Exception as e:
         print(f"Error fetching session details: {e}")
+        return None
+    
+# Add this new function to database_service.py
+
+def upload_image(file_bytes: bytes, content_type: str) -> str | None:
+    """
+    Uploads an image file to the 'symptom_images' storage bucket.
+
+    Args:
+        file_bytes: The raw bytes of the image file.
+        content_type: The MIME type of the file (e.g., 'image/png').
+
+    Returns:
+        The public URL of the uploaded image, or None on failure.
+    """
+    if not supabase_client:
+        return None
+    try:
+        # Generate a unique filename to prevent overwrites
+        file_name = f"img_{uuid.uuid4()}"
+        bucket_name = "symptom-images"
+
+        # Upload the file
+        supabase_client.storage.from_(bucket_name).upload(
+            file=file_bytes,
+            path=file_name,
+            file_options={"content-type": content_type}
+        )
+
+        # Get the public URL for the newly uploaded file
+        response = supabase_client.storage.from_(bucket_name).get_public_url(file_name)
+        print(f"Image uploaded. Public URL: {response}")
+        return response
+
+    except Exception as e:
+        print(f"Error uploading image to Supabase Storage: {e}")
         return None

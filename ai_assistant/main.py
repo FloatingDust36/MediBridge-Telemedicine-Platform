@@ -1,6 +1,6 @@
 # ai_assistant/main.py
 
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI, HTTPException, Response, UploadFile, File, Form
 from pydantic import BaseModel
 import uvicorn
 from ai_service import AIService
@@ -59,15 +59,29 @@ async def start_chat(request: StartChatRequest):
 
 
 @app.post("/chat/message", response_model=SendMessageResponse)
-async def send_message(request: SendMessageRequest):
+async def send_message(
+    session_id: str = Form(...),
+    user_message: str = Form(...),
+    image: UploadFile = File(None)
+):
     """
-    Processes a new message from a user in an existing session.
+    Processes a user message, which can include an optional image upload.
+    This endpoint uses multipart/form-data.
     """
-    service = active_sessions.get(request.session_id)
+    service = active_sessions.get(session_id)
     if not service:
-        raise HTTPException(status_code=404, detail="Session not found. Please start a new chat.")
+        raise HTTPException(status_code=404, detail="Session not found.")
 
-    result = service.process_user_message(request.user_message)
+    image_bytes = None
+    image_content_type = None
+    if image:
+        # Ensure the uploaded file is an image
+        if not image.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="Invalid file type. Only images are allowed.")
+        image_bytes = await image.read()
+        image_content_type = image.content_type
+
+    result = service.process_user_message(user_message, image_bytes, image_content_type)
     return SendMessageResponse(**result)
 
 
