@@ -1,6 +1,7 @@
 # ai_assistant/main.py
 
 from fastapi import FastAPI, HTTPException, Response, UploadFile, File, Form
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 from ai_service import AIService
@@ -12,6 +13,27 @@ app = FastAPI(
     title="MediBridge AI Health Assistant API",
     description="API endpoints for the AI-powered virtual nurse.",
     version="1.0.0"
+)
+
+# --- CORS Middleware Configuration ---
+# This allows your frontend (running on a different port) to communicate with your backend.
+
+# Define the list of "origins" (addresses) that are allowed to connect.
+origins = [
+    "http://localhost",
+    "http://localhost:3000", # Common for React
+    "http://localhost:8080", # Common for Vue
+    "http://localhost:4200", # Common for Angular
+    "http://localhost:5173", # Common for Vite
+    # In production, you would add your actual frontend's domain here.
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"], # Allows all methods (GET, POST, etc.)
+    allow_headers=["*"], # Allows all headers
 )
 
 # --- 2. In-Memory Session Storage ---
@@ -126,6 +148,18 @@ async def get_pdf_summary(session_id: str):
         'Content-Disposition': f'attachment; filename="summary_{session_id}.pdf"'
     }
     return Response(content=pdf_bytes, media_type='application/pdf', headers=headers)
+
+
+@app.get("/session/{session_id}/messages", response_model=list[dict])
+async def get_messages_for_session(session_id: str):
+    """
+    Retrieves the message history for a specific session.
+    """
+    messages = db.get_session_messages(session_id)
+    if messages is None:
+        raise HTTPException(status_code=404, detail="Session not found or has no messages.")
+    return messages
+
 
 # --- 5. Run the Application ---
 # This block allows you to run the API directly from the command line

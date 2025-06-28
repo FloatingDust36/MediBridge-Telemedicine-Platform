@@ -75,7 +75,7 @@ class AIService:
 
             print(f"[DEBUG] Final chat_input being sent to Gemini: {chat_input}")
             response = self.chat.send_message(chat_input)
-            ai_response_text = response.text
+            bot_response_text = response.text
 
         except Exception as e:
             print(f"[DEBUG] CRITICAL ERROR communicating with Gemini API: {e}")
@@ -83,19 +83,19 @@ class AIService:
 
         # The rest of the function remains the same...
         try:
-            triage_data = json.loads(ai_response_text)
+            triage_data = json.loads(bot_response_text)
             esi_level = triage_data.get("esi_level")
             patient_response = triage_data.get("patient_response")
             clinical_summary = triage_data.get("clinical_summary")
             if not all([isinstance(esi_level, int), patient_response, clinical_summary]):
                 raise json.JSONDecodeError("Missing required keys in JSON response.")
-            db.log_message(self.session_id, 'ai', patient_response)
+            db.log_message(self.session_id, 'bot', patient_response)
             db.update_session_esi_level(self.session_id, esi_level)
             db.update_session_summary(self.session_id, clinical_summary)
             return {"response": patient_response, "esi_level": esi_level}
         except json.JSONDecodeError:
-            db.log_message(self.session_id, 'ai', ai_response_text)
-            return {"response": ai_response_text, "esi_level": None}
+            db.log_message(self.session_id, 'bot', bot_response_text)
+            return {"response": bot_response_text, "esi_level": None}
 
     def _parse_and_log_esi_level(self, text: str) -> int | None:
         """

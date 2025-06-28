@@ -108,7 +108,6 @@ def get_session_details(session_id: str) -> dict | None:
         print(f"Error fetching session details: {e}")
         return None
     
-# Add this new function to database_service.py
 
 def upload_image(file_bytes: bytes, content_type: str) -> str | None:
     """
@@ -142,4 +141,19 @@ def upload_image(file_bytes: bytes, content_type: str) -> str | None:
 
     except Exception as e:
         print(f"Error uploading image to Supabase Storage: {e}")
+        return None
+
+def get_session_messages(session_id: str) -> list[dict] | None:
+    """Retrieves all messages for a given session, ordered by time."""
+    if not supabase_client:
+        return None
+    try:
+        response = supabase_client.table("session_messages").select(
+            "sender, message_content"
+        ).eq("session_id", session_id).order("timestamp", desc=False).execute()
+        
+        formatted_messages = [{"type": row['sender'], "text": row['message_content']} for row in response.data]
+        return formatted_messages
+    except Exception as e:
+        print(f"Error fetching session messages: {e}")
         return None

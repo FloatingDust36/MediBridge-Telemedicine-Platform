@@ -17,6 +17,7 @@
     "@vis.gl/react-google-maps": "^1.5.3",
     "framer-motion": "^12.18.1",
     "leaflet": "^1.9.4",
+    "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-leaflet": "^5.0.0",
