@@ -10,7 +10,7 @@ import './Emergency.css'; // Import the new CSS file
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png', // This is the default red/orange pin for hospitals
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
 });
 
@@ -92,7 +92,7 @@ const INITIAL_EMERGENCY_FACILITIES: EmergencyLocation[] = [
   { id: 140, lat: 11.2700, lng: 124.0000, name: 'Daanbantayan District Hospital', address: 'Poblacion, Daanbantayan', phone: '(032) 437 5500', type: 'hospital' },
 
   // --- Medellin ---
-  { id: 150, lat: 11.1600, lng: 123.9500, name: 'Medellin Hospital (Example)', address: 'Poblacion, Medellin', phone: '(032) 436 2000', type: 'hospital' }, // Changed to Hospital type
+  { id: 150, lat: 11.1600, lng: 123.9500, name: 'Medellin Hospital (Example)', address: 'Poblacion, Medellin', phone: '(032) 436 2000', type: 'hospital' },
 
   // --- Barili ---
   { id: 160, lat: 10.1500, lng: 123.5500, name: 'Barili District Hospital', address: 'Poblacion, Barili', phone: '0922-382-7595', type: 'hospital' },
@@ -129,9 +129,10 @@ const LocationMarker: React.FC<{
   const [locationError, setLocationError] = useState<string | null>(null);
   const watchIdRef = useRef<number | null>(null);
 
+  // MODIFIED: User icon changed to green for better distinction
   const userIcon = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-    iconRetinaUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+    iconRetinaUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
@@ -139,7 +140,7 @@ const LocationMarker: React.FC<{
     shadowSize: [41, 41]
   });
 
-  // --- MODIFIED: Function to fetch ONLY hospitals from Overpass API ---
+  // --- Function to fetch ONLY hospitals from Overpass API ---
   const fetchFacilitiesFromOverpass = async (centerLat: number, centerLng: number, radiusKm: number = 50) => {
     // Overpass API endpoint (using the main public instance)
     const overpassUrl = 'https://overpass-api.de/api/interpreter';
@@ -297,7 +298,7 @@ const LocationMarker: React.FC<{
   return (
     <>
       {userLocation && (
-        <Marker position={userLocation} icon={userIcon}>
+        <Marker position={userLocation} icon={userIcon}> {/* Uses the green userIcon */}
           <Popup>Your Current Location</Popup>
         </Marker>
       )}
@@ -334,7 +335,6 @@ const Emergency: React.FC = () => {
   const defaultMapZoom = 10;
 
   // Combine initial hardcoded hospitals with dynamically loaded hospitals for display
-  // Ensure we only display hardcoded items that are explicitly 'hospital' type
   const facilitiesToDisplay = [
     ...INITIAL_EMERGENCY_FACILITIES.filter(f => f.type === 'hospital'),
     ...dynamicFacilities
@@ -365,9 +365,9 @@ const Emergency: React.FC = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
 
-                  {/* Render only hospitals on the map */}
+                  {/* Render only hospitals on the map (they use the default red/orange pin) */}
                   {facilitiesToDisplay.map(loc => (
-                    <Marker key={loc.id} position={[loc.lat, loc.lng]}>
+                    <Marker key={loc.id} position={[loc.lat, loc.lng]}> {/* Hospitals use L.Icon.Default */}
                       <Popup>
                         <strong>{loc.name} ({loc.type})</strong><br />
                         {loc.address}<br />
