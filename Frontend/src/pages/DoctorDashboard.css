@@ -193,65 +193,133 @@ body {
     flex-direction: column;
     /* Add a gap for consistent spacing between its children */
     gap: 15px; /* Adjust as needed for visual appeal */
+    height: 400px;
+    padding: 20px; /* Ensure padding is consistent with other panels */
+   
 }
 
 .form-group {
-    /* No need for display: flex; flex-direction: column; here if its direct children
-       (label, select/input/textarea) are block-level elements or if parent is column flex.
-       However, explicitly ensuring this ensures consistent stacking within form groups. */
+    /* Explicit column flex for form groups */
     display: flex;
     flex-direction: column;
-    /* Removed margin-bottom here, using gap on parent .add-consultation-notes.panel-box instead */
+    width: 45%;
+    gap: 20px; /* Space between label and input */
+    margin-top: 50px; /* Space above each form group */
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 5px; /* Space between label and input field */
     font-weight: 500;
     color: #455a64;
+    font-size: 0.95em;
 }
 
 .input-field {
     width: 100%;
+    padding: 12px;
+    border: 1px solid #cfd8dc;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box;
+    background-color: #fcfcfc;
+    color: #000000;
+    min-height: 44px; /* Standard input height for better appearance */
+    font-family: inherit;
+}
+.input-field2 {
+    width: 90%;
     padding: 10px;
     border: 1px solid #cfd8dc;
     border-radius: 4px;
     font-size: 1em;
     box-sizing: border-box;
     background-color: #fcfcfc;
-    color:#000000;
-    min-height: 38px; /* Standard input height for better appearance */
+    color: #000000;
+    min-height: 44px; /* Standard input height for better appearance */
+    font-family: inherit;
+   margin-top: -10px;
+    margin-left: 20px;
+
 }
 
 .input-field:focus {
     outline: none;
     border-color: #800000;
     box-shadow: 0 0 0 2px rgba(128, 0, 0, 0.2);
+    background-color: #ffffff;
 }
 
 .textarea-field {
     min-height: 120px;
     resize: vertical;
+    font-family: inherit;
+    line-height: 1.4;
 }
 
-.save-notes-button,
-.search-button {
-    padding: 10px 15px;
+  .save-notes-button {
+    padding: 12px 20px;
     background-color: #800000;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 1em;
+    font-weight: 500;
     transition: background-color 0.3s ease;
     width: 100%;
     box-sizing: border-box;
-    /* Removed margin-top here, relying on gap on parent .add-consultation-notes.panel-box */
+    min-height: 44px;
+    margin-top: 260px;
+}
+
+.search-button {
+    padding: 12px 20px;
+    background-color: #800000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 44px;
 }
 
 .save-notes-button:hover,
 .search-button:hover {
     background-color: #6a0000;
+}
+
+.save-notes-button:active,
+.search-button:active {
+    background-color: #550000;
+}
+
+/* Search patient records specific styles */
+.search-patient-records.panel-box {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.search-patient-records .input-field {
+    margin-bottom: 0; /* Remove any default margin, rely on gap */
+}
+
+/* Ensure consultation notes section maintains proper structure */
+.add-consultation-notes .form-group:last-of-type {
+    margin-top: 130px; /* Remove margin from the last form group */
+    width: 42%; /* Ensure it takes full width */
+    margin-left: 20px;
+}
+
+/* Fix any potential layout issues with the textarea */
+.add-consultation-notes .textarea-field {
+    width: 100%;
+    box-sizing: border-box;
+  
 }
 
 /* Responsive adjustments */
@@ -281,8 +349,16 @@ body {
         padding: 15px;
         padding-top: 20px;
     }
+    
+    .panel-box {
+        padding: 15px;
+    }
+    
+    .add-consultation-notes.panel-box,
+    .search-patient-records.panel-box {
+        gap: 12px;
+    }
 }
-
 
 @media (max-width: 600px) {
   .main-content-area.doctor-dashboard-wrapper {
@@ -343,10 +419,17 @@ body {
     }
     .input-field, .textarea-field {
         font-size: 0.9em;
-        padding: 8px;
+        padding: 10px;
+        min-height: 40px;
     }
     .save-notes-button, .search-button {
         font-size: 0.9em;
-        padding: 8px 12px;
+        padding: 10px 15px;
+        min-height: 40px;
+    }
+    
+    .add-consultation-notes.panel-box,
+    .search-patient-records.panel-box {
+        gap: 10px;
     }
 }

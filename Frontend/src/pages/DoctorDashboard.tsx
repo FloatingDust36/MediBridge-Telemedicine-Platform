@@ -7,16 +7,32 @@ import './DoctorDashboard.css'; // Import the new CSS file
 // Remove Link import as it was only used for the Navbar links that are now global
 // import { Link } from 'react-router-dom';
 
-
 const DoctorDashboard: React.FC = () => {
   const [selectedPatient, setSelectedPatient] = useState<string>('Juan Dela Cruz');
   const [consultationNotes, setConsultationNotes] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const handleSaveNotes = () => {
+    if (!consultationNotes.trim()) {
+      alert('Please enter consultation notes before saving.');
+      return;
+    }
+    
     console.log(`Saving notes for ${selectedPatient}: ${consultationNotes}`);
     // Here you would typically send this data to a backend
-    alert('Consultation notes saved!'); // Consider a custom modal for better UX
+    alert('Consultation notes saved successfully!');
     setConsultationNotes(''); // Clear notes after saving
+  };
+
+  const handleSearch = () => {
+    if (!searchQuery.trim()) {
+      alert('Please enter a patient name or ID to search.');
+      return;
+    }
+    
+    console.log(`Searching for patient: ${searchQuery}`);
+    // Here you would typically search the backend
+    alert(`Searching for: ${searchQuery}`);
   };
 
   return (
@@ -31,7 +47,7 @@ const DoctorDashboard: React.FC = () => {
       */}
 
       <div className="welcome-section">
-        <h1>Welcome, Dr. [Nigga]</h1>
+        <h1>Welcome, Dr. [Name]</h1>
         <p>Manage your appointments, view patient records, and conduct consultations.</p>
         <span className="current-date">Thursday, 28 May 2025</span> {/* Consider dynamic date */}
       </div>
@@ -67,12 +83,13 @@ const DoctorDashboard: React.FC = () => {
           </div>
 
           <div className="add-consultation-notes panel-box">
-            <h2>Add Consultation Notes</h2>
+            <h2>Add Patient Consultation Notes</h2>
             <div className="form-group">
-              <label htmlFor="select-patient">Select Patient</label>
+              <label htmlFor ="select-patient">
+                Select Patient</label>
               <select
                 id="select-patient"
-                className="input-field"
+                className="input-field2"
                 value={selectedPatient}
                 onChange={(e) => setSelectedPatient(e.target.value)}
               >
@@ -81,17 +98,24 @@ const DoctorDashboard: React.FC = () => {
                 {/* Add more patients dynamically */}
               </select>
             </div>
+            
             <div className="form-group">
-              <label htmlFor="consultation-details">Consultation Notes</label>
+              <label htmlFor="consultation-details">Consultation Details</label>
               <textarea
                 id="consultation-details"
                 className="input-field textarea-field"
-                placeholder="Enter consultation details..."
+                placeholder="Enter consultation details, symptoms, diagnosis, treatment plan, and any additional notes..."
                 value={consultationNotes}
                 onChange={(e) => setConsultationNotes(e.target.value)}
-              ></textarea>
+                rows={5}
+              />
             </div>
-            <button className="save-notes-button" onClick={handleSaveNotes}>
+            
+            <button 
+              className="save-notes-button" 
+              onClick={handleSaveNotes}
+              disabled={!consultationNotes.trim()}
+            >
               Save Notes
             </button>
           </div>
@@ -104,8 +128,10 @@ const DoctorDashboard: React.FC = () => {
               type="text"
               placeholder="Enter patient name or ID"
               className="input-field"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <button className="search-button">Search</button>
+            <button className="search-button" onClick={handleSearch}>Search</button>
           </div>
         </div>
       </div>
