@@ -75,3 +75,47 @@
   color: white;
   font-weight: 600;
 }
+
+.session-item-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.session-item-container:hover {
+    background-color: #e2e8f0;
+}
+
+.session-item:hover {
+    background-color: transparent;
+}
+
+.session-item-container .session-item {
+    margin-bottom: 0;
+    flex-grow: 1;
+}
+
+.delete-session-button {
+    background: transparent;
+    border: none;
+    color: #9ca3af; /* A light gray for the icon */
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    visibility: hidden; /* Hide the button by default */
+    opacity: 0;
+    transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+    margin-left: 5px; /* Add some space */
+}
+
+.session-item-container:hover .delete-session-button {
+    visibility: visible; /* Show the button on hover */
+    opacity: 1;
+}
+
+.delete-session-button:hover {
+    background-color: #d1d9e0; /* A darker background on hover */
+    color: #374151; /* Darker icon color on hover */
+}

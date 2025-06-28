@@ -29,11 +29,10 @@ body {
    It is rendered inside the Layout component's <main> element.
 */
 .main-content-area.doctor-dashboard-wrapper {
-    padding: 25px; /* General padding around the dashboard sections */
+    padding: 60px; /* General padding around the dashboard sections */
     padding-bottom: 25px; /* Consistent padding at the bottom */
 
     width: 100%; /* Ensures it takes full available width within Layout's <main> */
-    max-width: 1200px; /* Constrain the overall content width for readability on large screens */
     margin: 0 auto; /* Centers the content wrapper horizontally within Layout's <main> */
     box-sizing: border-box; /* Ensures padding and border are included in the element's total width/height */
 
