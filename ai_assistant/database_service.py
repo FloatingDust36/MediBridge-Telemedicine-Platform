@@ -3,6 +3,7 @@
 import supabase
 import uuid
 from config import SUPABASE_URL, SUPABASE_KEY  # Import our credentials
+from datetime import datetime
 
 # --- Initialize the Supabase Client ---
 # We create a single, reusable client instance using our credentials.
@@ -94,6 +95,7 @@ def update_session_summary(session_id: str, summary_text: str):
     except Exception as e:
         print(f"Error updating session summary in database: {e}")
 
+
 def get_session_details(session_id: str) -> dict | None:
     """Retrieves a session's details from the database."""
     if not supabase_client:
@@ -143,6 +145,7 @@ def upload_image(file_bytes: bytes, content_type: str) -> str | None:
         print(f"Error uploading image to Supabase Storage: {e}")
         return None
 
+
 def get_session_messages(session_id: str) -> list[dict] | None:
     """Retrieves all messages for a given session, ordered by time."""
     if not supabase_client:
@@ -156,4 +159,35 @@ def get_session_messages(session_id: str) -> list[dict] | None:
         return formatted_messages
     except Exception as e:
         print(f"Error fetching session messages: {e}")
+        return None
+    
+
+def get_sessions_for_user(user_id: str) -> list[dict] | None:
+    """Retrieves all sessions for a given user, ordered by most recent."""
+    if not supabase_client:
+        return None
+    try:
+        # We select the session id and when it was created.
+        # We can also select the first few characters of the summary to use as a title.
+        response = supabase_client.table("sessions").select(
+            "id, created_at, session_summary"
+        ).eq("user_id", user_id).order("created_at", desc=True).execute()
+
+        # Format the data for the frontend
+        for session in response.data:
+            # Format the timestamp into a readable string
+            # e.g., "Jun 28, 02:25 PM"
+            dt_object = datetime.fromisoformat(session['created_at'])
+            formatted_date = dt_object.strftime('%b %d, %I:%M %p')
+
+            if session.get("session_summary"):
+                # If a summary exists, use the first few words as a title
+                session["title"] = session["session_summary"][:40] + "..."
+            else:
+                # Otherwise, use the formatted date as the title
+                session["title"] = formatted_date
+
+        return response.data
+    except Exception as e:
+        print(f"Error fetching sessions for user: {e}")
         return None

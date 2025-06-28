@@ -150,6 +150,18 @@ async def get_pdf_summary(session_id: str):
     return Response(content=pdf_bytes, media_type='application/pdf', headers=headers)
 
 
+@app.get("/sessions/user/{user_id}", response_model=list[dict])
+async def get_user_sessions(user_id: str):
+    """
+    Retrieves a list of all past chat sessions for a specific user.
+    """
+    sessions = db.get_sessions_for_user(user_id)
+    if sessions is None:
+        # Return an empty list instead of an error if user has no sessions
+        return []
+    return sessions
+
+
 @app.get("/session/{session_id}/messages", response_model=list[dict])
 async def get_messages_for_session(session_id: str):
     """
