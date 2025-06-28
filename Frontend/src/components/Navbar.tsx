@@ -70,6 +70,32 @@ const Navbar: React.FC<NavbarProps> = ({ userType }) => {
     }
   };
 
+  // Handle Google Registration with Role
+const handleGoogleRegister = async () => {
+  if (!role) {
+    alert('Please select a role (Doctor or Patient) before continuing.');
+    return;
+  }
+
+  // Save role to localStorage so /oauth-callback can access it
+  localStorage.setItem('selectedRole', role.toLowerCase()); // 'doctor' or 'patient'
+
+  const redirectTo = `${window.location.origin}/oauth-callback`;
+
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo,
+    },
+  });
+
+  if (error) {
+    console.error('OAuth Error:', error.message);
+    alert('Google registration failed.');
+  }
+};
+
+
   // Handle Google OAuth login
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -396,7 +422,7 @@ const Navbar: React.FC<NavbarProps> = ({ userType }) => {
               <button type="submit" className="register-submit">Register</button>
               <div className="social-icons">
                 <img src={facebookIcon} alt="Facebook" className="social-img" />
-                <img src={googleIcon} alt="Google" className="social-img" />
+                <img src={googleIcon} alt="Google" className="social-img" onClick={handleGoogleRegister} style={{ cursor: 'pointer' }} />
                 <img src={discordIcon} alt="Discord" className="social-img" />
               </div>
             </form>
