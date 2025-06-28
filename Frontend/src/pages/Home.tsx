@@ -12,20 +12,18 @@ const Home = () => {
   // ✅ This must be inside the component
   const [selectedRole, setSelectedRole] = useState<'doctor' | 'patient' | null>(null);
 
-  const handleGoogleRegister = async () => {
+const handleGoogleRegister = async () => {
   if (!selectedRole) {
     alert('Please select a role (Doctor or Patient) before continuing.');
     return;
   }
 
-  localStorage.setItem('selectedRole', selectedRole); // Save role for callback
+  localStorage.setItem('selectedRole', selectedRole);
   const redirectTo = `${window.location.origin}/oauth-callback`;
 
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: {
-      redirectTo,
-    },
+    options: { redirectTo },
   });
 
   if (error) {
@@ -38,6 +36,7 @@ const Home = () => {
 
 
   return (
+    
     <div className="app-layout-container">
       <div className="page-content-and-footer-wrapper">
         <div className="page-content-wrapper">
@@ -95,6 +94,8 @@ const Home = () => {
       </div>
     </div>
   );
+
+  
 };
 
 export default Home;
