@@ -12,5 +12,6 @@
   color: #000;
   /* Vertically center text if not already */
   line-height: 30px; /* Matches footer height */
-  margin: 0;
+  margin: auto;
+  margin-top: auto;
 }

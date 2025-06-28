@@ -7,7 +7,7 @@
        We'll keep a small internal padding here for the page title.
     */
     padding-top: 25px; /* Spacing from the Layout's padding-top, effectively adding more space */
-    padding-bottom: 25px; /* Spacing for the bottom of the page content before the footer */
+    padding-bottom: 117.5px; /* Spacing for the bottom of the page content before the footer */
     padding-left: 30px; /* General side padding for the content wrapper */
     padding-right: 30px; /* General side padding for the content wrapper */
 
