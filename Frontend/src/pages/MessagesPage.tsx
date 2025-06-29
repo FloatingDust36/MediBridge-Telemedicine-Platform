@@ -9,11 +9,16 @@ interface Message {
   message_content: string;
   image_url?: string;
   timestamp: string;
+  sender?: {
+    full_name: string;
+  };
 }
+
 
 const MessagesPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
+  const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const [showCompose, setShowCompose] = useState(false);
   const [receiverEmail, setReceiverEmail] = useState('');
   const [messageContent, setMessageContent] = useState('');
@@ -35,7 +40,7 @@ const MessagesPage: React.FC = () => {
 
       const { data, error } = await supabase
         .from('session_messages')
-        .select('*')
+        .select('*, sender:users!session_messages_sender_id_fkey(full_name)')
         .or(`sender_id.eq.${currentUserId},receiver_id.eq.${currentUserId}`)
         .order('timestamp', { ascending: false });
 
@@ -49,6 +54,44 @@ const MessagesPage: React.FC = () => {
 
     fetchMessages();
   }, []);
+
+  const toggleMessageSelection = (id: string) => {
+  setSelectedMessages(prev =>
+    prev.includes(id) ? prev.filter(msgId => msgId !== id) : [...prev, id]
+  );
+};
+
+const handleDeleteMessage = async (id: string) => {
+  const { error } = await supabase
+    .from('session_messages')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('Delete error:', error.message);
+    alert('Failed to delete message.');
+  } else {
+    setMessages(messages.filter((m) => m.id !== id));
+    setSelectedMessages((prev) => prev.filter((mid) => mid !== id));
+  }
+};
+
+const handleBulkDelete = async () => {
+  if (selectedMessages.length === 0) return;
+
+  const { error } = await supabase
+    .from('session_messages')
+    .delete()
+    .in('id', selectedMessages);
+
+  if (error) {
+    console.error('Bulk delete error:', error.message);
+    alert('Failed to delete selected messages.');
+  } else {
+    setMessages(messages.filter((msg) => !selectedMessages.includes(msg.id)));
+    setSelectedMessages([]);
+  }
+};
 
   const handleSendMessage = async () => {
   if (!receiverEmail || !messageContent || !userId) {
@@ -96,7 +139,7 @@ const receiverId = receiverUsers[0].user_id;
     // Refresh messages
     const { data: refreshedMessages, error } = await supabase
       .from('session_messages')
-      .select('*')
+      .select('*, sender:users!session_messages_sender_id_fkey(full_name)')
       .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
       .order('timestamp', { ascending: false });
 
@@ -117,27 +160,51 @@ const receiverId = receiverUsers[0].user_id;
       <div className="card-base messages-inbox-card">
         <h3 className="card-title">Inbox</h3>
         {messages.length === 0 ? (
-          <p>No messages found.</p>
-        ) : (
-          <ul className="messages-list">
-            {messages.map((msg) => (
-              <li key={msg.id} className="message-item">
-                <div className="message-header">
-                  <span className="message-sender">
-                    {msg.sender_id === userId ? 'You' : msg.sender_id}
-                  </span>
-                  <span className="message-time">
-                    {new Date(msg.timestamp).toLocaleString()}
-                  </span>
-                </div>
-                <h4 className="message-subject">
-                  {msg.message_content.slice(0, 30)}...
-                </h4>
-                <p className="message-snippet">{msg.message_content}</p>
-              </li>
-            ))}
-          </ul>
-        )}
+  <p>No messages found.</p>
+) : (
+  <>
+    <ul className="messages-list">
+      {messages.map((msg) => (
+        <li key={msg.id} className="message-item">
+          <input
+            type="checkbox"
+            checked={selectedMessages.includes(msg.id)}
+            onChange={() => toggleMessageSelection(msg.id)}
+            style={{ marginRight: '10px' }}
+          />
+          <div className="message-header">
+            <span className="message-sender">
+              {msg.sender_id === userId ? 'You' : msg.sender?.full_name || msg.sender_id}
+            </span>
+            <span className="message-time">
+              {new Date(msg.timestamp).toLocaleString()}
+            </span>
+          </div>
+          <h4 className="message-subject">
+            {msg.message_content.slice(0, 30)}...
+          </h4>
+          <p className="message-snippet">{msg.message_content}</p>
+          <button
+            className="delete-button"
+            onClick={() => handleDeleteMessage(msg.id)}
+          >
+            Delete
+          </button>
+        </li>
+      ))}
+    </ul>
+
+    {selectedMessages.length > 0 && (
+      <button
+        className="bulk-delete-button"
+        onClick={handleBulkDelete}
+        style={{ marginTop: '12px' }}
+      >
+        Delete Selected ({selectedMessages.length})
+      </button>
+    )}
+  </>
+)}
 
         <button className="new-message-button" onClick={() => setShowCompose(!showCompose)}>
           {showCompose ? 'Cancel' : 'Compose New Message'}

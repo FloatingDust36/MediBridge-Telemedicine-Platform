@@ -49,6 +49,11 @@
   border-color: #a7d4ff;
 }
 
+.message-item.selected {
+  background-color: #e6f3ff;
+  border-color: #80c1ff;
+}
+
 .message-item:last-child {
   margin-bottom: 0;
 }
@@ -112,7 +117,7 @@
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Compose form styles — placed OUTSIDE the media query */
+/* Compose form styles */
 .compose-form {
   margin-top: 20px;
   padding: 15px;
@@ -132,6 +137,12 @@
   box-sizing: border-box;
 }
 
+.compose-form textarea.input-field {
+  resize: vertical;
+  min-height: 80px;
+  max-height: 200px;
+}
+
 .compose-form .send-button {
   width: 100%;
   padding: 10px 15px;
@@ -149,6 +160,27 @@
 .compose-form .send-button:hover {
   background-color: #218838;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Bulk delete button */
+.bulk-delete-button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 12px;
+  margin-bottom: 15px;
+  background-color: #dc3545;
+  color: white;
+  font-weight: 600;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.bulk-delete-button:hover {
+  background-color: #c82333;
 }
 
 /* Responsive tweaks */
