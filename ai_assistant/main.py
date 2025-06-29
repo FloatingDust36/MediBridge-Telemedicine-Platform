@@ -6,7 +6,7 @@ from pydantic import BaseModel
 import uvicorn
 from ai_service import AIService
 import pdf_service
-import database_service as db # Add alias to db for consistency
+import database_service as db
 
 # --- 1. Initialize FastAPI Application ---
 app = FastAPI(
@@ -18,14 +18,10 @@ app = FastAPI(
 # --- CORS Middleware Configuration ---
 # This allows your frontend (running on a different port) to communicate with your backend.
 
-# Define the list of "origins" (addresses) that are allowed to connect.
+# list of "origins" (addresses) that are allowed to connect.
 origins = [
     "http://localhost",
-    "http://localhost:3000", # Common for React
-    "http://localhost:8080", # Common for Vue
-    "http://localhost:4200", # Common for Angular
-    "http://localhost:5173", # Common for Vite
-    # In production, you would add your actual frontend's domain here.
+    "http://localhost:5173", # for Vite (our frontend development server)
 ]
 
 app.add_middleware(
@@ -39,8 +35,6 @@ app.add_middleware(
 # --- 2. In-Memory Session Storage ---
 # This dictionary will store active AI service instances.
 # Key: session_id (str), Value: AIService object
-# NOTE: For large-scale production, this might be replaced by a more
-# persistent cache like Redis, but for now, this is perfect.
 active_sessions = {}
 
 # --- 3. Pydantic Data Models ---
@@ -173,8 +167,33 @@ async def get_messages_for_session(session_id: str):
     return messages
 
 
-# --- 5. Run the Application ---
-# This block allows you to run the API directly from the command line
-# using 'python main.py'. It's mainly for development.
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+@app.delete("/session/{session_id}", status_code=204)
+async def delete_session(session_id: str):
+    """
+    Deletes a specific chat session and all its associated messages.
+    """
+    # Also remove from our in-memory cache if it exists
+    if session_id in active_sessions:
+        del active_sessions[session_id]
+
+    success = db.delete_session_from_db(session_id)
+
+    if not success:
+        # We don't raise an error if the session is already gone,
+        # as the end result for the user is the same.
+        print(f"Attempted to delete session {session_id}, but it was not found in the DB.")
+
+    # A 204 "No Content" response is the standard for a successful DELETE.
+    return Response(status_code=204)
+
+
+@app.get("/session/{session_id}", response_model=dict)
+async def get_session(session_id: str):
+    """
+    Retrieves the core details for a single session,
+    including whether it has been completed.
+    """
+    details = db.get_session_details(session_id)
+    if not details:
+        raise HTTPException(status_code=404, detail="Session not found.")
+    return details

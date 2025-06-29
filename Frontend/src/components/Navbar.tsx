@@ -27,7 +27,7 @@ const Navbar: React.FC<NavbarProps> = ({ userType }) => {
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [confirmRegisterPassword, setConfirmRegisterPassword] = useState('');
-  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false); // Renamed for clarity vs. strength
   const [role, setRole] = useState<'Doctor' | 'Patient' | ''>(''); // Role selected in register popup
   const [passwordStrength, setPasswordStrength] = useState<{ label: string; color: string }>({
     label: '',
@@ -69,6 +69,32 @@ const Navbar: React.FC<NavbarProps> = ({ userType }) => {
       setShowLogin(false); // Close login popup
     }
   };
+
+  // Handle Google Registration with Role
+const handleGoogleRegister = async () => {
+  if (!role) {
+    alert('Please select a role (Doctor or Patient) before continuing.');
+    return;
+  }
+
+  // Save role to localStorage so /oauth-callback can access it
+  localStorage.setItem('selectedRole', role.toLowerCase()); // 'doctor' or 'patient'
+
+  const redirectTo = `${window.location.origin}/oauth-callback`;
+
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo,
+    },
+  });
+
+  if (error) {
+    console.error('OAuth Error:', error.message);
+    alert('Google registration failed.');
+  }
+};
+
 
   // Handle Google OAuth login
   const handleGoogleLogin = async () => {
@@ -270,12 +296,18 @@ const Navbar: React.FC<NavbarProps> = ({ userType }) => {
           >
             <form className="login-form" onSubmit={handleLoginSubmit}>
               <h3>Login</h3>
-              <input type="email" placeholder="Email Address" required />
-              <input
-                type={showLoginPassword ? "text" : "password"}
-                placeholder="Password"
-                required
-              />
+              <div className="input-group"> {/* Added input-group for consistency */}
+                <label>Email Address</label> {/* Added label for consistency */}
+                <input type="email" placeholder="Enter email" required /> {/* Changed placeholder */}
+              </div>
+              <div className="input-group"> {/* Added input-group for consistency */}
+                <label>Password</label> {/* Added label for consistency */}
+                <input
+                  type={showLoginPassword ? "text" : "password"}
+                  placeholder="Enter password"
+                  required
+                />
+              </div>
               <label className="checkbox-label">
                 <input
                   type="checkbox"
@@ -329,9 +361,10 @@ const Navbar: React.FC<NavbarProps> = ({ userType }) => {
                   }}
                   required
                 />
+                {/* Password Strength Indicator - moved inside input-group to be grouped with its input */}
                 {registerPassword && (
-                  <>
-                    <p style={{ fontSize: '14px', color: passwordStrength.color, marginTop: '4px' }}>
+                  <div className="password-strength-info"> {/* New wrapper div */}
+                    <p style={{ fontSize: '14px', color: passwordStrength.color, marginTop: '4px', marginBottom: '4px' }}> {/* Added margin-bottom */}
                       Password Strength: {passwordStrength.label}
                     </p>
                     <div style={{
@@ -339,7 +372,7 @@ const Navbar: React.FC<NavbarProps> = ({ userType }) => {
                       width: '100%',
                       backgroundColor: '#e5e7eb',
                       borderRadius: '4px',
-                      marginTop: '4px'
+                      marginBottom: '4px' // Added margin-bottom
                     }}>
                       <div style={{
                         width: passwordStrength.label === 'Strong' ? '100%' : passwordStrength.label === 'Medium' ? '66%' : '33%',
@@ -349,7 +382,7 @@ const Navbar: React.FC<NavbarProps> = ({ userType }) => {
                         transition: 'width 0.3s ease'
                       }}></div>
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
               <div className="input-group">
@@ -362,14 +395,14 @@ const Navbar: React.FC<NavbarProps> = ({ userType }) => {
                   required
                 />
               </div>
-              <div className="checkbox-row">
+              {/* FIXED: "Show Password" checkbox now matches login form structure */}
+              <label className="checkbox-label">
                 <input
                   type="checkbox"
-                  id="showRegisterPasswordCheckbox"
                   onChange={() => setShowRegisterPassword(!showRegisterPassword)}
                 />
-                <label htmlFor="showRegisterPasswordCheckbox">Show Password</label>
-              </div>
+                Show password
+              </label>
               <div className="role-selection">
                 <button
                   type="button"
@@ -389,7 +422,7 @@ const Navbar: React.FC<NavbarProps> = ({ userType }) => {
               <button type="submit" className="register-submit">Register</button>
               <div className="social-icons">
                 <img src={facebookIcon} alt="Facebook" className="social-img" />
-                <img src={googleIcon} alt="Google" className="social-img" />
+                <img src={googleIcon} alt="Google" className="social-img" onClick={handleGoogleRegister} style={{ cursor: 'pointer' }} />
                 <img src={discordIcon} alt="Discord" className="social-img" />
               </div>
             </form>

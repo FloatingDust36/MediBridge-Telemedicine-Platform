@@ -1,0 +1,4 @@
+# Secret keys file - DO NOT COMMIT THIS
+.env.local
+.venv
+.env

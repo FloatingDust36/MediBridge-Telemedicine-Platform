@@ -1,69 +1,140 @@
-import React, { useState } from 'react';
-// Remove logo import as Navbar is no longer directly in this component
-// import logo from '../assets/MediBridge_LogoClear.png';
-import './DoctorDashboard.css'; // Import the new CSS file
-// Remove Home.css import as global styles are handled elsewhere and navbar is a component
-// import './Home.css';
-// Remove Link import as it was only used for the Navbar links that are now global
-// import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import supabase from '../lib/supabaseClient';
+import './DoctorDashboard.css';
 
 const DoctorDashboard: React.FC = () => {
-  const [selectedPatient, setSelectedPatient] = useState<string>('Juan Dela Cruz');
+  const [doctorName, setDoctorName] = useState<string>('Loading...');
+  const [selectedPatient, setSelectedPatient] = useState<string>('');
   const [consultationNotes, setConsultationNotes] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [patientList, setPatientList] = useState<string[]>([]);
+  const [currentDate, setCurrentDate] = useState<string>('');
 
-  const handleSaveNotes = () => {
-    if (!consultationNotes.trim()) {
-      alert('Please enter consultation notes before saving.');
-      return;
-    }
-    
-    console.log(`Saving notes for ${selectedPatient}: ${consultationNotes}`);
-    // Here you would typically send this data to a backend
+  useEffect(() => {
+    const fetchDoctorData = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+
+      if (!userId) {
+        console.error('No logged-in doctor');
+        return;
+      }
+
+      // Fetch doctor name from users table
+      const { data: user, error: userError } = await supabase
+        .from('users')
+        .select('full_name')
+        .eq('user_id', userId)
+        .single();
+
+      if (userError) {
+        console.error('Error fetching doctor name:', userError.message);
+        return;
+      }
+
+      setDoctorName(user.full_name);
+
+      // Fetch appointments (Mock: filter by today only)
+      const { data: appts, error: apptError } = await supabase
+        .from('appointments')
+        .select('id, date, time, patient_name')
+        .eq('doctor_id', userId);
+
+      if (apptError) {
+        console.error('Error fetching appointments:', apptError.message);
+        return;
+      }
+
+      const today = new Date().toISOString().slice(0, 10);
+      const todayAppts = appts?.filter((appt: any) => appt.date === today) || [];
+
+      setAppointments(todayAppts);
+      setPatientList(todayAppts.map((a: any) => a.patient_name));
+      if (todayAppts.length > 0) setSelectedPatient(todayAppts[0].patient_name);
+
+      const formattedDate = new Date().toLocaleDateString('en-US', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+      });
+      setCurrentDate(formattedDate);
+    };
+
+    fetchDoctorData();
+  }, []);
+
+  const handleSaveNotes = async () => {
+  if (!consultationNotes.trim()) {
+    alert('Please enter consultation notes before saving.');
+    return;
+  }
+
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  const doctorId = session?.user?.id;
+
+  if (!doctorId) {
+    alert('Doctor not logged in.');
+    return;
+  }
+
+  // Fetch patient_id from patient name
+  const { data: patient, error: patientError } = await supabase
+    .from('patients')
+    .select('user_id')
+    .eq('full_name', selectedPatient)
+    .single();
+
+  if (patientError || !patient) {
+    console.error('Error finding patient:', patientError?.message);
+    alert('Failed to find patient.');
+    return;
+  }
+
+  const { error: insertError } = await supabase.from('consultation_notes').insert({
+    doctor_id: doctorId,
+    patient_id: patient.user_id,
+    notes: consultationNotes,
+  });
+
+  if (insertError) {
+    console.error('Error saving note:', insertError.message);
+    alert('Failed to save note.');
+  } else {
     alert('Consultation notes saved successfully!');
-    setConsultationNotes(''); // Clear notes after saving
-  };
+    setConsultationNotes('');
+  }
+};
+
 
   const handleSearch = () => {
     if (!searchQuery.trim()) {
       alert('Please enter a patient name or ID to search.');
       return;
     }
-    
+
     console.log(`Searching for patient: ${searchQuery}`);
-    // Here you would typically search the backend
     alert(`Searching for: ${searchQuery}`);
   };
 
   return (
-    // This div now represents the main content area of the Doctor Dashboard page.
-    // It will be rendered inside the <main> tag of your Layout component,
-    // which already applies padding-top to clear the fixed Navbar.
-    <div className="main-content-area doctor-dashboard-wrapper"> {/* This is your page's root container */}
-      {/*
-        The Navbar and Footer are now rendered by the Layout component in App.tsx.
-        Do NOT render them here.
-        Removed: <nav className="navbar">...</nav>
-      */}
-
+    <div className="main-content-area doctor-dashboard-wrapper">
       <div className="welcome-section">
-        <h1>Welcome, Dr. [Name]</h1>
+        <h1>Welcome, Dr. {doctorName}</h1>
         <p>Manage your appointments, view patient records, and conduct consultations.</p>
-        <span className="current-date">Thursday, 28 May 2025</span> {/* Consider dynamic date */}
+        <span className="current-date">{currentDate}</span>
       </div>
 
       <div className="summary-cards">
         <div className="card">
           <h3>Appointments Today</h3>
-          <p className="card-value">9</p>
+          <p className="card-value">{appointments.length}</p>
         </div>
         <div className="card">
           <h3>Consultations Done</h3>
-          <p className="card-value">3</p>
+          <p className="card-value">3</p> {/* Optional: fetch from backend */}
         </div>
         <div className="card">
           <h3>Pending Messages</h3>
-          <p className="card-value">4</p>
+          <p className="card-value">4</p> {/* Optional: fetch from backend */}
         </div>
       </div>
 
@@ -71,48 +142,50 @@ const DoctorDashboard: React.FC = () => {
         <div className="section-left">
           <div className="today-appointments panel-box">
             <h2>Today's Appointments</h2>
-            <div className="appointment-item">
-              <p className="patient-name">Patient: Juan Dela Cruz</p>
-              <p className="appointment-time">June 18, 2025 - 10:00 AM</p>
-            </div>
-            <div className="appointment-item">
-              <p className="patient-name">Patient: Maria Lopez</p>
-              <p className="appointment-time">June 18, 2025 - 1:30 PM</p>
-            </div>
-            {/* More appointments can be mapped here */}
+            {appointments.length > 0 ? (
+              appointments.map((appt) => (
+                <div className="appointment-item" key={appt.id}>
+                  <p className="patient-name">Patient: {appt.patient_name}</p>
+                  <p className="appointment-time">
+                    {appt.date} - {appt.time}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p>No appointments for today.</p>
+            )}
           </div>
 
           <div className="add-consultation-notes panel-box">
             <h2>Add Patient Consultation Notes</h2>
             <div className="form-group">
-              <label htmlFor ="select-patient">
-                Select Patient</label>
+              <label htmlFor="select-patient">Select Patient</label>
               <select
                 id="select-patient"
                 className="input-field2"
                 value={selectedPatient}
                 onChange={(e) => setSelectedPatient(e.target.value)}
               >
-                <option value="Juan Dela Cruz">Juan Dela Cruz</option>
-                <option value="Maria Lopez">Maria Lopez</option>
-                {/* Add more patients dynamically */}
+                {patientList.map((name, idx) => (
+                  <option value={name} key={idx}>{name}</option>
+                ))}
               </select>
             </div>
-            
+
             <div className="form-group">
               <label htmlFor="consultation-details">Consultation Details</label>
               <textarea
                 id="consultation-details"
                 className="input-field textarea-field"
-                placeholder="Enter consultation details, symptoms, diagnosis, treatment plan, and any additional notes..."
+                placeholder="Enter consultation details, symptoms, diagnosis, treatment plan..."
                 value={consultationNotes}
                 onChange={(e) => setConsultationNotes(e.target.value)}
                 rows={5}
               />
             </div>
-            
-            <button 
-              className="save-notes-button" 
+
+            <button
+              className="save-notes-button"
               onClick={handleSaveNotes}
               disabled={!consultationNotes.trim()}
             >
@@ -131,7 +204,9 @@ const DoctorDashboard: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <button className="search-button" onClick={handleSearch}>Search</button>
+            <button className="search-button" onClick={handleSearch}>
+              Search
+            </button>
           </div>
         </div>
       </div>

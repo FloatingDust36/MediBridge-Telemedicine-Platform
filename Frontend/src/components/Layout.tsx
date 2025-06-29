@@ -11,7 +11,7 @@ const Layout: React.FC<LayoutProps> = ({ userType }) => {
   return (
     <>
       <Navbar userType={userType} />
-      <main style={{ paddingTop: '60px' }}> {/* Adjust padding to account for fixed navbar height */}
+      <main style={{/* paddingTop: '60px' */}}> {/* Adjust padding to account for fixed navbar height */}
         <Outlet /> {/* This is where your nested routes will render */}
       </main>
       <Footer />
