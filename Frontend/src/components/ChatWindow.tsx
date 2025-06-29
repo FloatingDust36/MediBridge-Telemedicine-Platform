@@ -11,99 +11,88 @@ interface Message {
   text: string;
 }
 
-// This component receives the active session ID as a "prop" from its parent
+// A dedicated component for the welcome screen for better organization
+const WelcomeScreen = () => (
+  <div className="welcome-screen">
+    <img src="/images/chatbot-icon.png" alt="MedBot" className="welcome-icon" />
+    <h2>MediBridge AI Assistant</h2>
+    <p>Your personal health guide. Select a past conversation or click "New Chat" to begin.</p>
+  </div>
+);
+
 const ChatWindow = ({ sessionId }: { sessionId: string | null }) => {
-  // State for messages, input field, selected image, and loading indicators
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
-  const [isSending, setIsSending] = useState(false); // For disabling form while AI responds
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [isTriageComplete, setIsTriageComplete] = useState(false);
 
-  // Refs for accessing DOM elements
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  // This hook fetches the message history whenever the active sessionId changes
+  // This hook is now much simpler. It only runs when a valid sessionId is passed.
   useEffect(() => {
-    const fetchHistory = async () => {
+    const loadChat = async () => {
       if (!sessionId) {
-        setMessages([{ type: 'bot', text: 'Click "New Chat" on the left to begin a conversation.' }]);
-        setIsTriageComplete(false); // Reset completion state for new chats
-        setIsLoadingHistory(false);
+        setMessages([]); // Clear messages if no session is active
         return;
       }
 
-      setIsLoadingHistory(true);
+      setIsLoading(true);
+      setIsTriageComplete(false);
       try {
-        // First, get the core session details
-        const detailsResponse = await fetch(`${API_URL}/session/${sessionId}`);
-        const detailsData = await detailsResponse.json();
-      
-        // Set the triage complete status based on existing data
-        if (detailsData && detailsData.final_esi_level) {
+        const response = await fetch(`${API_URL}/session/${sessionId}`);
+        if (!response.ok) throw new Error("Session not found or server error.");
+        
+        const data = await response.json();
+        setMessages(data.messages || []);
+        if (data.final_esi_level) {
           setIsTriageComplete(true);
-        } else {
-          setIsTriageComplete(false);
         }
-
-        // Then, fetch the messages for that session
-        const messagesResponse = await fetch(`${API_URL}/session/${sessionId}/messages`);
-        const messagesData = await messagesResponse.json();
-        setMessages(messagesData.length > 0 ? messagesData : [{ type: 'bot', text: 'Hello again! How can I help you today?' }]);
-
       } catch (error) {
         console.error("Failed to fetch session data:", error);
-        setMessages([{ type: 'bot', text: 'Error connecting to the server.' }]);
+        setMessages([{ type: 'bot', text: 'Error: Could not load this conversation.' }]);
       } finally {
-        setIsLoadingHistory(false);
+        setIsLoading(false);
       }
     };
 
-    fetchHistory();
+    loadChat();
   }, [sessionId]);
 
-  // This hook auto-scrolls to the bottom when new messages are added
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, isSending]);
 
-  // Main function to handle sending a message (text and/or image)
   const handleSendMessage = async () => {
     if ((input.trim() === '' && !imageFile) || !sessionId || isSending) return;
 
-    setIsSending(true); // Disable form
+    setIsSending(true);
     const userMessageText = input.trim();
-    
-    // Optimistically add the user's message to the UI right away
     setMessages((prev) => [...prev, { type: 'user', text: userMessageText }]);
     setInput('');
     setImageFile(null);
 
-    // Use FormData to package the message and optional image file
     const formData = new FormData();
     formData.append('session_id', sessionId);
     formData.append('user_message', userMessageText);
-    if (imageFile) {
-      formData.append('image', imageFile);
-    }
+    if (imageFile) formData.append('image', imageFile);
 
     try {
       const response = await fetch(`${API_URL}/chat/message`, { method: 'POST', body: formData });
       if (!response.ok) throw new Error("API call failed");
+      
       const data = await response.json();
-      // ADD THIS: Check if an ESI level was just returned
+      setMessages((prev) => [...prev, { type: 'bot', text: data.response }]);
       if (data.esi_level && !isTriageComplete) {
         setIsTriageComplete(true);
       }
-      // Add the AI's real response
-      setMessages((prev) => [...prev, { type: 'bot', text: data.response }]);
     } catch (error) {
       console.error("Failed to send message:", error);
-      setMessages((prev) => [...prev, { type: 'bot', text: "Sorry, an error occurred. Please try again." }]);
+      setMessages((prev) => [...prev.slice(0, -1), { type: 'bot', text: "Sorry, an error occurred. Please try again." }]);
     } finally {
-      setIsSending(false); // Re-enable form
+      setIsSending(false);
     }
   };
 
@@ -111,44 +100,40 @@ const ChatWindow = ({ sessionId }: { sessionId: string | null }) => {
     <div className="chatbot-card">
       <div className="chatbot-header">
         <img src="/images/chatbot-icon.png" alt="Chatbot Icon" className="chatbot-icon" />
-        <h3 className="chatbot-title">Villamor AI Health Assistant</h3>
-        
-        {isTriageComplete && (
-          <a 
-            href={`${API_URL}/session/${sessionId}/summary/pdf`} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="download-pdf-button"
-          >
+        <h3 className="chatbot-title">AI Health Assistant</h3>
+        {isTriageComplete && sessionId && (
+          <a href={`${API_URL}/session/${sessionId}/summary/pdf`} target="_blank" rel="noopener noreferrer" className="download-pdf-button">
             Download Summary
           </a>
         )}
       </div>
 
-      <div className="chatbot-messages">
-        {isLoadingHistory ? (
-          <div className="loading-chat">Connecting to assistant...</div>
+      <div className={`chatbot-messages ${isLoading ? 'loading' : ''}`}>
+        {!sessionId ? (
+          <WelcomeScreen />
+        ) : isLoading ? (
+          <div className="loading-chat">Loading conversation...</div>
         ) : (
-          messages.map((msg, index) => (
-            <div key={index} className={`message-bubble ${msg.type}`}>
-              {msg.text}
-            </div>
-          ))
+          <>
+            {messages.map((msg, index) => (
+              <div key={index} className={`message-bubble ${msg.type}`}>
+                {msg.text}
+              </div>
+            ))}
+            {isSending && (
+              <div className="message-bubble bot typing-indicator">
+                <span></span><span></span><span></span>
+              </div>
+            )}
+          </>
         )}
         <div ref={messagesEndRef} />
       </div>
-      
-      {isTriageComplete && !isLoadingHistory && (
-          <div className="triage-complete-indicator">
-            Initial assessment is complete. A summary is now available.
-          </div>
-      )}
 
       <div className="chatbot-input-area">
-        {/* Image Preview Area */}
         {imageFile && (
           <div className="image-preview-container">
-            <img src={URL.createObjectURL(imageFile)} alt="Image preview" className="image-preview-thumbnail" />
+            <img src={URL.createObjectURL(imageFile)} alt="Preview" className="image-preview-thumbnail" />
             <button onClick={() => setImageFile(null)} className="image-preview-remove">×</button>
           </div>
         )}
@@ -160,13 +145,13 @@ const ChatWindow = ({ sessionId }: { sessionId: string | null }) => {
           <input
             type="text"
             className="chatbot-input"
-            placeholder="Chat with Villamor..."
+            placeholder={!sessionId ? "Click 'New Chat' to begin" : "Describe your symptoms..."}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => { if (e.key === 'Enter' && !isSending) handleSendMessage(); }}
-            disabled={!sessionId || isLoadingHistory || isSending}
+            disabled={!sessionId || isLoading || isSending}
           />
-          <button className="chatbot-send-button" onClick={handleSendMessage} disabled={!sessionId || isLoadingHistory || isSending}>
+          <button className="chatbot-send-button" onClick={handleSendMessage} disabled={!sessionId || isLoading || isSending}>
             <Send size={20} />
           </button>
         </div>
