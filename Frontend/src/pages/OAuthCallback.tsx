@@ -5,55 +5,80 @@ import supabase from '../lib/supabaseClient';
 
 const OAuthCallback = () => {
   const navigate = useNavigate();
+  
 
   useEffect(() => {
-    const handleOAuthRedirect = async () => {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
+  const handleOAuthRedirect = async () => {
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession();
 
-      if (error) {
-        console.error('Error retrieving session:', error.message);
-        navigate('/');
-        return;
-      }
+    if (error || !session) {
+      console.error('Session Error:', error?.message || 'No session found.');
+      navigate('/');
+      return;
+    }
 
-      if (!session) {
-        console.warn('No session found.');
-        navigate('/');
-        return;
-      }
+    const user = session.user;
+    const selectedRole = localStorage.getItem('selectedRole');
+    localStorage.removeItem('selectedRole');
 
-      //  Read selected role from localStorage (set before Google login)
-      const selectedRole = localStorage.getItem('selectedRole');
+    if (!selectedRole) {
+      console.warn('No selected role in localStorage');
+      navigate('/');
+      return;
+    }
 
-      //  Clean up the role from localStorage
-      localStorage.removeItem('selectedRole');
+    // Store role in metadata (optional but helpful)
+    await supabase.auth.updateUser({
+      data: { user_role: selectedRole },
+    });
 
-      if (!selectedRole) {
-        console.warn('No selected role found in localStorage');
-        navigate('/');
-        return;
-      }
+    const userId = user.id;
 
-      //  Optionally store user role in Supabase metadata (optional but recommended)
-      await supabase.auth.updateUser({
-        data: { user_role: selectedRole },
-      });
+    // Insert into users table (avoid duplicate)
+    await supabase
+      .from('users')
+      .upsert([
+        {
+          user_id: userId,
+          email: user.email,
+          role: selectedRole,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+      ]);
 
-      //  Redirect to proper profile completion page
-      if (selectedRole === 'doctor') {
-        navigate('/completedoctorprofile');
-      } else if (selectedRole === 'patient') {
-        navigate('/completepatientprofile');
-      } else {
-        navigate('/');
-      }
-    };
+    if (selectedRole === 'doctor') {
+      // ✅ Safely upsert doctor record
+      await supabase
+        .from('doctors')
+        .upsert([
+          {
+            user_id: userId,
+            is_available: true,
+            consultation_fee: 0,
+          },
+        ]);
+      navigate('/completedoctorprofile');
+    } else if (selectedRole === 'patient') {
+      await supabase
+        .from('patients')
+        .upsert([
+          {
+            user_id: userId,
+          },
+        ]);
+      navigate('/completepatientprofile');
+    } else {
+      navigate('/');
+    }
+  };
 
-    handleOAuthRedirect();
-  }, [navigate]);
+  handleOAuthRedirect();
+}, [navigate]);
+
 
   return <div>Signing you in, please wait...</div>;
 };

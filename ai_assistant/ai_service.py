@@ -40,81 +40,69 @@ class AIService:
 
     def process_user_message(self, user_message: str, image_bytes: bytes | None = None, image_content_type: str | None = None) -> dict:
         """
-        Processes a user's message, with added print statements for debugging.
+        Processes a user's message, sends it to the AI, and correctly parses the response for an ESI level.
         """
-        print("\n--- [DEBUG] Inside process_user_message ---")
         if not self.session_id:
-            print("[DEBUG] Aborting: Session ID is missing.")
             return {"error": "Failed to create or retrieve a database session."}
 
-        # 1. Check if image data was successfully received by this function
-        print(f"[DEBUG] Raw image bytes received by service? {'Yes' if image_bytes else 'No'}")
-
+        # 1. Prepare image for analysis if it exists
         pil_image = None
         if image_bytes and image_content_type:
-            print("[DEBUG] Attempting to create PIL Image from bytes...")
             try:
                 pil_image = Image.open(io.BytesIO(image_bytes))
-                print(f"[DEBUG] PIL Image created successfully. Format: {pil_image.format}, Size: {pil_image.size}")
             except Exception as e:
-                print(f"[DEBUG] CRITICAL ERROR: Failed to create PIL Image: {e}")
+                print(f"ERROR: Could not process image file: {e}")
                 pil_image = None
-
-        # 2. Upload to storage
+    
+        # 2. Upload image and log user's message
         image_url = None
         if image_bytes and image_content_type:
             image_url = db.upload_image(image_bytes, image_content_type)
-
+    
         db.log_message(self.session_id, 'user', user_message, image_url)
 
-        # 3. Prepare the final prompt for Gemini
+        # 3. Send the prompt to Gemini
         try:
             chat_input = [user_message]
             if pil_image:
-                print("[DEBUG] Appending PIL Image to chat_input.")
                 chat_input.append(pil_image)
-            else:
-                print("[DEBUG] No PIL Image to append to chat_input.")
-
-            print(f"[DEBUG] Final chat_input being sent to Gemini: {chat_input}")
+        
             response = self.chat.send_message(chat_input)
             bot_response_text = response.text
 
         except Exception as e:
-            print(f"[DEBUG] CRITICAL ERROR communicating with Gemini API: {e}")
-            return {"response": "I'm sorry, I'm having trouble connecting right now. Please try again.", "esi_level": None}
+            print(f"ERROR: Could not get response from Gemini API: {e}")
+            return {"response": "I'm sorry, I'm having connection issues. Please try again.", "esi_level": None}
 
-        # The rest of the function remains the same...
-        try:
-            triage_data = json.loads(bot_response_text)
-            esi_level = triage_data.get("esi_level")
-            patient_response = triage_data.get("patient_response")
-            clinical_summary = triage_data.get("clinical_summary")
-            if not all([isinstance(esi_level, int), patient_response, clinical_summary]):
-                raise json.JSONDecodeError("Missing required keys in JSON response.")
-            db.log_message(self.session_id, 'bot', patient_response)
-            db.update_session_esi_level(self.session_id, esi_level)
-            db.update_session_summary(self.session_id, clinical_summary)
-            return {"response": patient_response, "esi_level": esi_level}
-        except json.JSONDecodeError:
-            db.log_message(self.session_id, 'bot', bot_response_text)
-            return {"response": bot_response_text, "esi_level": None}
+        esi_level = self.parse_and_log_esi_level(bot_response_text)
 
-    def _parse_and_log_esi_level(self, text: str) -> int | None:
+        # 5. Log the AI's full response to the database
+        db.log_message(self.session_id, 'bot', bot_response_text)
+
+        # 6. Return the response and the (now correctly parsed) ESI level
+        return {
+            "response": bot_response_text,
+            "esi_level": esi_level
+        }
+
+    def parse_and_log_esi_level(self, text: str) -> int | None:
         """
-        Parses the ESI level from text. If found for the first time,
-        it logs it to the database.
+        Uses a more robust, case-insensitive, multiline regex to find the ESI level.
         """
-        match = re.search(r"Final ESI Level:\s*(\d)", text)
+        # This regex now ignores case (e.g., "final esi level") and is better at handling text across multiple lines.
+        match = re.search(r"^Final ESI Level:\s*(\d+)", text, re.IGNORECASE | re.MULTILINE)
+
         if match:
             esi_level = int(match.group(1))
-            print(f"ESI Level {esi_level} detected for session {self.session_id}. Logging to DB.")
-            # We do a preliminary update to store the ESI level as soon as it's known.
+            print(f"ESI Level {esi_level} detected. Logging to DB.")
             db.update_session_esi_level(self.session_id, esi_level)
+
+            self.generate_and_save_summary()
+
             return esi_level
         return None
 
-    def end_and_summarize_session(self):
+    def generate_and_save_summary(self):
         """
         To be called when the user is finished. Generates the final summary
         for the entire conversation and updates the database.

@@ -66,6 +66,7 @@
     max-width: 1100px; /* Constrain grid width if it gets too wide inside max-width: 1200px parent */
     box-sizing: border-box;
     margin-bottom: 118.5px;
+    margin-bottom: 118.5px;
 }
 
 /* Card Base Styles (These are common styles for all your dashboard cards) */

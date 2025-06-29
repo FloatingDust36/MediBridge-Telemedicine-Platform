@@ -1,13 +1,96 @@
 // src/pages/CompletePatientProfile.tsx
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import supabase from '../lib/supabaseClient';
 // import './CompletePatientProfile.css'; // REMOVE OR COMMENT OUT THIS LINE TEMPORARILY
 
 const CompletePatientProfile: React.FC = () => {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Patient Profile Submitted!');
-    // Handle patient profile submission logic here
+  const navigate = useNavigate();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  const [lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [middleName, setMiddleName] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [address, setAddress] = useState('');
+  const [contactNumber, setContactNumber] = useState('');
+  const [emergencyContact, setEmergencyContact] = useState('');
+  const [allergies, setAllergies] = useState('');
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+  const fetchUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    setUser(session?.user ?? null); // store full user object
   };
+  fetchUser();
+}, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!user) {
+    alert('User not logged in');
+    return;
+  }
+
+  const userId = user.id;
+  const email = user.email;
+
+  // Step 1: Upsert into `users` table
+  const { error: userError } = await supabase
+  .from('users')
+  .upsert(
+    [
+      {
+        user_id: userId,
+        email: email, 
+        full_name: `${firstName} ${middleName} ${lastName}`,
+        date_of_birth: dateOfBirth,
+        address,
+        phone_number: contactNumber,
+        role: 'patient',
+      },
+    ],
+    { onConflict: 'user_id' }
+  );
+
+  if (userError) {
+    console.error('Error updating user table:', userError.message);
+    alert('Failed to update user information.');
+    return;
+  }
+
+  // Step 2: Insert into `patients` table
+  const { error: patientError } = await supabase
+    .from('patients')
+    .upsert(
+      [
+        {
+          user_id: userId,
+          last_name: lastName,
+          first_name: firstName,
+          middle_name: middleName,
+          date_of_birth: dateOfBirth,
+          address,
+          contact_number: contactNumber,
+          emergency_contact: emergencyContact,
+          allergies,
+        },
+      ],
+      { onConflict: 'user_id' } 
+    );
+
+  if (patientError) {
+    console.error('Error inserting patient details:', patientError.message);
+    alert('Failed to save patient details.');
+    return;
+  }
+
+  // Redirect to patient dashboard
+  navigate('/patientdashboard');
+};
 
   // Define inline styles directly in the component
   const styles: { [key: string]: React.CSSProperties } = {
@@ -118,7 +201,7 @@ const CompletePatientProfile: React.FC = () => {
     // Note: :hover and :active states cannot be applied via inline styles.
   };
 
-  return (
+   return (
     <div style={styles.patientProfileContainerWrapper}>
       <div style={styles.patientProfileCard}>
         <h2 style={styles.profileTitle}>Complete Your Patient Profile</h2>
@@ -126,51 +209,50 @@ const CompletePatientProfile: React.FC = () => {
           <div style={styles.formGroup}>
             <label htmlFor="lastName" style={styles.formLabel}>Last Name</label>
             <div style={styles.formInputContainer}>
-              <input type="text" id="lastName" placeholder="Enter your Last name" style={styles.formInput} required />
+              <input type="text" id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Enter your Last name" style={styles.formInput} required />
             </div>
           </div>
           <div style={styles.formGroup}>
             <label htmlFor="firstName" style={styles.formLabel}>First Name</label>
             <div style={styles.formInputContainer}>
-              <input type="text" id="firstName" placeholder="Enter your First name" style={styles.formInput} required />
+              <input type="text" id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Enter your First name" style={styles.formInput} required />
             </div>
           </div>
           <div style={styles.formGroup}>
             <label htmlFor="middleName" style={styles.formLabel}>Middle Name</label>
             <div style={styles.formInputContainer}>
-              <input type="text" id="middleName" placeholder="Enter your Middle name" style={styles.formInput} />
+              <input type="text" id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)} placeholder="Enter your Middle name" style={styles.formInput} />
             </div>
           </div>
           <div style={styles.formGroup}>
             <label htmlFor="dateOfBirth" style={styles.formLabel}>Date of Birth</label>
             <div style={styles.formInputContainer}>
-              {/* Special handling for date input, inline styles can't override all native date picker styles */}
-              <input type="date" id="dateOfBirth" placeholder="mm/dd/yyyy" style={{...styles.formInput, paddingRight: '30px'}} required />
+              <input type="date" id="dateOfBirth" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} placeholder="mm/dd/yyyy" style={{ ...styles.formInput, paddingRight: '30px' }} required />
               <div style={styles.calendarIcon}></div>
             </div>
           </div>
           <div style={styles.formGroup}>
             <label htmlFor="address" style={styles.formLabel}>Address</label>
             <div style={styles.formInputContainer}>
-              <input type="text" id="address" placeholder="Street, City, Province" style={styles.formInput} required />
+              <input type="text" id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Street, City, Province" style={styles.formInput} required />
             </div>
           </div>
           <div style={styles.formGroup}>
             <label htmlFor="contactNumber" style={styles.formLabel}>Contact Number</label>
             <div style={styles.formInputContainer}>
-              <input type="tel" id="contactNumber" pattern="[0-9]{11}" placeholder="e.g. 09123456789" style={styles.formInput} required />
+              <input type="tel" id="contactNumber" value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} pattern="[0-9]{11}" placeholder="e.g. 09123456789" style={styles.formInput} required />
             </div>
           </div>
           <div style={styles.formGroup}>
             <label htmlFor="emergencyContact" style={styles.formLabel}>Emergency Contact</label>
             <div style={styles.formInputContainer}>
-              <input type="text" id="emergencyContact" placeholder="Name & Number" style={styles.formInput} />
+              <input type="text" id="emergencyContact" value={emergencyContact} onChange={(e) => setEmergencyContact(e.target.value)} placeholder="Name & Number" style={styles.formInput} />
             </div>
           </div>
           <div style={styles.formGroup}>
             <label htmlFor="allergies" style={styles.formLabel}>Allergies</label>
             <div style={styles.formInputContainer}>
-              <input type="text" id="allergies" placeholder="e.g. Penicillin, Seafood" style={styles.formInput} />
+              <input type="text" id="allergies" value={allergies} onChange={(e) => setAllergies(e.target.value)} placeholder="e.g. Penicillin, Seafood" style={styles.formInput} />
             </div>
           </div>
           <button type="submit" style={styles.submitButton}>
