@@ -68,9 +68,12 @@ def get_session_details(session_id: str) -> dict | None:
         session_data = session_response.data
 
         # CHANGED to 'ai_messages'
-        messages_response = supabase_client.table("ai_messages").select("sender, message_content").eq("session_id", session_id).order("timestamp", desc=False).execute()
+        messages_response = supabase_client.table("ai_messages").select("sender, message_content, image_url").eq("session_id", session_id).order("timestamp", desc=False).execute()
 
-        session_data['messages'] = [{"type": row['sender'], "text": row['message_content']} for row in messages_response.data]
+        session_data['messages'] = [
+            {"type": row['sender'], "text": row['message_content'], "imageUrl": row.get('image_url')} 
+            for row in messages_response.data
+        ]
         return session_data
     except Exception as e:
         print(f"Error fetching AI session details: {e}")

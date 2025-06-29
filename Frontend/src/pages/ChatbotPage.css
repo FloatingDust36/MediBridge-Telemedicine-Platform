@@ -108,8 +108,6 @@
   margin: 0;
 }
 
-
-/* --- Messages Area & Bubbles --- */
 .chatbot-messages {
   flex-grow: 1;
   padding: 24px;
@@ -123,6 +121,27 @@
 
 .chatbot-messages.loading {
   opacity: 0;
+}
+
+.message-image {
+  display: block;
+  max-width: 350px;
+  max-height: 400px;
+  width: auto;
+  height: auto;
+  border-radius: 12px; 
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: filter 0.2s ease;
+  object-fit: cover;
+}
+
+.message-image:hover {
+  filter: brightness(0.97);
+}
+
+.message-text:empty {
+    display: none;
 }
 
 .loading-chat {
@@ -140,7 +159,11 @@
   font-size: 15px;
   line-height: 1.6;
   word-wrap: break-word;
-  white-space: pre-wrap; /* This is crucial for rendering newlines from the AI */
+  white-space: pre-wrap;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  white-space: pre-wrap;
 }
 
 .message-bubble.bot {
