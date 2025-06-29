@@ -93,10 +93,10 @@ if (doctorError) {
   alert(`Failed to save doctor profile: ${doctorError.message}`);
   return;
 }
-
+  
 
   // Redirect after successful save
-  navigate('/doctordashboard');
+  navigate('/addschedule');
 };
 
   return (
