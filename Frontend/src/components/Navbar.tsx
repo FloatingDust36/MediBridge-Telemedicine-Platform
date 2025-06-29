@@ -101,7 +101,7 @@ const handleGoogleRegister = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin, // Redirects back to your app after Google login
+        redirectTo: `${window.location.origin}/oauth-callback`, // Redirects back to your app after Google login
       },
     });
 
