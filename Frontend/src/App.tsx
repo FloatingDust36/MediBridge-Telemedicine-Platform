@@ -185,6 +185,7 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['guest', 'doctor']}>
                 <CompleteDoctorProfile />
+                <AddSchedule/>
               </ProtectedRoute>
             }
           />

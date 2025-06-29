@@ -1,25 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import './AddSchedule.css';
+import supabase from '../lib/supabaseClient';
 
-// Define a type for a schedule item for better type safety
 interface ScheduleItem {
-  id: number;
+  id: string; // UUID from database
   date: string;
-  time: string; // This will now store the formatted time range
+  time: string;
 }
+
+
 
 const AddSchedule: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState('');
-  const [selectedStartTime, setSelectedStartTime] = useState(''); // Renamed for clarity
-  const [selectedEndTime, setSelectedEndTime] = useState('');   // New state for end time
+  const [selectedStartTime, setSelectedStartTime] = useState('');
+  const [selectedEndTime, setSelectedEndTime] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [existingSchedulesData, setExistingSchedulesData] = useState<ScheduleItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [existingSchedulesData, setExistingSchedulesData] = useState<ScheduleItem[]>([
-    { id: 1, date: "June 25, 2025", time: "09:00 AM - 12:00 PM" },
-    { id: 2, date: "July 3, 2025", time: "01:00 PM - 04:00 PM" },
-  ]);
 
-  // Helper function to format time (e.g., "13:00" to "1:00 PM")
   const formatTime12Hour = (time24h: string): string => {
     if (!time24h) return '';
     const [hours, minutes] = time24h.split(':').map(Number);
@@ -28,14 +27,70 @@ const AddSchedule: React.FC = () => {
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
   };
 
-  const handlePublishSchedule = () => {
-    // Validate both start and end times
+  const fetchSchedules = async () => {
+  setIsLoading(true);
+
+  const {
+    data: { user },
+    error: userError
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    console.error("Error fetching user:", userError?.message);
+    alert("User not authenticated.");
+    setIsLoading(false);
+    return;
+  }
+
+  // ✅ Filter schedules by logged-in doctor only
+  const { data, error } = await supabase
+    .from("doctor_schedules")
+    .select("id, start_time, end_time")
+    .eq("doctor_id", user.id)
+    .order("start_time", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching schedules:", error.message);
+    alert("❌ Failed to load schedules.");
+    setIsLoading(false);
+    return;
+  }
+
+  // Transform for display
+  const formatted = data.map((schedule) => {
+    const start = new Date(schedule.start_time);
+    const end = new Date(schedule.end_time);
+
+    return {
+      id: schedule.id,
+      date: start.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+      time: `${start.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })} - ${end.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })}`,
+    };
+  });
+
+  setExistingSchedulesData(formatted);
+  setIsLoading(false);
+};
+
+
+  const handlePublishSchedule = async () => {
     if (!selectedDate || !selectedStartTime || !selectedEndTime) {
       alert('Please select a date, start time, and end time for your schedule.');
       return;
     }
 
-    // Basic validation: ensure end time is after start time
     const startDateTime = new Date(`${selectedDate}T${selectedStartTime}:00`);
     const endDateTime = new Date(`${selectedDate}T${selectedEndTime}:00`);
 
@@ -44,40 +99,92 @@ const AddSchedule: React.FC = () => {
       return;
     }
 
-    const formattedDateForDisplay = new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    const {
+      data: { user },
+      error: userError
+    } = await supabase.auth.getUser();
 
-    const formattedStartTime = formatTime12Hour(selectedStartTime);
-    const formattedEndTime = formatTime12Hour(selectedEndTime);
+    if (userError || !user) {
+      alert('User not authenticated.');
+      return;
+    }
 
-    const formattedTimeRange = `${formattedStartTime} - ${formattedEndTime}`;
+    // Convert selected times to Date objects
+const newStart = new Date(`${selectedDate}T${selectedStartTime}:00`);
+const newEnd = new Date(`${selectedDate}T${selectedEndTime}:00`);
 
-    const newSchedule: ScheduleItem = {
-      id: existingSchedulesData.length > 0 ? Math.max(...existingSchedulesData.map(s => s.id)) + 1 : 1,
-      date: formattedDateForDisplay,
-      time: formattedTimeRange,
-    };
+// 1. Fetch existing schedules for this doctor on the selected day
+const { data: existingSchedules, error: fetchError } = await supabase
+  .from('doctor_schedules')
+  .select('start_time, end_time')
+  .eq('doctor_id', user.id)
+  .gte('start_time', new Date(`${selectedDate}T00:00:00`).toISOString())
+  .lt('start_time', new Date(`${selectedDate}T23:59:59`).toISOString());
 
-    setExistingSchedulesData(prevSchedules => [...prevSchedules, newSchedule]);
-    console.log('Publishing schedule:', newSchedule);
-    alert(`✅ Schedule successfully published!\n\nDate: ${newSchedule.date}\nTime: ${newSchedule.time}`);
+if (fetchError) {
+  console.error("Failed to check for conflicts:", fetchError.message);
+  alert("❌ Could not verify schedule conflicts.");
+  return;
+}
 
+// 2. Check for overlapping
+const hasConflict = existingSchedules?.some((schedule) => {
+  const existingStart = new Date(schedule.start_time);
+  const existingEnd = new Date(schedule.end_time);
+  return newStart < existingEnd && newEnd > existingStart;
+});
+
+if (hasConflict) {
+  alert("⚠️ This schedule overlaps with an existing one. Please choose a different time.");
+  return;
+}
+
+// 3. Insert into database if no conflict
+const { error: insertError } = await supabase
+  .from("doctor_schedules")
+  .insert([
+    {
+      doctor_id: user.id,
+      start_time: newStart.toISOString(),
+      end_time: newEnd.toISOString(),
+    },
+  ]);
+
+if (insertError) {
+  console.error("Error inserting schedule:", insertError.message);
+  alert("❌ Failed to publish schedule. Please try again.");
+  return;
+}
+
+
+    alert(`✅ Schedule successfully published!`);
     setSelectedDate('');
     setSelectedStartTime('');
     setSelectedEndTime('');
+
+    await fetchSchedules(); // Reload schedules after successful insert
   };
 
-  const handleDeleteSchedule = (idToDelete: number) => {
-    console.log('Attempting to delete schedule with ID:', idToDelete);
-    const updatedSchedules = existingSchedulesData.filter(schedule => schedule.id !== idToDelete);
-    setExistingSchedulesData(updatedSchedules);
-    alert(`🗑️ Schedule with ID ${idToDelete} has been deleted.`);
-  };
+  const handleDeleteSchedule = async (idToDelete: string) => {
+  const { error } = await supabase
+    .from("doctor_schedules")
+    .delete()
+    .eq("id", idToDelete);
+
+  if (error) {
+    console.error("Failed to delete schedule:", error.message);
+    alert("❌ Failed to delete schedule.");
+    return;
+  }
+
+  // Remove from UI after successful DB delete
+  setExistingSchedulesData(prev => prev.filter(schedule => schedule.id !== idToDelete));
+  alert(`🗑️ Schedule deleted successfully.`);
+};
+
 
   useEffect(() => {
+    fetchSchedules();
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
@@ -99,50 +206,42 @@ const AddSchedule: React.FC = () => {
       <div className="schedule-content-grid">
         <div className="card-base add-schedule-card">
           <h3 className="card-title">Add New Schedule</h3>
-
           <div className="schedule-form-section">
             <div className="input-group">
               <label htmlFor="schedule-date">Select Date:</label>
               <input
                 type="date"
                 id="schedule-date"
-                className="schedule-date-input"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
                 required
               />
             </div>
-
             <div className="input-group">
-              <label htmlFor="schedule-start-time">Select Start Time:</label> {/* Updated label */}
+              <label htmlFor="schedule-start-time">Start Time:</label>
               <input
                 type="time"
                 id="schedule-start-time"
-                className="schedule-time-input" // Reusing this class
                 value={selectedStartTime}
                 onChange={(e) => setSelectedStartTime(e.target.value)}
                 required
               />
             </div>
-
             <div className="input-group">
-              <label htmlFor="schedule-end-time">Select End Time:</label> {/* New input field */}
+              <label htmlFor="schedule-end-time">End Time:</label>
               <input
                 type="time"
                 id="schedule-end-time"
-                className="schedule-time-input" // Reusing this class
                 value={selectedEndTime}
                 onChange={(e) => setSelectedEndTime(e.target.value)}
                 required
               />
             </div>
           </div>
-
           <button
-            type="button"
             className="publish-schedule-button"
             onClick={handlePublishSchedule}
-            disabled={!selectedDate || !selectedStartTime || !selectedEndTime} // Disable button until all are selected
+            disabled={!selectedDate || !selectedStartTime || !selectedEndTime}
           >
             Publish Schedule
           </button>
