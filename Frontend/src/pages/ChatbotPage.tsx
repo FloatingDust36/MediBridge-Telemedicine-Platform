@@ -11,6 +11,7 @@ export interface Session {
   id: string;
   title: string;
   created_at: string;
+  has_summary: boolean;
 }
 
 const LoadingSpinner = () => (
