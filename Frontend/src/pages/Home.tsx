@@ -1,23 +1,45 @@
 // Home.tsx
-import React from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import medibridge from '../assets/MediBridge_Home.png';
 import './Home.css';
+import supabase from '../lib/supabaseClient';
 
 const Home = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // ✅ This must be inside the component
+  const [selectedRole, setSelectedRole] = useState<'doctor' | 'patient' | null>(null);
+
+const handleGoogleRegister = async () => {
+  if (!selectedRole) {
+    alert('Please select a role (Doctor or Patient) before continuing.');
+    return;
+  }
+
+  localStorage.setItem('selectedRole', selectedRole);
+  const redirectTo = `${window.location.origin}/oauth-callback`;
+
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo },
+  });
+
+  if (error) {
+    console.error('OAuth Error:', error.message);
+    alert('Google sign-in failed.');
+  }
+};
+
+
+
 
   return (
-    // This top-level div acts as the main flex container for the page content and footer
-    // Navbar should be outside this if it's truly fixed and global.
-    // If Navbar is truly fixed, it should be in App.tsx or your main layout file, NOT here.
-    // Assuming Navbar is fixed and floats above everything else.
-    <div className="app-layout-container"> {/* New or renamed top-level container */}
-
-      {/* This wrapper holds all scrollable content for the page */}
+    
+    <div className="app-layout-container">
       <div className="page-content-and-footer-wrapper">
-        {/* Main Page Content Wrapper - This div ensures content sits below fixed navbar */}
-        <div className="page-content-wrapper"> {/* This holds your dynamic content */}
+        <div className="page-content-wrapper">
           {/* Hero Section */}
           <header
             className="hero-section"
@@ -68,10 +90,12 @@ const Home = () => {
               </div>
             </div>
           </section>
-        </div> {/* End page-content-wrapper */}
-      </div> {/* End page-content-and-footer-wrapper */}
-    </div> // End app-layout-container
+        </div>
+      </div>
+    </div>
   );
+
+  
 };
 
 export default Home;

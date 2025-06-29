@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'; // Import useNavigate
 import supabase from './lib/supabaseClient';
 
+
 import Layout from './components/Layout'; // Ensure correct path for Layout
 
 // Import your pages
@@ -27,6 +28,8 @@ import Chatbot from "./pages/ChatbotPage";
 import AdminDashboard from './pages/AdminDashboard';
 
 import "./pages/Home.css"; // Keep this if Home.css is specifically for the Home page
+import OAuthCallback from './pages/OAuthCallback';
+
 
 type UserRole = 'guest' | 'patient' | 'doctor' | 'admin';
 
@@ -43,12 +46,13 @@ function App() {
 
   // --- START: Temporary Hardcoded Account Simulation ---
   const [mockUserRole, setMockUserRole] = useState<UserRole>('guest'); // Change this to 'patient', 'doctor', 'admin' to test
-  const MOCK_USERS: { [key in UserRole]?: CurrentUser } = {
-    guest: null, // Guest means no user logged in
-    patient: { id: 'patient-id-123', role: 'patient', email: 'test.patient@example.com' },
-    doctor: { id: 'doctor-id-456', role: 'doctor', email: 'test.doctor@example.com' },
-    admin: { id: 'admin-id-789', role: 'admin', email: 'test.admin@example.com' },
-  };
+  const MOCK_USERS: { [key in UserRole]: CurrentUser | null } = {
+  guest: null, // ✅ Now explicitly null
+  patient: { id: 'patient-id-123', role: 'patient', email: 'test.patient@example.com' },
+  doctor: { id: 'doctor-id-456', role: 'doctor', email: 'test.doctor@example.com' },
+  admin: { id: 'admin-id-789', role: 'admin', email: 'test.admin@example.com' },
+};
+
   // --- END: Temporary Hardcoded Account Simulation ---
 
 
@@ -111,6 +115,7 @@ function App() {
     children: React.ReactNode;
     allowedRoles: UserRole[];
     redirectPath?: string;
+    
   }> = ({ children, allowedRoles, redirectPath = '/' }) => {
     if (!currentUser && allowedRoles.includes('guest')) {
       // Guest is allowed, and no user is logged in
@@ -182,14 +187,14 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="completepatientprofile"
-            element={
-              <ProtectedRoute allowedRoles={['guest', 'patient']}>
-                <CompletePatientProfile />
-              </ProtectedRoute>
-            }
-          />
+         <Route
+  path="completepatientprofile"
+  element={
+    <ProtectedRoute allowedRoles={['guest', 'patient']}>
+      <CompletePatientProfile />
+    </ProtectedRoute>
+  }
+/>
 
           {/* Protected Dashboard and Related Routes */}
           <Route
@@ -264,6 +269,9 @@ function App() {
           {/* Fallback for unmatched routes within the Layout */}
           <Route path="*" element={<div>404 - Page Not Found</div>} />
         </Route>
+
+         {/* ✅ Google OAuth callback route */}
+         <Route path="/oauth-callback" element={<OAuthCallback />} />
       </Routes>
     </>
   );
