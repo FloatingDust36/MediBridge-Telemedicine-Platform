@@ -19,6 +19,7 @@ import CompletePatientProfile from './pages/CompletePatientProfile';
 import DoctorDashboard from './pages/DoctorDashboard';
 import OnlineConsultation from './pages/OnlineConsultation';
 import ConsultationSummary from './pages/ConsultationSummary';
+import AddSchedule from './pages/AddSchedule';
 
 import PatientDashboard from './pages/PatientDashboard';
 import Appointments from "./pages/AppointmentsPage";
@@ -204,6 +205,14 @@ function App() {
                 <DoctorDashboard />
               </ProtectedRoute>
             }
+                />
+          <Route
+            path="addschedule"
+            element={
+              <ProtectedRoute allowedRoles={['doctor']}>
+                <AddSchedule />
+              </ProtectedRoute> 
+            }
           />
           <Route
             path="summary"
@@ -266,7 +275,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           {/* Fallback for unmatched routes within the Layout */}
           <Route path="*" element={<div>404 - Page Not Found</div>} />
         </Route>

@@ -240,6 +240,7 @@ const handleGoogleRegister = async () => {
           { label: "Dashboard", path: "/doctordashboard" },
           { label: "Consultation", path: "/consultation" },
           { label: "Messages", path: "/messages" },
+          { label: "Add Schedule", path: "/addschedule" },
         ];
       case 'patient':
         return [
