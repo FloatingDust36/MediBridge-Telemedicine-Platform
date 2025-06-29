@@ -1,6 +1,7 @@
 # ai_assistant/main.py
 
-from fastapi import FastAPI, HTTPException, Response, UploadFile, File, Form
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi.responses import StreamingResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
@@ -58,23 +59,24 @@ async def start_chat(request: StartChatRequest):
     active_sessions[service.session_id] = service
     return StartChatResponse(session_id=service.session_id)
 
-@app.post("/chat/message", response_model=SendMessageResponse)
-async def send_message(session_id: str = Form(...), user_message: str = Form(...), image: UploadFile = File(None)):
-    """Processes a user message, which can include an optional image upload."""
+@app.post("/chat/stream-message")
+async def stream_message(
+    session_id: str = Form(...),
+    user_message: str = Form(...),
+    image: UploadFile = File(None)
+):
     service = active_sessions.get(session_id)
     if not service:
-        raise HTTPException(status_code=404, detail="Session not found or has expired. Please start a new chat.")
-    
-    image_bytes = None
-    image_content_type = None
-    if image:
-        if not image.content_type or not image.content_type.startswith("image/"):
-            raise HTTPException(status_code=400, detail="Invalid file type. Only images are allowed.")
-        image_bytes = await image.read()
-        image_content_type = image.content_type
-        
-    result = service.process_user_message(user_message, image_bytes, image_content_type)
-    return SendMessageResponse(**result)
+        raise HTTPException(status_code=404, detail="Session not found or has expired.")
+
+    image_bytes = await image.read() if image else None
+    image_content_type = image.content_type if image else None
+
+    # Return a StreamingResponse that calls our new async generator function
+    return StreamingResponse(
+        service.stream_user_message(user_message, image_bytes, image_content_type),
+        media_type="text/event-stream"
+    )
 
 @app.post("/chat/end", status_code=204)
 async def end_chat(request: EndChatRequest):

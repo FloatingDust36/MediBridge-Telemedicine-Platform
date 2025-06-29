@@ -82,13 +82,10 @@ const ChatWindow = ({ sessionId }: { sessionId: string | null }) => {
 
     setIsSending(true);
     const userMessageText = input.trim();
-    
-    // Create a temporary local URL for the image for instant display in the UI
     const tempImageUrl = imageFile ? URL.createObjectURL(imageFile) : undefined;
-    
-    // Optimistically add the user's message to the chat window
+
     setMessages((prev) => [...prev, { type: 'user', text: userMessageText, imageUrl: tempImageUrl }]);
-    
+
     const fileToSend = imageFile;
     setInput('');
     setImageFile(null);
@@ -96,28 +93,46 @@ const ChatWindow = ({ sessionId }: { sessionId: string | null }) => {
     const formData = new FormData();
     formData.append('session_id', sessionId);
     formData.append('user_message', userMessageText);
-    if (fileToSend) {
-      formData.append('image', fileToSend);
-    }
+    if (fileToSend) formData.append('image', fileToSend);
 
     try {
-      const response = await fetch(`${API_URL}/chat/message`, { method: 'POST', body: formData });
-      if (!response.ok) throw new Error("API call failed");
-      
-      const data = await response.json();
-      
-      // Add the real response from the AI
-      setMessages((prev) => [...prev, { type: 'bot', text: data.response }]);
-      
-      // If the AI has completed the triage, update the state
-      if (data.esi_level && !isTriageComplete) {
-        setIsTriageComplete(true);
-        setFinalEsiLevel(data.esi_level);
+      const response = await fetch(`${API_URL}/chat/stream-message`, { method: 'POST', body: formData });
+      if (!response.ok || !response.body) throw new Error("API call failed");
+
+      // Prepare to read the stream
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      // Add a new, empty bot message to the state that we will populate
+      setMessages((prev) => [...prev, { type: 'bot', text: '' }]);
+
+      // Read the stream chunk by chunk
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+
+        // Check if the chunk is our special final JSON object
+        try {
+          const jsonData = JSON.parse(chunk);
+          if (jsonData.type === 'triage_complete') {
+            setIsTriageComplete(true);
+            setFinalEsiLevel(jsonData.esi_level);
+          }
+        } catch (e) {
+          // If it's not JSON, it's a normal text chunk.
+          // Append the new text to the last message in the array.
+          setMessages((prev) => {
+            const lastMessage = prev[prev.length - 1];
+            lastMessage.text += chunk;
+            return [...prev.slice(0, -1), lastMessage];
+          });
+        }
       }
     } catch (error) {
-      console.error("Failed to send message:", error);
-      // If sending fails, show an error message
-      setMessages((prev) => [...prev.slice(0, -1), { type: 'bot', text: "Sorry, an error occurred. Please try again." }]);
+      console.error("Failed to stream message:", error);
+      setMessages((prev) => [...prev, { type: 'bot', text: "Sorry, an error occurred." }]);
     } finally {
       setIsSending(false);
     }
