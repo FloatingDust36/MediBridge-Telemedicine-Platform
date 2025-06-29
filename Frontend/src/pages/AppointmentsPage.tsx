@@ -1,54 +1,160 @@
 import React, { useState, useEffect } from 'react';
 import './AppointmentsPage.css';
+import supabase from '../lib/supabaseClient';
+
+interface Doctor {
+  user_id: string;
+  specialization: string;
+  full_name: string;
+}
+
+interface ScheduleSlot {
+  id: string;
+  start_time: string;
+  end_time: string;
+}
 
 const AppointmentsPage: React.FC = () => {
-  const [selectedDoctor, setSelectedDoctor] = useState("Dr. Maria Santos – Pediatrics");
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState("Mon 9:00–12:00");
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [schedules, setSchedules] = useState<ScheduleSlot[]>([]);
+  const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<ScheduleSlot | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
-
-  const handleBookAppointment = () => {
-    // More functional booking logic
-    const appointmentDetails = {
-      doctor: selectedDoctor,
-      timeSlot: selectedTimeSlot,
-      date: new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })
-    };
-
-    // Here you would typically make an API call to book the appointment
-    console.log('Booking appointment:', appointmentDetails);
-    
-    // Show confirmation
-    alert(`✅ Appointment successfully booked!\n\nDoctor: ${selectedDoctor}\nTime: ${selectedTimeSlot}\nDate: ${appointmentDetails.date}`);
-    
-    // You could also update the upcoming appointments list here
-    // or redirect to a confirmation page
-  };
-
-  const doctors = [
-    "Dr. Maria Santos – Pediatrics",
-    "Dr. Alex Smith – General Medicine",
-    "Dr. Sarah Lee – Dermatology",
-  ];
-
-  const timeSlots = [
-    "Mon 9:00–12:00",
-    "Wed 1:00–4:00",
-    "Fri 10:00–1:00",
-  ];
-
-  const upcomingAppointmentsData = [
-    { id: 1, doctor: "Dr. Maria Santos", date: "June 25, 2025", time: "10:30 AM" },
-    { id: 2, doctor: "Dr. Kevin Reyes", date: "July 3, 2025", time: "2:00 PM" },
-  ];
+  const [upcomingAppointments, setUpcomingAppointments] = useState<any[]>([]);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      const { data, error } = await supabase
+        .from('doctors')
+        .select('user_id, specialization, users ( full_name )')
+        .eq('is_available', true);
+
+      if (error) {
+        console.error('Failed to load doctors:', error.message);
+        return;
+      }
+
+      const mapped = data.map((d) => ({
+        user_id: d.user_id,
+        specialization: d.specialization,
+        full_name: d.users.full_name,
+      }));
+
+      setDoctors(mapped);
+    };
+
+    fetchDoctors();
+  }, []);
+
+  useEffect(() => {
+    if (!selectedDoctorId) return;
+
+    const fetchSchedules = async () => {
+      const now = new Date().toISOString();
+      const { data, error } = await supabase
+        .from('doctor_schedules')
+        .select('id, start_time, end_time')
+        .eq('doctor_id', selectedDoctorId)
+        .eq('is_available', true)
+        .gte('start_time', now)
+        .order('start_time', { ascending: true });
+
+      if (error) {
+        console.error('Failed to load schedules:', error.message);
+        return;
+      }
+
+      setSchedules(data);
+    };
+
+    fetchSchedules();
+  }, [selectedDoctorId]);
+
+  const fetchUpcomingAppointments = async () => {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) return;
+
+    const now = new Date().toISOString();
+
+    const { data, error } = await supabase
+      .from('appointments')
+      .select(`
+        id,
+        start_time,
+        end_time,
+        doctor_id,
+        doctors (
+          user_id,
+          users (
+            full_name
+          )
+        )
+      `)
+      .eq('patient_id', user.id)
+      .gte('start_time', now)
+      .order('start_time', { ascending: true });
+
+    if (error) {
+      console.error("Failed to load appointments:", error.message);
+      return;
+    }
+
+    const mapped = data.map((app) => ({
+      id: app.id,
+      doctor: app.doctors.users.full_name,
+      date: new Date(app.start_time).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+      time: new Date(app.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }));
+
+    setUpcomingAppointments(mapped);
+  };
+
+  useEffect(() => {
+    fetchUpcomingAppointments();
+  }, []);
+
+  const handleBookAppointment = async () => {
+    if (!selectedDoctorId || !selectedSlot) {
+      alert('❗ Please select a doctor and time slot.');
+      return;
+    }
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      alert("❌ User not logged in.");
+      return;
+    }
+
+    const patientId = user.id;
+
+    const { error: insertError } = await supabase
+      .from('appointments')
+      .insert([
+        {
+          patient_id: patientId,
+          doctor_id: selectedDoctorId,
+          start_time: selectedSlot.start_time,
+          end_time: selectedSlot.end_time,
+          status: 'pending',
+          appointment_type: 'video_consultation',
+        }
+      ]);
+
+    if (insertError) {
+      console.error('Error booking appointment:', insertError.message);
+      alert('❌ Booking failed.');
+      return;
+    }
+
+    alert('✅ Appointment successfully booked!');
+    setSelectedSlot(null);
+    fetchUpcomingAppointments(); // Refresh list after booking
+  };
 
   const formattedDate = currentTime.toLocaleDateString('en-US', {
     day: '2-digit', month: 'long', year: 'numeric',
@@ -75,12 +181,16 @@ const AppointmentsPage: React.FC = () => {
             <select
               id="doctor-select"
               className="doctor-select"
-              value={selectedDoctor}
-              onChange={(e) => setSelectedDoctor(e.target.value)}
+              value={selectedDoctorId || ''}
+              onChange={(e) => {
+                setSelectedDoctorId(e.target.value);
+                setSelectedSlot(null);
+              }}
             >
-              {doctors.map((doctor, index) => (
-                <option key={index} value={doctor}>
-                  {doctor}
+              <option value="" disabled>Select a doctor</option>
+              {doctors.map((doc) => (
+                <option key={doc.user_id} value={doc.user_id}>
+                  {doc.full_name} – {doc.specialization}
                 </option>
               ))}
             </select>
@@ -89,33 +199,35 @@ const AppointmentsPage: React.FC = () => {
           <div className="time-slot-section">
             <h4 className="select-time-title">Select an Available Time Slot:</h4>
             <div className="time-slot-grid">
-              {timeSlots.map((slot, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  className={`time-slot-button ${selectedTimeSlot === slot ? "active" : ""}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Time slot clicked:', slot);
-                    setSelectedTimeSlot(slot);
-                  }}
-                >
-                  {slot}
-                </button>
-              ))}
+              {schedules.length > 0 ? schedules.map((slot) => {
+                const start = new Date(slot.start_time);
+                const end = new Date(slot.end_time);
+                const label = `${start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} – ${end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+                return (
+                  <button
+                    key={slot.id}
+                    type="button"
+                    className={`time-slot-button ${selectedSlot?.id === slot.id ? 'active' : ''}`}
+                    onClick={() => setSelectedSlot(slot)}
+                  >
+                    {label}
+                  </button>
+                );
+              }) : (
+                <p>No available slots for this doctor.</p>
+              )}
             </div>
             <p className="time-slot-note">
-              Note: Doctor schedules are fixed. Please choose accordingly.
+              Note: Doctor schedules are real-time. Please choose accordingly.
             </p>
           </div>
 
-          {/* Book Appointment Button - Now outside form groups */}
           <button
             type="button"
             className="book-appointment-button"
             onClick={handleBookAppointment}
-            disabled={!selectedDoctor || !selectedTimeSlot}
+            disabled={!selectedDoctorId || !selectedSlot}
           >
             Book Appointment
           </button>
@@ -125,12 +237,14 @@ const AppointmentsPage: React.FC = () => {
         <div className="card-base upcoming-appointments-card">
           <h3 className="card-title">Upcoming Appointments</h3>
           <ul className="upcoming-appointments-list">
-            {upcomingAppointmentsData.map((app) => (
+            {upcomingAppointments.length > 0 ? upcomingAppointments.map((app) => (
               <li key={app.id} className="upcoming-appointment-item">
                 <span className="appointment-doctor">{app.doctor}</span>
                 <span className="appointment-date-time">{app.date} – {app.time}</span>
               </li>
-            ))}
+            )) : (
+              <p>No upcoming appointments yet.</p>
+            )}
           </ul>
         </div>
       </div>
