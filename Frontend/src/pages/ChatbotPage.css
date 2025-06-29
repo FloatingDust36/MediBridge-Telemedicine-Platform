@@ -258,6 +258,11 @@
   background-color: #f3f4f6; color: #4b5563;
 }
 
+.chatbot-attach-button:active, .chatbot-send-button:active {
+  transform: scale(0.9);
+  transition: transform 0.1s ease;
+}
+
 .chatbot-attach-button:hover { background-color: #e5e7eb; }
 
 .chatbot-send-button {

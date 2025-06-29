@@ -36,6 +36,11 @@
   background-color: #f1f5f9;
 }
 
+.new-chat-button:active {
+  transform: scale(0.98); /* Makes the button slightly smaller on click */
+  filter: brightness(0.95); /* Slightly darkens the button on click */
+}
+
 .session-list-container {
   flex-grow: 1;
   overflow-y: auto;
