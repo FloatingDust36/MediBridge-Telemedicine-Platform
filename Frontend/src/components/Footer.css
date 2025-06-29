@@ -13,4 +13,5 @@
   /* Vertically center text if not already */
   line-height: 30px; /* Matches footer height */
   margin: 0;
+  margin-top: auto;
 }
