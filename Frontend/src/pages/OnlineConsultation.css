@@ -1,4 +1,4 @@
-/* OnlineConsultation.css */
+/* src/pages/OnlineConsultation.css */
 
 .online-consultation-container {
   display: flex;
@@ -11,7 +11,6 @@
 
 .online-consultation-content {
   padding-top: 60px; /* Space for the fixed navbar */
-  /* No horizontal padding here, content fills almost full width */
   margin: 0; /* Remove auto margin to allow full width usage */
   width: 100%;
   box-sizing: border-box;
@@ -26,47 +25,108 @@
 .video-call-area {
   flex: 3; /* Video area takes more space */
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  flex-direction: column; /* Stack video container and controls */
+  gap: 15px; /* Space between video and controls */
   padding: 20px; /* Add padding inside video area */
   background-color: #222; /* Dark background for video area */
   color: #fff;
-  justify-content: center; /* Center video boxes vertically */
-  align-items: center; /* Center video boxes horizontally */
+  justify-content: center; /* Center video boxes vertically initially */
+  align-items: center; /* Center video boxes horizontally initially */
   box-sizing: border-box;
+  position: relative; /* Needed for absolute positioning of messages/controls */
 }
 
-.video-placeholder-top,
-.video-placeholder-bottom {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px; /* Space between text and video box */
-  width: 100%; /* Ensure placeholder div takes full width */
-  max-width: 800px; /* Max width for consistency */
+/* New: Container for the Daily.co iframe */
+.daily-video-container {
+    position: relative; /* Important for absolute positioning of iframe children */
+    width: 100%;
+    /* Aspect ratio. Daily.co iframe will fill this. */
+    /* If you want it to fill available height: */
+    flex-grow: 1; /* Allow it to grow in height within video-call-area */
+    min-height: 300px; /* Minimum height for video area */
+    background-color: #333; /* Darker grey for video stream box */
+    border: 2px solid #007bff; /* Blue border for highlighted stream */
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    overflow: hidden; /* Ensures border-radius applies to iframe */
 }
 
-.video-stream-box {
-  width: 100%;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio (height relative to width) */
-  height: 0; /* Important for padding-bottom aspect ratio trick */
-  background-color: #333; /* Darker grey for video stream box */
-  border: 2px solid #007bff; /* Blue border for highlighted stream */
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-  position: relative; /* Needed for text overlay if adding later */
+/* Styles for initial prompt and status messages */
+.call-start-prompt, .call-status-message {
+    text-align: center;
+    padding: 20px;
+    color: #fff;
+    font-size: 1.2em;
+    position: absolute; /* Position over the video container */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10; /* Ensure it's above the empty container */
+    width: 80%; /* Don't take full width */
+    max-width: 400px;
 }
 
-.video-stream-box.patient-video {
-  border-color: #fff; /* White border for other participant */
+.start-call-button {
+    padding: 12px 25px;
+    background-color: #800000; /* Red color */
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 20px;
 }
 
-.video-placeholder-top p,
-.video-placeholder-bottom p {
-  margin: 0;
-  font-size: 0.9em;
-  color: #aaa;
+.start-call-button:hover {
+    background-color: #a00000;
+    transform: translateY(-2px);
+}
+
+/* Call Controls */
+.call-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent background for controls */
+    border-radius: 8px;
+    position: relative; /* Keep it within the normal flow, or position it absolutely if preferred */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 5; /* Ensure controls are above other background elements if any */
+}
+
+.control-button, .end-call-button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.control-button {
+    background-color: #007bff; /* Blue for mute/video toggle */
+    color: white;
+}
+
+.control-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.end-call-button {
+    background-color: #dc3545; /* Red for end call */
+    color: white;
+}
+
+.end-call-button:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
 }
 
 
@@ -231,6 +291,7 @@
     padding: 15px;
     height: 50vh; /* Give video area a fixed height when stacked */
     min-height: 350px; /* Ensure a minimum height */
+    gap: 10px;
   }
 
   .consultation-sidebar {
@@ -258,11 +319,6 @@
     height: 40vh; /* Further reduce video height on smaller mobiles */
     min-height: 250px;
     gap: 10px;
-  }
-
-  .video-placeholder-top p,
-  .video-placeholder-bottom p {
-    font-size: 0.8em;
   }
 
   .chat-input-area input {
