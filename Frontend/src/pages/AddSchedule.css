@@ -1,0 +1,332 @@
+/* General Layout for AddSchedule Page */
+.main-content-area.schedule-page-wrapper {
+    padding-top: 25px; /* Spacing from the Layout's padding-top, effectively adding more space */
+    padding-bottom: 117.5px; /* Spacing for the bottom of the page content before the footer */
+    padding-top: 60px; /* Spacing from the Layout's padding-top, effectively adding more space */
+    padding-bottom: 25px; /* Spacing for the bottom of the page content before the footer */
+    padding-left: 30px; /* General side padding for the content wrapper */
+    padding-right: 30px; /* General side padding for the content wrapper */
+
+    width: 100%; /* Ensures it takes full available width within Layout's <main> */
+    max-width: 1200px; /* Constrain the overall content width for readability on large screens */
+    margin: 0 auto; /* Centers the content wrapper horizontally within Layout's <main> */
+    box-sizing: border-box; /* Ensures padding and border are included in the element's total width/height */
+
+    display: flex; /* Make this a flex container */
+    flex-direction: column; /* Stack its children (info bar, content grid) vertically */
+    align-items: center; /* Horizontally center content (like the top info bar) within this wrapper */
+
+    flex-grow: 1; /* CRUCIAL: Makes this container expand vertically to fill available space
+                    within its parent (<main> in Layout.tsx), thereby pushing the Footer to the bottom. */
+    background-color: #e6e9ed; /* Apply the page-specific background color here */
+    
+}
+
+
+/* Top Info Bar (Page Title and Timestamp) */
+.schedule-top-info-bar {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 25px;
+    width: 100%; /* Important: ensure this takes full width of its parent (.schedule-page-wrapper) */
+    align-items: flex-start; /* Aligns text to the left within the info bar */
+    /* No padding-left/right here; let the .schedule-page-wrapper handle overall padding */
+}
+
+.schedule-page-title {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    color: #333;
+    font-size: 26px;
+    margin-bottom: 10px;
+    margin-top: 0; /* Remove default top margin on H1 to control spacing precisely */
+}
+
+.schedule-timestamp {
+    font-family: 'Segoe UI', sans-serif;
+    color: #777;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+/* Content Grid (Add Schedule Card and Existing Schedules) */
+.schedule-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns for cards */
+    gap: 25px; /* Space between cards */
+    width: 100%; /* Ensure the grid takes full width of its parent */
+    /* Optional: If you want the grid to be narrower than the main-content-area,
+        you can add a max-width and margin: 0 auto here. */
+    max-width: 1100px; /* Constrain grid width if it gets too wide inside max-width: 1200px parent */
+    box-sizing: border-box;
+    margin-bottom: 118.5px;
+    margin-bottom: 118.5px;
+}
+
+/* Card Base Styles (These are common styles for all your dashboard cards) */
+.card-base {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-sizing: border-box;
+    border: 1px solid #c0c0c0;
+    flex-grow: 1; /* Allows cards to grow and distribute space, useful for grid layouts */
+}
+
+.card-title {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 600;
+    color: #333;
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+
+/* --- Styles specific to Add Schedule Card --- */
+.add-schedule-card {
+max-width: 100%;
+height: 55vh; /* This height might need adjustment based on actual content */
+background-color: #f0f0f0;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #e0e0e0;
+padding: 20px;
+box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Removed .form-group and .form-group2 as they were less specific */
+.add-schedule-card .input-group { /* New class for grouping label and input */
+    margin-bottom: 20px;
+}
+
+.add-schedule-card label {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 8px;
+    display: block;
+    font-weight: 500;
+}
+
+.add-schedule-card .schedule-date-input,
+.add-schedule-card .schedule-time-input {
+    width: 100%; /* Make inputs take full width of their parent .input-group */
+    padding: 10px 15px;
+    border: 1px solid #c0c0c0;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    color: #555;
+    box-sizing: border-box;
+    /* Remove appearance: none and background-image for date/time inputs as they are not selects */
+}
+
+
+.add-schedule-card .time-slot-title {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 600;
+    color: #333;
+    font-size: 16px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.add-schedule-card .schedule-time-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Flexible columns */
+    gap: 5px;
+    margin-bottom: 5px;
+ 
+}
+
+.add-schedule-card .schedule-time-button {
+    padding: 5px 5px;
+    border: 1px solid #c0c0c0;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.add-schedule-card .schedule-time-button:hover {
+    background-color: #e0e0e0;
+    border-color: #a0a0a0;
+}
+
+.add-schedule-card .schedule-time-button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+    font-weight: bold;
+}
+
+.add-schedule-card .schedule-note {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+    line-height: 1.4;
+}
+
+.add-schedule-card .publish-schedule-button {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #059669; /* Green from your mockup */
+    color: rgb(255, 255, 255);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    margin-top: -19px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+
+}
+
+.add-schedule-card .publish-schedule-button:hover {
+    background-color: #047a55;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Styles specific to Existing Schedules Card --- */
+.existing-schedules-card {
+    /* Inherits .card-base */
+}
+
+.existing-schedules-card .schedule-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.existing-schedules-card .schedule-item {
+    background-color: #f8f8f8;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #e0e0e0;
+    display: flex; /* Make it a flex container to align info and button */
+    justify-content: space-between; /* Space out info and button */
+    align-items: center; /* Vertically align items */
+}
+
+.existing-schedules-card .schedule-item:last-child {
+    margin-bottom: 0;
+}
+
+.existing-schedules-card .schedule-info { /* New class to wrap schedule details */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Allow info to take available space */
+}
+
+.existing-schedules-card .schedule-details {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 600;
+    color: #333;
+    font-size: 16px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.existing-schedules-card .schedule-date-time {
+    font-family: 'Segoe UI', sans-serif;
+    color: #555;
+    font-size: 14px;
+}
+
+.delete-schedule-button { /* New style for the delete button */
+    background-color: #dc3545; /* Red color for delete */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 15px; /* Space from the schedule info */
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    display: flex; /* To center the trash icon if it's an icon */
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-schedule-button:hover {
+    background-color: #c82333;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    .main-content-area.schedule-page-wrapper {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .schedule-content-grid {
+        grid-template-columns: 1fr;
+    }
+    .schedule-top-info-bar {
+        padding-left: 0;
+        padding-right: 0;
+        align-items: flex-start;
+    }
+    .schedule-page-title {
+        font-size: 22px;
+    }
+    .main-content-area.schedule-page-wrapper {
+        padding-top: 20px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .existing-schedules-card .schedule-item {
+        flex-direction: column; /* Stack info and button on small screens */
+        align-items: flex-start;
+    }
+    .existing-schedules-card .schedule-info {
+        margin-bottom: 10px; /* Space between info and button when stacked */
+    }
+    .delete-schedule-button {
+        width: 100%; /* Make button full width when stacked */
+        margin-left: 0; /* Remove left margin when stacked */
+    }
+}
+
+@media (max-width: 480px) {
+    .schedule-page-title {
+        font-size: 20px;
+    }
+    .main-content-area.schedule-page-wrapper {
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 15px;
+    }
+    .card-base {
+        padding: 15px;
+    }
+    .card-title {
+        font-size: 16px;
+    }
+    .add-schedule-card .schedule-time-button,
+    .existing-schedules-card .schedule-date-time {
+        font-size: 13px;
+    }
+    .add-schedule-card .publish-schedule-button {
+        font-size: 15px;
+        margin-top: 0px;
+    }
+    .delete-schedule-button {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+}

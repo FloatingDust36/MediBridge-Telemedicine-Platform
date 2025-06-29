@@ -15,13 +15,40 @@ const CompleteDoctorProfile: React.FC = () => {
   const [contactNumber, setContactNumber] = useState('');
   const [emergencyContact, setEmergencyContact] = useState('');
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUserId(session?.user?.id ?? null);
-    };
-    fetchUser();
-  }, []);
+ useEffect(() => {
+  const fetchUser = async () => {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    const userId = session?.user?.id;
+    setUserId(userId ?? null);
+
+    if (!userId) return;
+
+    // Check if user already exists in public.users
+    const { data: existingUser, error: findError } = await supabase
+      .from('users')
+      .select('user_id')
+      .eq('user_id', userId)
+      .single();
+
+    if (!existingUser) {
+      // Insert user into public.users
+      const { error: insertError } = await supabase.from('users').insert({
+        user_id: userId,
+        email: session?.user?.email,
+        full_name: '', // you will update this later in handleSubmit
+        role: 'doctor',
+        created_at: new Date().toISOString()
+      });
+
+      if (insertError) {
+        console.error('Failed to insert into users table:', insertError.message);
+      }
+    }
+  };
+
+  fetchUser();
+}, []);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,10 +89,11 @@ const CompleteDoctorProfile: React.FC = () => {
 ]);
 
 if (doctorError) {
-  console.error('Error inserting doctor data:', doctorError.message);
-  alert('Failed to save doctor profile.');
+  console.error('Doctor insert failed:', doctorError);
+  alert(`Failed to save doctor profile: ${doctorError.message}`);
   return;
 }
+
 
   // Redirect after successful save
   navigate('/doctordashboard');
