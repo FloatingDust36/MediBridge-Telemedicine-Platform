@@ -14,7 +14,7 @@ interface Message {
 // A dedicated component for the welcome screen for better organization
 const WelcomeScreen = () => (
   <div className="welcome-screen">
-    <img src="/images/chatbot-icon.png" alt="MedBot" className="welcome-icon" />
+    <img src="/src/assets/pictures/chatbot-icon.png" alt="MedBot" className="welcome-icon" />
     <h2>MediBridge AI Assistant</h2>
     <p>Your personal health guide. Select a past conversation or click "New Chat" to begin.</p>
   </div>
@@ -99,7 +99,7 @@ const ChatWindow = ({ sessionId }: { sessionId: string | null }) => {
   return (
     <div className="chatbot-card">
       <div className="chatbot-header">
-        <img src="/images/chatbot-icon.png" alt="Chatbot Icon" className="chatbot-icon" />
+        <img src="/src/assets/pictures/chatbot-icon.png" alt="Chatbot Icon" className="chatbot-icon" />
         <h3 className="chatbot-title">AI Health Assistant</h3>
         {isTriageComplete && sessionId && (
           <a href={`${API_URL}/session/${sessionId}/summary/pdf`} target="_blank" rel="noopener noreferrer" className="download-pdf-button">
