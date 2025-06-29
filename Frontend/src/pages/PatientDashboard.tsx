@@ -3,6 +3,7 @@ import supabase from '../lib/supabaseClient';
 import React, { useState, useEffect } from "react";
 import "./PatientDashboard.css";
 import { color } from "framer-motion";
+import logo from '../assets/MediBridge_LogoClear.png';
 
 const PatientDashboardSection: React.FC<{ data: any }> = ({ data }) => {
   if (!data) return <div style={{ color: 'black' }}>Loading patient info...</div>;
@@ -156,7 +157,7 @@ const PatientDashboard: React.FC = () => {
         <h1 className="page-title">Patient Dashboard</h1>
         <div className="welcome-and-profile">
           <div className="profile-image-container">
-            <img src="/images/patient-avatar.png" alt="Patient" className="profile-image" />
+            <img src={logo} alt="Patient" className="profile-image" />
           </div>
           <div className="welcome-text-group">
             <span className="medical-profile-label">Medical Profile</span>

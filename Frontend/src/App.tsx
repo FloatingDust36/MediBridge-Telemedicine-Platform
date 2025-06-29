@@ -206,14 +206,6 @@ function App() {
             }
           />
           <Route
-            path="consultation"
-            element={
-              <ProtectedRoute allowedRoles={['doctor']}>
-                <OnlineConsultation />
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="summary"
             element={
               <ProtectedRoute allowedRoles={['doctor']}>
@@ -248,6 +240,15 @@ function App() {
           />
 
           {/* Messages accessible by both doctor and patient */}
+          <Route
+            path="consultation"
+            element={
+              <ProtectedRoute allowedRoles={['doctor', 'patient']}>
+                <OnlineConsultation />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="messages"
             element={

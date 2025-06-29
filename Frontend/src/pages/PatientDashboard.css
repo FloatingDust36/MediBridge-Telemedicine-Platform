@@ -18,72 +18,12 @@ body {
     background-color: #e6e9ed;
 }
 
-/* Styles for the new navigation items */
-.nav-item-new {
-    line-height: 60px; /* Match navbar height for vertical centering */
-    white-space: nowrap;
-    cursor: pointer;
-    color: #555; /* Default color */
-    font-weight: 500;
-    transition: color 0.3s ease, border-bottom 0.3s ease;
-    position: relative;
-    /* No text-decoration here by default */
-}
-
-.nav-item-new.active {
-    color: #007bff; /* Active color */
-    font-weight: 600;
-    /* Text decoration for the active item */
-    text-decoration: underline; /* Add underline directly */
-    text-decoration-color: #007bff; /* Match active color */
-    text-decoration-thickness: 3px; /* Adjust thickness */
-    text-underline-offset: 8px; /* Offset the underline from the text */
-}
-
-/* Remove the ::after pseudo-element that caused the strikethrough */
-/* .nav-item-new.active::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 15px;
-    width: 100%;
-    height: 3px;
-    background-color: #007bff;
-    border-radius: 2px;
-} */
-
-
-.nav-item-new:hover {
-    color: #007bff; /* Hover color */
-}
-
-/* No specific button styles for logout, it now inherits .nav-item-new styles */
-/* Remove .logout-button-new styles completely or adapt if you want a subtle difference */
-/* If you want logout to have a distinct look, but not a button style: */
-.nav-links .nav-item-new:last-child { /* Targets the Logout item */
-    margin-left: 10px; /* Add some spacing from the last nav item */
-    /* You could add a subtle background or a different text color here if desired */
-    /* For example: background-color: #f0f0f0; border-radius: 5px; padding: 0 10px; */
-}
-
-
-/* --- END NEW NAVBAR STYLES --- */
-
-
-.patientdash-wrapper { /* This wrapper is not needed if navbar is fixed */
-    width: 100%;
-    max-width: 1200px;
-    background-color: #e6e9ed;
-    position: relative;
-    padding-bottom: 50px;
-}
-
 /* Main Content Area - Adjust padding-top to clear fixed navbar */
 .main-content-area {
     padding: 20px 30px;
     width: 100%;
     box-sizing: border-box;
-    padding-top: 80px; /* Space for the fixed navbar (navbar height + some margin) */
+    padding-top: 60px; /* Space for the fixed navbar (navbar height + some margin) */
 }
 
 .top-info-bar {
