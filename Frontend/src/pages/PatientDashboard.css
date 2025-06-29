@@ -163,6 +163,10 @@ body {
     border: 1px solid #c0c0c0;
 }
 
+.card-content {
+    color: black;
+}
+
 .card-margin-bottom {
     margin-bottom: 25px;
 }

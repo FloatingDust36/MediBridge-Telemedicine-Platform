@@ -2,9 +2,10 @@ import { Link } from "react-router-dom";
 import supabase from '../lib/supabaseClient';
 import React, { useState, useEffect } from "react";
 import "./PatientDashboard.css";
+import { color } from "framer-motion";
 
 const PatientDashboardSection: React.FC<{ data: any }> = ({ data }) => {
-  if (!data) return <div>Loading patient info...</div>;
+  if (!data) return <div style={{ color: 'black' }}>Loading patient info...</div>;
 
   return (
     <div className="card-base patient-dashboard-section">
