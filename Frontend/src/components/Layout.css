@@ -1,0 +1,13 @@
+/* Frontend/src/components/Layout.css */
+
+.app-layout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Make the entire app container fill the viewport height */
+}
+
+.app-main-content {
+  flex-grow: 1; /* This is the key: it makes this area expand to take all available space */
+  overflow-y: auto; /* Adds a scrollbar ONLY to this content area if content is too long */
+  display: flex; /* This ensures child components can use height: 100% correctly */
+}

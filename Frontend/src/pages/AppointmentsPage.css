@@ -6,6 +6,8 @@
        or can be set to 0 if the Layout's padding is sufficient.
        We'll keep a small internal padding here for the page title.
     */
+    padding-top: 25px; /* Spacing from the Layout's padding-top, effectively adding more space */
+    padding-bottom: 117.5px; /* Spacing for the bottom of the page content before the footer */
     padding-top: 60px; /* Spacing from the Layout's padding-top, effectively adding more space */
     padding-bottom: 25px; /* Spacing for the bottom of the page content before the footer */
     padding-left: 30px; /* General side padding for the content wrapper */
@@ -23,6 +25,7 @@
     flex-grow: 1; /* CRUCIAL: Makes this container expand vertically to fill available space
                      within its parent (<main> in Layout.tsx), thereby pushing the Footer to the bottom. */
     background-color: #e6e9ed; /* Apply the page-specific background color here */
+   
 }
 
 
@@ -62,6 +65,8 @@
        you can add a max-width and margin: 0 auto here. */
     max-width: 1100px; /* Constrain grid width if it gets too wide inside max-width: 1200px parent */
     box-sizing: border-box;
+    margin-bottom: 118.5px;
+    margin-bottom: 118.5px;
 }
 
 /* Card Base Styles (These are common styles for all your dashboard cards) */

@@ -1,7 +1,10 @@
-import React from 'react'
-import { Outlet } from 'react-router-dom'
-import Navbar from './Navbar' // Adjust path if necessary
-import Footer from './Footer' // Assuming you have a Footer component
+// Frontend/src/components/Layout.tsx
+
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Navbar from './Navbar';
+import Footer from './Footer';
+import './Layout.css'; // Make sure the corresponding CSS file is imported
 
 interface LayoutProps {
   userType: 'guest' | 'patient' | 'doctor' | 'admin';
@@ -9,14 +12,14 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ userType }) => {
   return (
-    <>
+    <div className="app-layout-container">
       <Navbar userType={userType} />
-      <main style={{/* paddingTop: '60px' */}}> {/* Adjust padding to account for fixed navbar height */}
-        <Outlet /> {/* This is where your nested routes will render */}
+      <main className="app-main-content">
+        <Outlet /> {/* Your pages like ChatbotPage render here */}
       </main>
       <Footer />
-    </>
-  )
-}
+    </div>
+  );
+};
 
 export default Layout;

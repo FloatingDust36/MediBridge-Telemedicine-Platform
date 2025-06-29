@@ -54,6 +54,7 @@
   font-weight: normal;
   font-family: 'Roboto', sans-serif;
   line-height: 20px; /* leading-tight */
+  margin-top: -23px; /* Adjusted to align with input */
 }
 
 .form-input-container {
@@ -65,11 +66,12 @@
   overflow: hidden;
   display: flex;
   align-items: center;
-  padding: 0 9px;
+  padding:3.4px;
+  margin-top: -20px; /* Adjusted to align with label */
 }
 
 .form-input {
-  width: 100%;
+  width: 512px;
   height: 100%;
   border: none;
   background: transparent;
@@ -79,6 +81,7 @@
   font-family: 'Roboto', sans-serif;
   line-height: 24px; /* leading-normal or normal */
   padding: 0;
+  
 }
 
 /* Specific positioning for each form group based on the design */

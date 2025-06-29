@@ -36,18 +36,6 @@ const OnlineConsultation: React.FC = () => {
 
   return (
     <div className="online-consultation-container">
-      <nav className="navbar">
-        <div className="logo">
-          <img src={logo} alt="MedBridge Logo" className="logo-img" />
-          <span className="logo-text">MedBridge</span>
-        </div>
-        <ul className="nav-links">
-          <li>Dashboard</li>
-          <li>Appointments</li>
-          <li>Messages</li>
-          <li><Link to="/home">Logout</Link></li>
-        </ul>
-      </nav>
 
       <div className="online-consultation-content">
         {/* Main Video Call Area */}

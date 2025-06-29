@@ -4,6 +4,7 @@ import supabase
 import uuid
 from config import SUPABASE_URL, SUPABASE_KEY
 from datetime import datetime
+import pytz
 
 # --- Initialize the Supabase Client ---
 try:
@@ -103,8 +104,10 @@ def get_sessions_for_user(user_id: str) -> list[dict] | None:
         ).eq("user_id", user_id).order("created_at", desc=True).execute()
 
         for session in response.data:
-            dt_object = datetime.fromisoformat(session['created_at'])
-            formatted_date = dt_object.strftime('%b %d, %I:%M %p')
+            utc_dt = datetime.fromisoformat(session['created_at'])
+            local_tz = pytz.timezone("Asia/Manila")
+            local_dt = utc_dt.astimezone(local_tz)
+            formatted_date = local_dt.strftime('%b %d, %I:%M %p')
 
             # The frontend now knows if a summary is available.
             session["has_summary"] = bool(session.get("session_summary"))

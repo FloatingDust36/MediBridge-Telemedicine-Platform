@@ -92,8 +92,8 @@
     @apply bg-background text-foreground; /* Use Tailwind's CSS variables for consistency */
     font-feature-settings: "rlig" 1, "calt" 1;
     margin: 0; /* Ensures no default body margin interferes */
-    display: flex; /* */
-    place-items: center; /* Centers direct children horizontally and vertically */
+    /*display: flex; /* */
+    /*place-items: center; /* Centers direct children horizontally and vertically */
     min-width: 320px;
     min-height: 100vh; /* Ensures body takes full viewport height */
   }
