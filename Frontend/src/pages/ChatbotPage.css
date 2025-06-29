@@ -93,6 +93,7 @@
   font-size: 15px;
   line-height: 1.5;
   word-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .message-bubble.bot {
@@ -213,4 +214,31 @@
     background-color: #d1d5db;
     color: #9ca3af;
     cursor: not-allowed;
+}
+
+.triage-complete-indicator {
+  padding: 10px 20px;
+  background-color: #dcfce7; /* Light green */
+  color: #166534; /* Dark green */
+  text-align: center;
+  font-size: 14px;
+  border-top: 1px solid #a7f3d0;
+  flex-shrink: 0;
+}
+
+.download-pdf-button {
+  margin-left: auto; /* Pushes button to the far right */
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.download-pdf-button:hover {
+  background-color: rgba(255, 255, 255, 0.25);
 }

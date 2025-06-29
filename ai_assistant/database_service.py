@@ -52,7 +52,7 @@ def log_message(session_id: str, sender: str, message_content: str, image_url: s
 
     Args:
         session_id: The ID of the current session.
-        sender: Who sent the message ('user' or 'ai').
+        sender: Who sent the message ('user' or 'bot').
         message_content: The text of the message.
         image_url: (Optional) The URL of an image if one was uploaded.
     """
@@ -102,7 +102,7 @@ def get_session_details(session_id: str) -> dict | None:
         return None
     try:
         response = supabase_client.table("sessions").select(
-            "session_summary, user_id"
+            "session_summary, user_id, final_esi_level"
         ).eq("id", session_id).single().execute()
 
         return response.data

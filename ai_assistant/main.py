@@ -35,8 +35,6 @@ app.add_middleware(
 # --- 2. In-Memory Session Storage ---
 # This dictionary will store active AI service instances.
 # Key: session_id (str), Value: AIService object
-# NOTE: For large-scale production, this might be replaced by a more
-# persistent cache like Redis, but for now, this is perfect.
 active_sessions = {}
 
 # --- 3. Pydantic Data Models ---
@@ -187,3 +185,15 @@ async def delete_session(session_id: str):
 
     # A 204 "No Content" response is the standard for a successful DELETE.
     return Response(status_code=204)
+
+
+@app.get("/session/{session_id}", response_model=dict)
+async def get_session(session_id: str):
+    """
+    Retrieves the core details for a single session,
+    including whether it has been completed.
+    """
+    details = db.get_session_details(session_id)
+    if not details:
+        raise HTTPException(status_code=404, detail="Session not found.")
+    return details
