@@ -1,362 +1,333 @@
-/* src/pages/PatientDashboard.css */
+/* src/pages/OnlineConsultation.css */
 
-/* General */
-body {
-    margin: 0;
-    font-family: "Segoe UI", sans-serif;
-    background-color: #e6e9ed;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+.online-consultation-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f0f2f5; /* Light grey background */
+  width: 100vw;
+  overflow-x: hidden;
 }
 
-.patientdash-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100vw;
-    min-height: 100vh;
-    background-color: #e6e9ed;
+.online-consultation-content {
+  padding-top: 60px; /* Space for the fixed navbar */
+  margin: 0; /* Remove auto margin to allow full width usage */
+  width: 100%;
+  box-sizing: border-box;
+  flex-grow: 1;
+  display: flex; /* Key for video area and sidebar layout */
+  flex-direction: row; /* Default to row layout for video and sidebar */
+  min-height: calc(100vh - 60px); /* Fill remaining vertical space */
+  align-items: stretch; /* Make children fill vertical space */
 }
 
-/* Main Content Area - Adjust padding-top to clear fixed navbar */
-.main-content-area {
-    padding: 20px 30px;
+/* Video Call Area */
+.video-call-area {
+  flex: 3; /* Video area takes more space */
+  display: flex;
+  flex-direction: column; /* Stack video container and controls */
+  gap: 15px; /* Space between video and controls */
+  padding: 20px; /* Add padding inside video area */
+  background-color: #222; /* Dark background for video area */
+  color: #fff;
+  justify-content: center; /* Center video boxes vertically initially */
+  align-items: center; /* Center video boxes horizontally initially */
+  box-sizing: border-box;
+  position: relative; /* Needed for absolute positioning of messages/controls */
+}
+
+/* New: Container for the Daily.co iframe */
+.daily-video-container {
+    position: relative; /* Important for absolute positioning of iframe children */
     width: 100%;
-    box-sizing: border-box;
-    padding-top: 60px; /* Space for the fixed navbar (navbar height + some margin) */
-}
-
-.top-info-bar {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 25px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.page-title {
-    font-family: 'Segoe UI', sans-serif;
-    font-weight: bold;
-    color: #333;
-    font-size: 26px;
-    margin-bottom: 10px;
-    margin-top: 0;
-}
-
-.welcome-and-profile {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 10px;
-}
-
-.profile-image-container {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 2px solid white;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.profile-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.welcome-text-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.medical-profile-label {
-    font-family: 'Segoe UI', sans-serif;
-    font-weight: 600;
-    color: #007bff;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.welcome-message {
-    font-family: 'Segoe UI', sans-serif;
-    color: #444;
-    font-size: 18px;
-    font-weight: 500;
-}
-
-.current-timestamp {
-    font-family: 'Segoe UI', sans-serif;
-    color: #777;
-    font-size: 13px;
-    margin-top: 5px;
-}
-
-/* Card Base Styles (for all dashboard sections) */
-.card-base {
-    background-color: white;
+    /* Aspect ratio. Daily.co iframe will fill this. */
+    /* If you want it to fill available height: */
+    flex-grow: 1; /* Allow it to grow in height within video-call-area */
+    min-height: 300px; /* Minimum height for video area */
+    background-color: #333; /* Darker grey for video stream box */
+    border: 2px solid #007bff; /* Blue border for highlighted stream */
     border-radius: 8px;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    overflow: hidden; /* Ensures border-radius applies to iframe */
+}
+
+/* Styles for initial prompt and status messages */
+.call-start-prompt, .call-status-message {
+    text-align: center;
     padding: 20px;
-    box-sizing: border-box;
-    border: 1px solid #c0c0c0;
+    color: #fff;
+    font-size: 1.2em;
+    position: absolute; /* Position over the video container */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10; /* Ensure it's above the empty container */
+    width: 80%; /* Don't take full width */
+    max-width: 400px;
 }
 
-.card-content {
-    color: black;
-}
-
-.card-margin-bottom {
-    margin-bottom: 25px;
-}
-
-/* Common Header/Title Styling for all Sections (inside cards) */
-.card-base h3 {
-    font-family: 'Segoe UI', sans-serif;
-    font-weight: 600;
-    color: #333;
-    font-size: 18px;
-    margin-top: 0;
-    margin-bottom: 15px;
-}
-
-/* Common List Item Styling for all Sections */
-.card-base ul {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-}
-
-.card-base li {
-    color: #555;
-    font-size: 15px;
-    margin-bottom: 8px;
-    line-height: 1.4;
-}
-.card-base li:last-child {
-    margin-bottom: 0;
-}
-
-
-/* --- Styles specific to PatientDashboardSection --- */
-.patient-dashboard-section-content p {
-    margin-bottom: 8px;
-    font-size: 15px;
-    color: #444;
-}
-.patient-dashboard-section-content p strong {
-    color: #000;
-    font-weight: 600;
-}
-
-/* --- Styles specific to NotesSection --- */
-.notes-section .notes-list {
-    max-height: 120px;
-    overflow-y: auto;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 15px;
-    margin-bottom: 15px;
-}
-
-.notes-section .notes-list li {
-    background-color: #fcfcfc;
-    padding: 8px 12px;
-    border-radius: 5px;
-    margin-bottom: 6px;
-    color: #333;
-    font-size: 14px;
-    line-height: 1.3;
-}
-
-.notes-section .add-note-textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: vertical;
-    font-family: inherit;
-    font-size: 14px;
-    margin-bottom: 10px;
-    box-sizing: border-box;
-    min-height: 60px;
-}
-
-.notes-section .add-note-textarea:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
-}
-
-.notes-section .add-note-button {
-    width: 100%;
-    padding: 10px 15px;
-    background-color: #007bff;
+.start-call-button {
+    padding: 12px 25px;
+    background-color: #800000; /* Red color */
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 25px;
+    font-size: 1.1em;
     cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 20px;
 }
 
-.notes-section .add-note-button:hover {
+.start-call-button:hover {
+    background-color: #a00000;
+    transform: translateY(-2px);
+}
+
+/* Call Controls */
+.call-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent background for controls */
+    border-radius: 8px;
+    position: relative; /* Keep it within the normal flow, or position it absolutely if preferred */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 5; /* Ensure controls are above other background elements if any */
+}
+
+.control-button, .end-call-button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.control-button {
+    background-color: #007bff; /* Blue for mute/video toggle */
+    color: white;
+}
+
+.control-button:hover {
     background-color: #0056b3;
     transform: translateY(-1px);
 }
-.notes-section .add-note-button:active {
-    transform: translateY(0);
+
+.end-call-button {
+    background-color: #dc3545; /* Red for end call */
+    color: white;
 }
 
-/* --- Styles specific to ConsultationAppointmentsSection --- */
-.consultation-section h4 {
-    font-size: 1.1em;
-    color: #333;
-    margin-top: 15px;
-    margin-bottom: 10px;
-}
-
-.consultation-section .consultation-list {
-    list-style: disc;
-    padding-left: 20px;
-}
-
-.consultation-section .consultation-list li {
-    margin-bottom: 6px;
-    font-size: 14px;
-    color: #555;
-}
-.consultation-section .consultation-list li strong {
-    color: #333;
+.end-call-button:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
 }
 
 
-/* --- Styles specific to PrescriptionsSection --- */
-.prescriptions-section .prescriptions-list {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-}
-.prescriptions-section .prescriptions-list li {
-    background-color: #f8f8f8;
-    padding: 10px 15px;
-    border-radius: 5px;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: #444;
-}
-.prescriptions-section .prescriptions-list li:last-child {
-    margin-bottom: 0;
+/* Right Sidebar */
+.consultation-sidebar {
+  flex: 1; /* Sidebar takes less space */
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f8f8; /* Lighter background for sidebar */
+  border-left: 1px solid #e0e0e0;
+  box-sizing: border-box;
+  min-width: 320px; /* Minimum width for sidebar content */
+  max-width: 400px; /* Optional: Max width for very wide screens */
+  overflow-y: auto; /* Allow scrolling if content overflows vertically */
 }
 
-/* --- Styles specific to MedicalHistorySection --- */
-.medical-history-section .medical-history-list {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
+.panel-box-header {
+  background-color: #e0f7fa; /* Light blue header */
+  padding: 15px 20px;
+  border-bottom: 1px solid #b3e5fc;
+  color: #333;
+  text-align: right; /* Align text to the right as in screenshot */
 }
 
-.medical-history-section .medical-history-item {
-    background-color: #f8f8f8;
-    padding: 10px 15px;
-    border-radius: 5px;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: #444;
-}
-.medical-history-section .medical-history-item strong {
-    font-weight: 600;
-    color: #000;
-}
-.medical-history-section .medical-history-item:last-child {
-    margin-bottom: 0;
+.panel-box-header .details-text {
+  margin: 0;
+  font-weight: bold;
+  font-size: 1.1em;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        height: auto;
-        padding: 10px 15px;
-        gap: 10px;
-    }
-    .logo-text {
-        line-height: normal;
-    }
-    .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
-        width: 100%;
-    }
-    .nav-item-new {
-        line-height: normal;
-    }
-    /* No more .logout-button-new specific styles */
-
-    .main-content-area {
-        padding: 20px;
-        padding-top: 150px; /* Adjust for stacked navbar */
-    }
-    .top-info-bar {
-        padding-left: 0;
-        padding-right: 0;
-        align-items: flex-start;
-    }
-    .page-title {
-        font-size: 22px;
-    }
-    .welcome-and-profile {
-        flex-direction: row;
-        align-items: center;
-    }
-    .profile-image-container {
-        width: 40px;
-        height: 40px;
-    }
-    .card-base {
-        padding: 15px;
-    }
+.panel-box-header .name-info {
+  margin: 0;
+  font-size: 0.85em;
+  color: #555;
 }
 
-@media (max-width: 480px) {
-    .navbar {
-        padding: 8px 10px;
-    }
-    .logo-img {
-        height: 30px;
-    }
-    .logo-text {
-        font-size: 1rem;
-    }
-    .nav-links {
-        gap: 10px;
-    }
-    .nav-item-new {
-        font-size: 14px;
-    }
-    .main-content-area {
-        padding: 15px;
-        padding-top: 160px;
-    }
-    .page-title {
-        font-size: 20px;
-    }
-    .welcome-message {
-        font-size: 16px;
-    }
-    .current-timestamp {
-        font-size: 12px;
-    }
-    .card-base h3 {
-        font-size: 16px;
-    }
-    .card-base p, .card-base li {
-        font-size: 14px;
-    }
-    .notes-section .add-note-button {
-        font-size: 14px;
-        padding: 8px 12px;
-    }
+.patient-info,
+.doctor-info,
+.chat-box {
+  background-color: #ffffff;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+  box-shadow: none; /* Remove shadow for stacked panels */
+  border-radius: 0; /* Remove border-radius for stacked panels */
+}
+
+.patient-info {
+  background-color: #e6ffe6; /* Light green for patient info */
+  border-color: #a3e6a3;
+}
+
+.doctor-info {
+  background-color: #e6e6ff; /* Light blue for doctor info */
+  border-color: #a3a3e6;
+}
+
+.panel-box h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #37474f;
+  font-size: 1.2em;
+}
+
+.panel-box p {
+  margin: 5px 0;
+  font-size: 0.95em;
+  color: #444;
+}
+
+/* Chat Box Styling */
+.chat-box {
+  flex-grow: 1; /* Chat box fills remaining vertical space in sidebar */
+  display: flex;
+  flex-direction: column;
+  padding: 0; /* Remove direct padding, manage inside */
+  background-color: #ffe6e6; /* Light red for chat area */
+  border-color: #ffb3b3;
+  position: relative; /* For chat box here text */
+}
+
+.chat-messages {
+  flex-grow: 1;
+  overflow-y: auto; /* Enable scrolling for messages */
+  padding: 15px 20px; /* Padding for messages area */
+  border-bottom: 1px solid #ffcccc;
+}
+
+.chat-message {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.chat-message .sender-name {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.user-message {
+  text-align: right;
+  color: #007bff; /* Blue for user messages */
+}
+
+.other-message {
+  text-align: left;
+  color: #333; /* Darker for other messages */
+}
+
+.chat-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ccc;
+  font-size: 1.2em;
+  font-style: italic;
+  white-space: nowrap;
+}
+
+.chat-input-area {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ffcccc;
+  background-color: #fff;
+}
+
+.chat-input-area input {
+  flex-grow: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px; /* Rounded input */
+  margin-right: 10px;
+  font-size: 0.95em;
+}
+
+.chat-input-area input:focus {
+  outline: none;
+  border-color: #800000;
+}
+
+.chat-input-area button {
+  padding: 8px 15px;
+  background-color: #007bff; /* Send button blue */
+  color: white;
+  border: none;
+  border-radius: 20px; /* Rounded button */
+  cursor: pointer;
+  font-size: 0.95em;
+  transition: background-color 0.3s ease;
+}
+
+.chat-input-area button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .online-consultation-content {
+    flex-direction: column; /* Stack video area and sidebar */
+  }
+
+  .video-call-area {
+    padding: 15px;
+    height: 50vh; /* Give video area a fixed height when stacked */
+    min-height: 350px; /* Ensure a minimum height */
+    gap: 10px;
+  }
+
+  .consultation-sidebar {
+    min-width: unset; /* Allow sidebar to shrink */
+    max-width: 100%; /* Take full width */
+    width: 100%; /* Ensure it spans full width */
+    border-left: none; /* Remove left border when stacked */
+    border-top: 1px solid #e0e0e0; /* Add top border */
+  }
+
+  .panel-box-header,
+  .patient-info,
+  .doctor-info,
+  .chat-box {
+    border-radius: 0; /* Ensure no unwanted radius when stacked */
+  }
+}
+
+@media (max-width: 600px) {
+  .online-consultation-content {
+    padding: 10px;
+  }
+
+  .video-call-area {
+    height: 40vh; /* Further reduce video height on smaller mobiles */
+    min-height: 250px;
+    gap: 10px;
+  }
+
+  .chat-input-area input {
+    padding: 6px 10px;
+    font-size: 0.9em;
+  }
+
+  .chat-input-area button {
+    padding: 6px 12px;
+    font-size: 0.9em;
+  }
 }
