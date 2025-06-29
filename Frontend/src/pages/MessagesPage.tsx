@@ -1,51 +1,166 @@
-import React from 'react';
-// Remove Link import if no internal links within the content are using it.
-// Based on current code, Link is only used in the removed Navbar, so it can be removed.
-// import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import supabase from '../lib/supabaseClient';
 import './MessagesPage.css';
-// Remove logo import as Navbar is no longer directly in this component
-// import logo from '../assets/MediBridge_LogoClear.png';
+
+interface Message {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  message_content: string;
+  image_url?: string;
+  timestamp: string;
+}
 
 const MessagesPage: React.FC = () => {
-  const messages = [
-    { id: 1, sender: "Dr. Alex Smith", subject: "Regarding your lab results", snippet: "Your recent lab results are back...", time: "10:30 AM" },
-    { id: 2, sender: "Admin Support", subject: "Upcoming system maintenance", snippet: "We will be performing scheduled maintenance...", time: "Yesterday" },
-    { id: 3, sender: "Dr. Sarah Lee", subject: "Follow-up question", snippet: "Just had a quick question about your medication...", time: "2 days ago" },
-  ];
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [showCompose, setShowCompose] = useState(false);
+  const [receiverEmail, setReceiverEmail] = useState('');
+  const [messageContent, setMessageContent] = useState('');
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      const currentUserId = session?.user?.id;
+      if (!currentUserId || sessionError) {
+        console.error('User not logged in');
+        return;
+      }
+
+      setUserId(currentUserId);
+
+      const { data, error } = await supabase
+        .from('session_messages')
+        .select('*')
+        .or(`sender_id.eq.${currentUserId},receiver_id.eq.${currentUserId}`)
+        .order('timestamp', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching messages:', error.message);
+        return;
+      }
+
+      setMessages(data || []);
+    };
+
+    fetchMessages();
+  }, []);
+
+  const handleSendMessage = async () => {
+  if (!receiverEmail || !messageContent || !userId) {
+    alert('Please fill in all fields');
+    return;
+  }
+
+  // Look up receiver's user_id from email
+  const { data: receiverUsers, error: userLookupError } = await supabase
+  .from('users')
+  .select('user_id')
+  .eq('email', receiverEmail.toLowerCase())
+
+if (userLookupError) {
+  console.error('User lookup error:', userLookupError.message);
+  alert('Failed to look up user.');
+  return;
+}
+
+if (!receiverUsers || receiverUsers.length === 0) {
+  alert('Receiver email not found.');
+  return;
+}
+
+const receiverId = receiverUsers[0].user_id;
+
+
+  // Insert message
+  const { error: insertError } = await supabase.from('session_messages').insert([
+    {
+      sender_id: userId,
+      receiver_id: receiverId,
+      message_content: messageContent,
+    },
+  ]);
+
+  if (insertError) {
+    console.error('Error sending message:', insertError.message);
+    alert('Failed to send message');
+  } else {
+    setMessageContent('');
+    setReceiverEmail('');
+    setShowCompose(false);
+
+    // Refresh messages
+    const { data: refreshedMessages, error } = await supabase
+      .from('session_messages')
+      .select('*')
+      .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+      .order('timestamp', { ascending: false });
+
+    if (!error) setMessages(refreshedMessages || []);
+  }
+};
+
 
   return (
-    // This div now represents the main content area of the Messages page.
-    // It will be rendered inside the <main> tag of your Layout component,
-    // which already applies padding-top to clear the fixed Navbar.
-    <div className="main-content-area messages-page-wrapper"> {/* Renamed for consistency */}
-      {/*
-        The Navbar and Footer are now rendered by the Layout component in App.tsx.
-        Do NOT render them here.
-        Removed: <nav className="navbar">...</nav>
-      */}
-
-      {/* Title and Description */}
+    <div className="main-content-area messages-page-wrapper">
       <div className="messages-top-info-bar">
         <h1 className="messages-page-title">Messages</h1>
-        <p className="messages-description">View and manage your communications with medical staff.</p>
+        <p className="messages-description">
+          View and manage your communications with medical staff.
+        </p>
       </div>
 
-      {/* Messages Card */}
       <div className="card-base messages-inbox-card">
         <h3 className="card-title">Inbox</h3>
-        <ul className="messages-list">
-          {messages.map((message) => (
-            <li key={message.id} className="message-item">
-              <div className="message-header">
-                <span className="message-sender">{message.sender}</span>
-                <span className="message-time">{message.time}</span>
-              </div>
-              <h4 className="message-subject">{message.subject}</h4>
-              <p className="message-snippet">{message.snippet}</p>
-            </li>
-          ))}
-        </ul>
-        <button className="new-message-button">Compose New Message</button>
+        {messages.length === 0 ? (
+          <p>No messages found.</p>
+        ) : (
+          <ul className="messages-list">
+            {messages.map((msg) => (
+              <li key={msg.id} className="message-item">
+                <div className="message-header">
+                  <span className="message-sender">
+                    {msg.sender_id === userId ? 'You' : msg.sender_id}
+                  </span>
+                  <span className="message-time">
+                    {new Date(msg.timestamp).toLocaleString()}
+                  </span>
+                </div>
+                <h4 className="message-subject">
+                  {msg.message_content.slice(0, 30)}...
+                </h4>
+                <p className="message-snippet">{msg.message_content}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <button className="new-message-button" onClick={() => setShowCompose(!showCompose)}>
+          {showCompose ? 'Cancel' : 'Compose New Message'}
+        </button>
+
+        {showCompose && (
+          <div className="compose-form">
+            <input
+              type="email"
+              placeholder="Receiver Email"
+              className="input-field"
+              value={receiverEmail}
+              onChange={(e) => setReceiverEmail(e.target.value)}
+            />
+            <textarea
+              placeholder="Your message..."
+              className="input-field"
+              value={messageContent}
+              onChange={(e) => setMessageContent(e.target.value)}
+            />
+            <button className="send-button" onClick={handleSendMessage}>Send</button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,14 +1,14 @@
 /* src/pages/MessagesPage.css */
 
 .messages-page-container {
-  padding: 20px 30px; /* Match main-content-area padding */
+  padding: 20px 30px;
   width: 100%;
   box-sizing: border-box;
 }
 
 .messages-top-info-bar {
   margin-bottom: 25px;
-  padding-left: 10px; /* Align with card content */
+  padding-left: 10px;
   padding-right: 10px;
 }
 
@@ -63,7 +63,7 @@
 .message-sender {
   font-family: 'Segoe UI', sans-serif;
   font-weight: 600;
-  color: #007bff; /* Blue for sender */
+  color: #007bff;
   font-size: 15px;
 }
 
@@ -88,11 +88,11 @@
   line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap; /* Keep snippet on one line */
+  white-space: nowrap;
 }
 
 .new-message-button {
-  display: block; /* Takes full width */
+  display: block;
   width: 100%;
   padding: 10px 15px;
   margin-top: 20px;
@@ -112,11 +112,52 @@
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* Compose form styles — placed OUTSIDE the media query */
+.compose-form {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #fefefe;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+}
+
+.compose-form .input-field {
+  width: 100%;
+  padding: 10px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.compose-form .send-button {
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #28a745;
+  color: white;
+  font-weight: 600;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.compose-form .send-button:hover {
+  background-color: #218838;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive tweaks */
 @media (max-width: 768px) {
   .messages-top-info-bar {
     padding-left: 0;
     padding-right: 0;
   }
+
   .messages-page-title {
     font-size: 22px;
   }

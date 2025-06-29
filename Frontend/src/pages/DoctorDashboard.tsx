@@ -38,7 +38,7 @@ const DoctorDashboard: React.FC = () => {
       // Fetch appointments (Mock: filter by today only)
       const { data: appts, error: apptError } = await supabase
         .from('appointments')
-        .select('id, date, time, patient_name')
+        .select('id, start_time, end_time, patients(first_name, last_name)')
         .eq('doctor_id', userId);
 
       if (apptError) {
@@ -50,9 +50,11 @@ const DoctorDashboard: React.FC = () => {
       const todayAppts = appts?.filter((appt: any) => appt.date === today) || [];
 
       setAppointments(todayAppts);
-      setPatientList(todayAppts.map((a: any) => a.patient_name));
-      if (todayAppts.length > 0) setSelectedPatient(todayAppts[0].patient_name);
-
+      setPatientList(todayAppts.map((a: any) => `${a.patients?.[0]?.first_name} ${a.patients?.[0]?.last_name}`));
+      if (todayAppts.length > 0) { const patient = todayAppts[0].patients?.[0];
+      if (patient) {setSelectedPatient(`${patient.first_name} ${patient.last_name}`);
+      }}
+      
       const formattedDate = new Date().toLocaleDateString('en-US', {
         weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
       });
@@ -145,9 +147,10 @@ const DoctorDashboard: React.FC = () => {
             {appointments.length > 0 ? (
               appointments.map((appt) => (
                 <div className="appointment-item" key={appt.id}>
-                  <p className="patient-name">Patient: {appt.patient_name}</p>
+                  <p className="patient-name"> Patient: {appt.patients?.[0]?.first_name} {appt.patients?.[0]?.last_name} 
+                  </p>
                   <p className="appointment-time">
-                    {appt.date} - {appt.time}
+                    {new Date(appt.start_time).toLocaleString()} - {new Date(appt.end_time).toLocaleTimeString()}
                   </p>
                 </div>
               ))
