@@ -29,24 +29,24 @@ const AppointmentsPage: React.FC = () => {
 
   useEffect(() => {
     const fetchDoctors = async () => {
-      const { data, error } = await supabase
-        .from('doctors')
-        .select('user_id, specialization, users ( full_name )')
-        .eq('is_available', true);
+  const { data, error } = await supabase
+    .from('doctors')
+    .select('user_id, specialization, users ( full_name )')
+    .eq('is_available', true);
 
-      if (error) {
-        console.error('Failed to load doctors:', error.message);
-        return;
-      }
+  if (error) {
+    console.error('Failed to load doctors:', error.message);
+    return;
+  }
 
-      const mapped = data.map((d) => ({
-        user_id: d.user_id,
-        specialization: d.specialization,
-        full_name: d.users.full_name,
-      }));
+  const mapped = data.map((d: any) => ({
+    user_id: d.user_id,
+    specialization: d.specialization,
+    full_name: d.users?.full_name ?? 'Unknown Doctor', // Optional chaining
+  }));
 
-      setDoctors(mapped);
-    };
+  setDoctors(mapped);
+};
 
     fetchDoctors();
   }, []);
@@ -104,12 +104,13 @@ const AppointmentsPage: React.FC = () => {
       return;
     }
 
-    const mapped = data.map((app) => ({
-      id: app.id,
-      doctor: app.doctors.users.full_name,
-      date: new Date(app.start_time).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-      time: new Date(app.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }));
+    const mapped = data.map((app: any) => ({
+  id: app.id,
+  doctor: app.doctors?.users?.full_name ?? 'Unknown',
+  date: new Date(app.start_time).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+  time: new Date(app.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}));
+
 
     setUpcomingAppointments(mapped);
   };
