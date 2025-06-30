@@ -126,10 +126,14 @@ async def delete_session(session_id: str):
     """Deletes a specific chat session and all its associated messages."""
     if session_id in active_sessions:
         del active_sessions[session_id]
-    
-    db.delete_session_from_db(session_id)
-    return Response(status_code=204)
 
-# --- Run the Application ---
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    success = db.delete_session_from_db(session_id)
+
+    # This check ensures that if the database operation fails, an error is returned.
+    if not success:
+        raise HTTPException(
+            status_code=404, 
+            detail="Session not found or you do not have permission to delete it."
+        )
+    
+    return Response(status_code=204)

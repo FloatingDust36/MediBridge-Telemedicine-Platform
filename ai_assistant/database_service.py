@@ -60,23 +60,33 @@ def update_session_summary(session_id: str, summary_text: str):
         print(f"Error updating AI session summary: {e}")
 
 def get_session_details(session_id: str) -> dict | None:
+    """Retrieves all details for a session, including its full message history."""
     if not supabase_client: return None
     try:
-        # CHANGED to 'ai_sessions'
-        session_response = supabase_client.table("ai_sessions").select("session_summary, user_id, final_esi_level").eq("id", session_id).single().execute()
-        if not session_response.data: return None
+        # First, get the main session data
+        session_response = supabase_client.table("ai_sessions").select(
+            "session_summary, user_id, final_esi_level"
+        ).eq("id", session_id).single().execute()
+
+        if not session_response.data:
+            return None
+
         session_data = session_response.data
 
-        # CHANGED to 'ai_messages'
-        messages_response = supabase_client.table("ai_messages").select("sender, message_content, image_url").eq("session_id", session_id).order("timestamp", desc=False).execute()
+        # Next, fetch all messages for that session
+        messages_response = supabase_client.table("ai_messages").select(
+            "sender, message_content, image_url"
+        ).eq("session_id", session_id).order("timestamp", desc=False).execute()
 
+        # Format the messages and attach them to our session data
         session_data['messages'] = [
             {"type": row['sender'], "text": row['message_content'], "imageUrl": row.get('image_url')} 
             for row in messages_response.data
         ]
+
         return session_data
     except Exception as e:
-        print(f"Error fetching AI session details: {e}")
+        print(f"Error fetching session details: {e}")
         return None
 
 def get_sessions_for_user(user_id: str) -> list[dict] | None:
