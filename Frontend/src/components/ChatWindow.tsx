@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Paperclip, Send } from 'lucide-react';
-import PostTriageActions from './PostTriageActions'; // Import the new component
+import PostTriageActions from './PostTriageActions';
 import './../pages/ChatbotPage.css';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -14,7 +14,7 @@ interface Message {
   imageUrl?: string;
 }
 
-// A dedicated component for the welcome screen for better organization
+// A dedicated component for the Welcome Screen for better organization
 const WelcomeScreen = () => (
   <div className="welcome-screen">
     <img src="/images/chatbot-icon.png" alt="MedBot" className="welcome-icon" />
@@ -23,30 +23,37 @@ const WelcomeScreen = () => (
   </div>
 );
 
-const ChatWindow = ({ sessionId }: { sessionId: string | null }) => {
+// A dedicated component for the typing indicator
+const TypingIndicator = () => (
+    <div className="message-bubble bot typing-indicator">
+        <span></span><span></span><span></span>
+    </div>
+);
+
+const ChatWindow = ({ sessionId, onTriageComplete }: { sessionId: string | null; onTriageComplete: (sessionId: string) => void; }) => {
   // State management for the chat window's functionality
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [isTriageComplete, setIsTriageComplete] = useState(false);
   const [finalEsiLevel, setFinalEsiLevel] = useState<number | null>(null);
 
-  // Refs for DOM elements
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  // This hook loads the chat history when a session is selected
+  // This hook now makes a single, efficient call to load the entire chat state
   useEffect(() => {
     const loadChat = async () => {
       if (!sessionId) {
+        setMessages([]); // Clear messages when no session is active
         setIsLoading(false);
-        return; // Do nothing if no session is selected, the Welcome Screen will show
+        return;
       }
 
       setIsLoading(true);
-      setIsTriageComplete(false); // Reset state for the new session
+      setIsTriageComplete(false);
       setFinalEsiLevel(null);
       
       try {
@@ -54,9 +61,8 @@ const ChatWindow = ({ sessionId }: { sessionId: string | null }) => {
         if (!response.ok) throw new Error("Session not found or server error.");
         
         const data = await response.json();
-        setMessages(data.messages || []); // Set the message history
+        setMessages(data.messages || []);
         
-        // If the loaded session was already completed, update the UI state
         if (data.final_esi_level) {
           setIsTriageComplete(true);
           setFinalEsiLevel(data.final_esi_level);
@@ -71,7 +77,7 @@ const ChatWindow = ({ sessionId }: { sessionId: string | null }) => {
     loadChat();
   }, [sessionId]);
 
-  // This hook auto-scrolls to the bottom on new messages
+  // This hook auto-scrolls to the bottom when new messages are added or the bot is typing
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isSending]);
@@ -83,9 +89,9 @@ const ChatWindow = ({ sessionId }: { sessionId: string | null }) => {
     setIsSending(true);
     const userMessageText = input.trim();
     const tempImageUrl = imageFile ? URL.createObjectURL(imageFile) : undefined;
-
+    
     setMessages((prev) => [...prev, { type: 'user', text: userMessageText, imageUrl: tempImageUrl }]);
-
+    
     const fileToSend = imageFile;
     setInput('');
     setImageFile(null);
@@ -93,46 +99,41 @@ const ChatWindow = ({ sessionId }: { sessionId: string | null }) => {
     const formData = new FormData();
     formData.append('session_id', sessionId);
     formData.append('user_message', userMessageText);
-    if (fileToSend) formData.append('image', fileToSend);
+    if (fileToSend) {
+      formData.append('image', fileToSend);
+    }
 
     try {
       const response = await fetch(`${API_URL}/chat/stream-message`, { method: 'POST', body: formData });
       if (!response.ok || !response.body) throw new Error("API call failed");
 
-      // Prepare to read the stream
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-
-      // Add a new, empty bot message to the state that we will populate
       setMessages((prev) => [...prev, { type: 'bot', text: '' }]);
 
-      // Read the stream chunk by chunk
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
         const chunk = decoder.decode(value);
-
-        // Check if the chunk is our special final JSON object
+        
         try {
           const jsonData = JSON.parse(chunk);
-          if (jsonData.type === 'triage_complete') {
+          if (jsonData.type === 'triage_complete' && jsonData.esi_level) {
             setIsTriageComplete(true);
             setFinalEsiLevel(jsonData.esi_level);
+            onTriageComplete(sessionId); // Notify the parent page
           }
         } catch (e) {
-          // If it's not JSON, it's a normal text chunk.
-          // Append the new text to the last message in the array.
           setMessages((prev) => {
             const lastMessage = prev[prev.length - 1];
-            lastMessage.text += chunk;
-            return [...prev.slice(0, -1), lastMessage];
+            const updatedMessage = { ...lastMessage, text: lastMessage.text + chunk };
+            return [...prev.slice(0, -1), updatedMessage];
           });
         }
       }
     } catch (error) {
       console.error("Failed to stream message:", error);
-      setMessages((prev) => [...prev, { type: 'bot', text: "Sorry, an error occurred." }]);
+      setMessages((prev) => [...prev.slice(0, -1), { type: 'bot', text: "Sorry, an error occurred. Please try again." }]);
     } finally {
       setIsSending(false);
     }
@@ -165,17 +166,12 @@ const ChatWindow = ({ sessionId }: { sessionId: string | null }) => {
                 {msg.text && <div className="message-text">{msg.text}</div>}
               </div>
             ))}
-            {isSending && (
-              <div className="message-bubble bot typing-indicator">
-                <span></span><span></span><span></span>
-              </div>
-            )}
+            {isSending && <TypingIndicator />}
           </>
         )}
         <div ref={messagesEndRef} />
       </div>
-
-      {/* This is the container for the bottom part of the chat */}
+      
       <div className="chatbot-input-area-wrapper">
         {isTriageComplete && finalEsiLevel && (
             <PostTriageActions esiLevel={finalEsiLevel} />
@@ -207,7 +203,6 @@ const ChatWindow = ({ sessionId }: { sessionId: string | null }) => {
           </div>
         </div>
       </div>
-
     </div>
   );
 };
