@@ -182,7 +182,7 @@ body {
 
 /* NEW: What is MediBridge section styles */
 .description {
-  background: #ffffff; /* A clean white background */
+  background: #f0f5fa; /* A clean white background */
   padding: 3rem 2rem; /* More vertical padding, consistent horizontal padding */
   text-align: center;
   width: 100%;

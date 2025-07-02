@@ -216,7 +216,7 @@ const AppointmentsPage: React.FC = () => {
                   </button>
                 );
               }) : (
-                <p>No available slots for this doctor.</p>
+                <p style={{ color: 'black' }}>No available slots for this doctor.</p>
               )}
             </div>
             <p className="time-slot-note">
