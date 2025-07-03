@@ -109,31 +109,57 @@ const ChatWindow = ({ sessionId, onTriageComplete }: { sessionId: string | null;
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
+      
+      // Add a new, empty bot message to the state that we will populate
       setMessages((prev) => [...prev, { type: 'bot', text: '' }]);
 
+      // Read the stream chunk by chunk
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        const chunk = decoder.decode(value);
         
-        try {
-          const jsonData = JSON.parse(chunk);
-          if (jsonData.type === 'triage_complete' && jsonData.esi_level) {
-            setIsTriageComplete(true);
-            setFinalEsiLevel(jsonData.esi_level);
-            onTriageComplete(sessionId); // Notify the parent page
-          }
-        } catch (e) {
-          setMessages((prev) => {
-            const lastMessage = prev[prev.length - 1];
-            const updatedMessage = { ...lastMessage, text: lastMessage.text + chunk };
-            return [...prev.slice(0, -1), updatedMessage];
-          });
+        let chunk = decoder.decode(value);
+        
+        // --- NEW, ROBUST PARSING LOGIC ---
+        const jsonMarker = '{"type":"triage_complete"';
+        
+        if (chunk.includes(jsonMarker)) {
+            const parts = chunk.split(jsonMarker);
+            const textPart = parts[0];
+            const jsonPart = jsonMarker + parts[1];
+
+            // 1. Append the last piece of text before the JSON packet
+            if (textPart) {
+                setMessages((prev) => {
+                    const lastMessage = prev[prev.length - 1];
+                    const updatedMessage = { ...lastMessage, text: lastMessage.text + textPart };
+                    return [...prev.slice(0, -1), updatedMessage];
+                });
+            }
+
+            // 2. Process the JSON data
+            try {
+                const jsonData = JSON.parse(jsonPart);
+                if (jsonData.type === 'triage_complete') {
+                    setIsTriageComplete(true);
+                    setFinalEsiLevel(jsonData.esi_level);
+                    if (sessionId) onTriageComplete(sessionId);
+                }
+            } catch (e) {
+                console.error("Failed to parse final data packet:", e);
+            }
+        } else {
+            // This is just a normal text chunk, append it
+            setMessages((prev) => {
+                const lastMessage = prev[prev.length - 1];
+                const updatedMessage = { ...lastMessage, text: lastMessage.text + chunk };
+                return [...prev.slice(0, -1), updatedMessage];
+            });
         }
       }
     } catch (error) {
       console.error("Failed to stream message:", error);
-      setMessages((prev) => [...prev.slice(0, -1), { type: 'bot', text: "Sorry, an error occurred. Please try again." }]);
+      setMessages((prev) => [...prev, { type: 'bot', text: "Sorry, an error occurred." }]);
     } finally {
       setIsSending(false);
     }
