@@ -12,7 +12,7 @@
 }
 
 .reviews-page-title {
-  color: #000080; /* Dark blue color as seen in image */
+  color: #800000; /* Dark blue color as seen in image */
   margin-top: 20px;
   margin-bottom: 30px;
   font-size: 2rem; /* Larger font size for main title */
@@ -63,9 +63,13 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   padding: 25px;
   margin-bottom: 20px;
-  max-width: 800px; /* Max width for review cards */
-  width: 90%; /* Responsive width */
   box-sizing: border-box;
+}
+
+.review-card:hover{
+  background-color: #f0f5fa;
+  transform: translateY(-5px); /* Lift card slightly on hover */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* More pronounced shadow on hover */
 }
 
 .reviewer-info {

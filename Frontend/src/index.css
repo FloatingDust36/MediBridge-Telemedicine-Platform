@@ -12,6 +12,14 @@
   }
 }
 
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Base layer for custom styles and overrides, after Tailwind's preflight */
 @layer base {
   /* Add these crucial lines for full height */
