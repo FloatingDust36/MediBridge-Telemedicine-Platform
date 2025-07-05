@@ -142,7 +142,7 @@ function App() {
         padding: '10px',
         borderRadius: '8px',
         boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-        display: 'flex',
+        display: 'none',
         flexDirection: 'column',
         gap: '5px',
         color: '#666'

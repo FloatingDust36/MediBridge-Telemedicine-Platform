@@ -138,14 +138,10 @@ const LocationMarker: React.FC<{
       (
         node(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[amenity=hospital];
         node(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[healthcare=hospital];
-        node(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[amenity=clinic];
-        node(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[healthcare=clinic];
         node(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[amenity=doctors];
         node(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[healthcare=doctor];
         way(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[amenity=hospital];
         way(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[healthcare=hospital];
-        way(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[amenity=clinic];
-        way(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[healthcare=clinic];
         way(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[amenity=doctors];
         way(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[healthcare=doctor];
       );
