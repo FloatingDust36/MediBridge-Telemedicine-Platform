@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'; // Import useNavigate
 import supabase from './lib/supabaseClient';
+import OAuthRegisterCallback from './pages/OAuthRegisterCallback';
+
 
 
 import Layout from './components/Layout'; // Ensure correct path for Layout
@@ -300,6 +302,7 @@ function App() {
 
          {/* Google OAuth callback route */}
          <Route path="/oauth-callback" element={<OAuthCallback />} />
+         <Route path="/oauth-register-callback" element={<OAuthRegisterCallback />} />
       </Routes>
     </>
   );

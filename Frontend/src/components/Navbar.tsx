@@ -57,32 +57,56 @@ const Navbar: React.FC<NavbarProps> = ({ userType }) => {
   const email = (form[0] as HTMLInputElement).value;
   const password = (form[1] as HTMLInputElement).value;
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
-  if (error) {
-    alert('Login failed: ' + error.message);
+  if (loginError) {
+    alert('Login failed: ' + loginError.message);
+    return;
+  }
+
+  // Step 1: Get logged-in user
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData?.user) {
+    alert('Login failed: Unable to get user session');
+    return;
+  }
+
+  const userId = userData.user.id;
+
+  // Step 2: Check if the user exists in your `users` table
+  const { data: existingUser, error: checkError } = await supabase
+    .from('users')
+    .select('*')
+    .eq('user_id', userId)
+    .single();
+
+  if (checkError || !existingUser) {
+    // Not in your users table — reject login
+    await supabase.auth.signOut();
+    alert('Login failed: This account is not registered in MediBridge.');
+    return;
+  }
+
+  // ✅ User is valid — continue
+  alert('Login successful!');
+  setShowLogin(false);
+
+  const role = existingUser.role;
+
+  if (role === 'doctor') {
+    navigate('/doctordashboard');
+  } else if (role === 'patient') {
+    navigate('/patientdashboard');
+  } else if (role === 'admin') {
+    navigate('/admindashboard');
   } else {
-    alert('Login successful!');
-    setShowLogin(false);
-
-    // Get the user's role
-    const { data: { user } } = await supabase.auth.getUser();
-    const role = user?.user_metadata?.user_role;
-
-    if (role === 'doctor') {
-      navigate('/doctordashboard');
-    } else if (role === 'patient') {
-      navigate('/patientdashboard');
-    } else if (role === 'admin') {
-      navigate('/admindashboard');
-    } else {
-      navigate('/');
-    }
+    navigate('/');
   }
 };
+
 
   // Handle Google Registration with Role
 const handleGoogleRegister = async () => {
@@ -142,24 +166,38 @@ const handleGoogleRegister = async () => {
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (registerPassword !== confirmRegisterPassword) {
-      alert('Passwords do not match!'); // Consider a custom modal
-      return;
-    }
-    if (!role) {
-      alert('Please select a role (Patient or Doctor).'); // Consider a custom modal
-      return;
-    }
+    
+  if (registerPassword !== confirmRegisterPassword) {
+    alert('Passwords do not match!');
+    return;
+  }
 
-    const { data, error } = await supabase.auth.signUp({
-      email: registerEmail,
-      password: registerPassword,
-      options: {
-        data: {
-          user_role: role.toLowerCase(), // Store role in user_metadata
-        },
+  if (!role) {
+    alert('Please select a role (Patient or Doctor).');
+    return;
+  }
+
+  // 🔒 Check if email already exists in your own `users` table
+  const { data: existingUser, error: userCheckError } = await supabase
+    .from('users')
+    .select('email')
+    .eq('email', registerEmail)
+    .single();
+
+  if (existingUser) {
+    alert('This email is already registered in MediBridge.');
+    return;
+  }
+     // ✅ Safe to proceed with Supabase registration
+  const { data, error } = await supabase.auth.signUp({
+    email: registerEmail,
+    password: registerPassword,
+    options: {
+      data: {
+        user_role: role.toLowerCase(),
       },
-    });
+    },
+  });
 
     if (error) {
       alert('Registration failed: ' + error.message); // Consider a custom modal

@@ -21,56 +21,32 @@ const OAuthCallback = () => {
     }
 
     const user = session.user;
-    const selectedRole = localStorage.getItem('selectedRole');
-    localStorage.removeItem('selectedRole');
+    const userId = user.id;
 
-    if (!selectedRole) {
-      console.warn('No selected role in localStorage');
+    // Check if user exists in your `users` table
+    const { data: existingUser, error: lookupError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (lookupError || !existingUser) {
+      // ❌ Not registered — log out and redirect
+      await supabase.auth.signOut();
+      alert('This Google account is not registered in MediBridge.');
       navigate('/');
       return;
     }
 
-    // Store role in metadata (optional but helpful)
-    await supabase.auth.updateUser({
-      data: { user_role: selectedRole },
-    });
+    // ✅ User exists — proceed
+    const role = existingUser.role;
 
-    const userId = user.id;
-
-    // Insert into users table (avoid duplicate)
-    await supabase
-      .from('users')
-      .upsert([
-        {
-          user_id: userId,
-          email: user.email,
-          role: selectedRole,
-          created_at: new Date(),
-          updated_at: new Date(),
-        },
-      ]);
-
-    if (selectedRole === 'doctor') {
-      // ✅ Safely upsert doctor record
-      await supabase
-        .from('doctors')
-        .upsert([
-          {
-            user_id: userId,
-            is_available: true,
-            consultation_fee: 0,
-          },
-        ]);
-      navigate('/completedoctorprofile');
-    } else if (selectedRole === 'patient') {
-      await supabase
-        .from('patients')
-        .upsert([
-          {
-            user_id: userId,
-          },
-        ]);
-      navigate('/completepatientprofile');
+    if (role === 'doctor') {
+      navigate('/doctordashboard');
+    } else if (role === 'patient') {
+      navigate('/patientdashboard');
+    } else if (role === 'admin') {
+      navigate('/admindashboard');
     } else {
       navigate('/');
     }
