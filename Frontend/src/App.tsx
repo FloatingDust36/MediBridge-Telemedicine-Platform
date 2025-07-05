@@ -25,6 +25,8 @@ import PatientDashboard from './pages/PatientDashboard';
 import Appointments from "./pages/AppointmentsPage";
 import Messages from "./pages/MessagesPage";
 import Chatbot from "./pages/ChatbotPage";
+import PatientProfile from './pages/PatientProfile';
+import DoctorProfile from './pages/DoctorProfile';
 
 import AdminDashboard from './pages/AdminDashboard';
 
@@ -190,13 +192,13 @@ function App() {
             }
           />
          <Route
-  path="completepatientprofile"
-  element={
-    <ProtectedRoute allowedRoles={['guest', 'patient']}>
-      <CompletePatientProfile />
-    </ProtectedRoute>
-  }
-/>
+           path="completepatientprofile"
+           element={
+            <ProtectedRoute allowedRoles={['guest', 'patient']}>
+               <CompletePatientProfile />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Protected Dashboard and Related Routes */}
           <Route
@@ -215,6 +217,14 @@ function App() {
               </ProtectedRoute> 
             }
           />
+          <Route
+            path="doctorprofile"
+            element={
+              <ProtectedRoute allowedRoles={['doctor']}>
+                <DoctorProfile />
+              </ProtectedRoute>
+            }
+            />
           <Route
             path="summary"
             element={
@@ -248,6 +258,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="patientprofile"
+            element={
+              <ProtectedRoute allowedRoles={['patient']}>
+                <PatientProfile />
+              </ProtectedRoute>
+            }
+            /> {/* Patient Profile route */}
 
           {/* Messages accessible by both doctor and patient */}
           <Route

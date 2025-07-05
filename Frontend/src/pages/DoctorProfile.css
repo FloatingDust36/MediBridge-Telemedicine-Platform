@@ -1,0 +1,282 @@
+/* src/pages/DoctorProfile.css */
+
+/* Global reset for potentially conflicting elements within this component */
+.doctor-profile-card * {
+  box-sizing: border-box !important; /* Ensure consistent box model */
+  margin: 0 !important; /* Remove all default margins */
+  padding: 0 !important; /* Remove all default paddings */
+  position: static !important; /* Ensure no unintended absolute/relative positioning */
+  float: none !important; /* Remove any floating behavior */
+  clear: both !important; /* Clear any floats */
+}
+
+/* Outer container for centering */
+.doctor-profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align content to the top */
+  min-height: calc(100vh - 60px); /* Adjust based on your header height */
+  padding: 40px 20px;
+  background-color: #f0f2f5; /* Light background for the page */
+  font-family: 'Arial', sans-serif;
+  box-sizing: border-box;
+}
+
+/* Main card that contains the profile information */
+.doctor-profile-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 600px; /* Constrain card width for a better form appearance */
+  box-sizing: border-box !important; /* Ensure this is applied */
+
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+
+  /* --- Crucial for Scrollability & Preventing Cut-off --- */
+  max-height: calc(100vh - 120px); /* Adjust height; allows content to scroll within the card */
+  overflow-y: auto; /* Enable vertical scrolling if content overflows */
+  position: relative; /* For z-index if needed, but not for positioning content */
+
+  /* Scrollbar styling (optional, for aesthetics) */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #888 #f0f2f5; /* Firefox */
+}
+
+/* Webkit scrollbar (Chrome, Safari) */
+.doctor-profile-card::-webkit-scrollbar {
+  width: 8px;
+}
+.doctor-profile-card::-webkit-scrollbar-track {
+  background: #f0f2f5;
+  border-radius: 10px;
+}
+.doctor-profile-card::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+.doctor-profile-card::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Header area for title and edit button */
+.profile-header-area {
+  display: flex !important; /* Force flex display */
+  justify-content: space-between !important; /* Space out title and button */
+  align-items: center !important; /* Vertically align items */
+  margin-bottom: 35px !important; /* Explicit margin */
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 15px !important;
+  flex-shrink: 0 !important; /* Prevent from shrinking */
+  width: 100% !important; /* Ensure it takes full width */
+}
+
+/* Profile title styling */
+.profile-title {
+  font-size: 2.2em;
+  color: #2c3e50;
+  text-align: left; /* Align to left within header */
+  font-weight: bold;
+  margin: 0 !important; /* Ensure no margins */
+  flex-grow: 1 !important; /* Allow title to take available space */
+  padding: 0 !important; /* Ensure no padding */
+}
+
+/* Message styling (success/error) */
+.profile-message {
+  padding: 12px 20px;
+  margin-bottom: 20px !important; /* Consistent margin */
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1em;
+  flex-shrink: 0 !important; /* Prevent from shrinking */
+  width: 100% !important; /* Ensure full width */
+}
+
+.profile-message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.profile-message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* --- Form Area Layout using Flexbox for stacking --- */
+.doctor-form-area {
+  display: flex !important;
+  flex-direction: column !important; /* Stack form groups vertically */
+  /* Removed gap; using margin-bottom on form-group for explicit spacing */
+  flex-grow: 1 !important; /* Allow form area to take available vertical space */
+  padding-bottom: 20px !important; /* Padding at the bottom for scroll comfort */
+  width: 100% !important; /* Ensure full width */
+}
+
+.form-group {
+  display: flex !important;
+  flex-direction: column !important; /* Stack label and input vertically */
+  align-items: flex-start !important; /* Align content to the left */
+  width: 100% !important; /* Ensures the group takes full width */
+  margin-bottom: 20px !important; /* Explicit space between form groups */
+  position: relative !important; /* Ensure it's a new stacking context if needed */
+  /* Resetting potential overrides */
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+}
+
+/* Remove margin-bottom from the very last form-group to prevent extra space at the end */
+.doctor-form-area .form-group:last-child {
+  margin-bottom: 0 !important;
+}
+
+
+.form-label {
+  font-size: 0.95em;
+  color: #555;
+  margin-bottom: 6px !important; /* Space between label and its input field */
+  font-weight: 600;
+  width: 100% !important; /* Ensure label takes full width */
+  text-align: left;
+  display: block !important; /* Ensure it's a block element */
+}
+
+.form-input-container {
+  width: 100% !important; /* Ensure input container takes full width */
+  display: block !important; /* Ensure it's a block element */
+}
+
+.form-input {
+  width: 100% !important; /* Input takes 100% of its container */
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+  color: #333;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box !important; /* Crucial: Includes padding and border in the element's total width/height */
+  line-height: 1.5; /* Improves vertical alignment of text */
+  display: block !important; /* Ensure it's a block element */
+}
+
+.form-input::placeholder {
+  color: #999;
+}
+
+.form-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+
+/* Styling for non-editable display text */
+.profile-display-text {
+  background-color: #f8f8f8;
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 1em;
+  color: #555;
+  width: 100% !important; /* IMPORTANT: Ensure it takes full width, no fixed pixels or negative margins */
+  min-height: 40px; /* Ensures consistent height with inputs */
+  display: flex !important; /* Force flex for vertical centering */
+  align-items: center !important; /* Vertically center text */
+  box-sizing: border-box !important;
+  line-height: 1.5;
+  /* Ensure no problematic margins are applied here */
+  margin: 0 !important;
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+}
+
+/* Action Buttons (for Save/Cancel in edit mode) */
+.profile-actions {
+  display: flex !important;
+  justify-content: center !important; /* Center buttons */
+  gap: 15px !important; /* Space between buttons */
+  margin-top: 30px !important; /* Space above buttons */
+  width: 100% !important;
+  flex-shrink: 0 !important; /* Prevent from shrinking */
+  padding-top: 20px !important; /* Add padding above buttons */
+  border-top: 1px solid #eee; /* Visual separator */
+}
+
+.submit-button,
+.cancel-button { /* Only these two for 'profile-actions' */
+  padding: 10px 22px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  min-width: 120px;
+  text-align: center;
+  margin: 0 !important; /* Reset margin */
+  position: static !important;
+}
+
+.submit-button {
+  background-color: #28a745; /* Green for submit */
+  color: white;
+}
+
+.submit-button:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+}
+
+.cancel-button {
+  background-color: #6c757d; /* Gray for cancel */
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+}
+
+/* Edit Profile Button (now lives inside .profile-header-area) */
+.edit-button {
+  background-color: #007bff; /* Blue for edit */
+  color: white;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  min-width: 120px;
+  text-align: center;
+  /* Crucial resets for this button */
+  margin: 0 !important;
+  position: static !important; /* Ensure it's not positioned absolutely */
+  top: auto !important;
+  left: auto !important;
+  align-self: center !important; /* Vertically align within flex parent */
+}
+
+.edit-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+/* Loading state */
+.doctor-profile-loading {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 1.2em;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #eaf2f8;
+  color: #2980b9;
+}
