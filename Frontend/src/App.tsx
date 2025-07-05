@@ -298,7 +298,7 @@ function App() {
           <Route path="*" element={<div>404 - Page Not Found</div>} />
         </Route>
 
-         {/* ✅ Google OAuth callback route */}
+         {/* Google OAuth callback route */}
          <Route path="/oauth-callback" element={<OAuthCallback />} />
       </Routes>
     </>

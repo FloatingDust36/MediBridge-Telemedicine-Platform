@@ -8,7 +8,7 @@ import googleIcon from '../assets/icons/Google.png';     // Adjust path
 import discordIcon from '../assets/icons/Discord.png';   // Adjust path
 
 import './Navbar.css'; // Import Navbar specific CSS
-import path from 'path';
+
 
 // Define the possible user types
 type UserType = 'guest' | 'patient' | 'doctor' | 'admin';
@@ -51,25 +51,38 @@ const Navbar: React.FC<NavbarProps> = ({ userType }) => {
 
   // Handle Login form submission
   const handleLoginSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const form = e.target as HTMLFormElement;
-    const email = (form[0] as HTMLInputElement).value;
-    const password = (form[1] as HTMLInputElement).value;
+  const form = e.target as HTMLFormElement;
+  const email = (form[0] as HTMLInputElement).value;
+  const password = (form[1] as HTMLInputElement).value;
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-    if (error) {
-      alert('Login failed: ' + error.message); // Consider a custom modal instead of alert
+  if (error) {
+    alert('Login failed: ' + error.message);
+  } else {
+    alert('Login successful!');
+    setShowLogin(false);
+
+    // Get the user's role
+    const { data: { user } } = await supabase.auth.getUser();
+    const role = user?.user_metadata?.user_role;
+
+    if (role === 'doctor') {
+      navigate('/doctordashboard');
+    } else if (role === 'patient') {
+      navigate('/patientdashboard');
+    } else if (role === 'admin') {
+      navigate('/admindashboard');
     } else {
-      alert('Login successful!'); // Consider a custom modal instead of alert
-      // Supabase's onAuthStateChange in App.tsx will handle the role and navigation
-      setShowLogin(false); // Close login popup
+      navigate('/');
     }
-  };
+  }
+};
 
   // Handle Google Registration with Role
 const handleGoogleRegister = async () => {
