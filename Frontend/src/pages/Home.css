@@ -276,3 +276,84 @@ body {
     padding-top: 120px; /* Further adjustment for very small screens */
   }
 }
+/* Apply styles specifically for mobile screens */
+@media (max-width: 768px) {
+      /* ----- Step B: Center content within the panel ----- */
+
+    /* For the toggles (Register/Login text/buttons at the very top) */
+   /* Adjust this breakpoint if needed (common for mobile/tablet) */
+
+    .login-register-popup { /* Replace with the actual class/ID of your popup */
+        /* Core Centering Properties */
+        position: fixed; /* Ensures it's positioned relative to the viewport */
+        top: 50%;        /* Moves the top edge of the popup to the vertical center */
+        left: 50%;       /* Moves the left edge of the popup to the horizontal center */
+        transform: translate(-50%, -50%); /* Shifts the popup back by half its own width and half its own height, perfectly centering it */
+        
+        /* Ensure it's on top of other content */
+        z-index: 1000; 
+
+        /* Styling for the popup's appearance (adjust as per your design) */
+        background-color: white; /* The white background you see */
+        padding: 20px; /* Internal spacing */
+        border-radius: 8px; /* Rounded corners */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Soft shadow for "pop" effect */
+
+        /* Mobile Responsiveness for Width */
+        width: 90%;      /* Take up 90% of the screen width on mobile */
+        max-width: 350px; /* Prevent it from getting too wide on slightly larger mobile screens */
+        height: auto;    /* Adjust height based on content */
+        max-height: 90vh; /* Prevent it from exceeding viewport height on tall content */
+        overflow-y: auto; /* Add scroll if content is too tall */
+
+        /* If your popup is animated, ensure transitions are smooth */
+        transition: transform 0.3s ease-out, opacity 0.3s ease-out; /* Example transitions */
+    }
+
+    /* Optional: Overlay background (highly recommended for modals/popups) */
+    .modal-overlay { /* Add a div with this class behind your popup in HTML */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6); /* Dark, semi-transparent background */
+        z-index: 999; /* Just below the popup */
+    }
+
+    /* Additionally, ensure elements *inside* the popup are centered */
+    /* Based on your Home.tsx, your selected role buttons and register button. */
+    /* If they are not centered, you might need to apply these: */
+    .role-selection-buttons { /* Assuming this wraps Patient/Doctor buttons */
+        display: flex;
+        justify-content: center; /* Centers the buttons horizontally */
+        margin-top: 15px; /* Add some space above */
+        margin-bottom: 15px; /* Add some space below */
+    }
+
+    /* For individual block-level buttons like "Register" and "Sign in with Google" */
+    .register-button,
+    .google-signin-button { /* Use the actual classes of these buttons */
+        display: block; /* Make it a block element */
+        width: 85%; /* Adjust width as needed, often slightly less than 100% */
+        margin: 10px auto; /* Centers horizontally and adds vertical spacing */
+        text-align: center; /* Ensures text inside is centered */
+        padding: 12px 0; /* Add vertical padding */
+    }
+
+    /* For the Login/Register toggles at the very top of the popup */
+    .login-toggle,
+    .register-toggle {
+        /* Remove any 'float' or 'left' positioning that might be applied */
+        display: inline-block; /* Or flex on their parent */
+        margin: 0 10px; /* Add horizontal spacing between them */
+        /* If they are in a flex container, remove margin: 0 auto; from here */
+    }
+    /* If they are in a container, center that container's content */
+    .auth-panel-header { /* Example: parent of login-toggle and register-toggle */
+        display: flex;
+        justify-content: center; /* Centers children within this header */
+        width: 100%;
+    }
+
+}

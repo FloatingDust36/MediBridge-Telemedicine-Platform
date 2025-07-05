@@ -8,6 +8,7 @@ import googleIcon from '../assets/icons/Google.png';     // Adjust path
 import discordIcon from '../assets/icons/Discord.png';   // Adjust path
 
 import './Navbar.css'; // Import Navbar specific CSS
+import path from 'path';
 
 // Define the possible user types
 type UserType = 'guest' | 'patient' | 'doctor' | 'admin';
@@ -241,6 +242,7 @@ const handleGoogleRegister = async () => {
           { label: "Consultation", path: "/consultation" },
           { label: "Messages", path: "/messages" },
           { label: "Add Schedule", path: "/addschedule" },
+          { label: "Doctor Profile",path: "/doctorprofile" },
         ];
       case 'patient':
         return [
@@ -249,6 +251,7 @@ const handleGoogleRegister = async () => {
           { label: "Messages", path: "/messages" },
           { label: "Appointments", path: "/appointments" },
           { label: "Chatbot", path: "/chatbot" },
+          { label: "Patient Profile", path: "/patientprofile" },
         ];
       case 'admin':
         return [
