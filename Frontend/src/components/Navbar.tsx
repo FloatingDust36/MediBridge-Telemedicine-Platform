@@ -118,7 +118,8 @@ const handleGoogleRegister = async () => {
   // Save role to localStorage so /oauth-callback can access it
   localStorage.setItem('selectedRole', role.toLowerCase()); // 'doctor' or 'patient'
 
-  const redirectTo = `${window.location.origin}/oauth-callback`;
+  const redirectTo = `${window.location.origin}/oauth-register-callback`;
+
 
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -135,6 +136,7 @@ const handleGoogleRegister = async () => {
 
 
   // Handle Google OAuth login
+   // Handle Google OAuth login
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
