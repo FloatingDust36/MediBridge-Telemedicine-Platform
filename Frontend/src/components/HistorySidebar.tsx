@@ -1,7 +1,7 @@
 // Frontend/src/components/HistorySidebar.tsx
 
-import { PlusSquare, Trash2, Download } from 'lucide-react'; // Add Download icon
-import type { Session } from '../pages/ChatbotPage'; // Import the Session type
+import { PlusSquare, Trash2, Download } from 'lucide-react';
+import type { Session } from '../pages/ChatbotPage';
 import './HistorySidebar.css';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -47,7 +47,13 @@ const HistorySidebar = ({ sessions, activeSessionId, isLoading, onSelectSession,
                     className={`session-item ${session.id === activeSessionId ? 'active' : ''}`}
                     onClick={() => onSelectSession(session.id)}
                   >
-                    {session.title}
+                    {session.title || new Date(session.created_at).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true
+                    })}
                   </div>
                   <div className="session-actions">
                     {/* Conditionally render the download button if a summary exists */}

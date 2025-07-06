@@ -12,6 +12,7 @@ interface Message {
   type: 'bot' | 'user';
   text: string;
   imageUrl?: string;
+  key?: string;
 }
 
 // A dedicated component for the Welcome Screen for better organization
@@ -25,17 +26,20 @@ const WelcomeScreen = () => (
 
 // A dedicated component for the typing indicator
 const TypingIndicator = () => (
-    <div className="message-bubble bot typing-indicator">
-        <span></span><span></span><span></span>
+    <div className="message-row bot-row">
+        <img src="/images/chatbot-icon.png" alt="bot avatar" className="chat-avatar" />
+        <div className="message-bubble bot typing-indicator">
+            <span></span><span></span><span></span>
+        </div>
     </div>
 );
 
-const ChatWindow = ({ sessionId, onTriageComplete }: { sessionId: string | null; onTriageComplete: (sessionId: string) => void; }) => {
-  // State management for the chat window's functionality
+
+const ChatWindow = ({ sessionId, onTriageComplete, onMessageSent }: { sessionId: string | null; onTriageComplete: (sessionId: string) => void; onMessageSent: (sessionId: string) => void; }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isTriageComplete, setIsTriageComplete] = useState(false);
   const [finalEsiLevel, setFinalEsiLevel] = useState<number | null>(null);
@@ -43,26 +47,21 @@ const ChatWindow = ({ sessionId, onTriageComplete }: { sessionId: string | null;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  // This hook now makes a single, efficient call to load the entire chat state
   useEffect(() => {
     const loadChat = async () => {
       if (!sessionId) {
-        setMessages([]); // Clear messages when no session is active
+        setMessages([]);
         setIsLoading(false);
         return;
       }
-
       setIsLoading(true);
       setIsTriageComplete(false);
       setFinalEsiLevel(null);
-      
       try {
         const response = await fetch(`${API_URL}/session/${sessionId}`);
         if (!response.ok) throw new Error("Session not found or server error.");
-        
         const data = await response.json();
         setMessages(data.messages || []);
-        
         if (data.final_esi_level) {
           setIsTriageComplete(true);
           setFinalEsiLevel(data.final_esi_level);
@@ -77,12 +76,10 @@ const ChatWindow = ({ sessionId, onTriageComplete }: { sessionId: string | null;
     loadChat();
   }, [sessionId]);
 
-  // This hook auto-scrolls to the bottom when new messages are added or the bot is typing
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isSending]);
 
-  // Main function for sending a message
   const handleSendMessage = async () => {
     if ((input.trim() === '' && !imageFile) || !sessionId || isSending) return;
 
@@ -102,6 +99,11 @@ const ChatWindow = ({ sessionId, onTriageComplete }: { sessionId: string | null;
     if (fileToSend) {
       formData.append('image', fileToSend);
     }
+    
+    onMessageSent(sessionId);
+
+    const botMessageKey = `bot-${Date.now()}`;
+    setMessages((prev) => [...prev, { type: 'bot', text: '', key: botMessageKey }]);
 
     try {
       const response = await fetch(`${API_URL}/chat/stream-message`, { method: 'POST', body: formData });
@@ -110,56 +112,37 @@ const ChatWindow = ({ sessionId, onTriageComplete }: { sessionId: string | null;
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       
-      // Add a new, empty bot message to the state that we will populate
-      setMessages((prev) => [...prev, { type: 'bot', text: '' }]);
-
-      // Read the stream chunk by chunk
+      let finalDataPacket = null;
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        
         let chunk = decoder.decode(value);
-        
-        // --- NEW, ROBUST PARSING LOGIC ---
         const jsonMarker = '{"type":"triage_complete"';
-        
         if (chunk.includes(jsonMarker)) {
             const parts = chunk.split(jsonMarker);
-            const textPart = parts[0];
-            const jsonPart = jsonMarker + parts[1];
-
-            // 1. Append the last piece of text before the JSON packet
-            if (textPart) {
-                setMessages((prev) => {
-                    const lastMessage = prev[prev.length - 1];
-                    const updatedMessage = { ...lastMessage, text: lastMessage.text + textPart };
-                    return [...prev.slice(0, -1), updatedMessage];
-                });
-            }
-
-            // 2. Process the JSON data
-            try {
-                const jsonData = JSON.parse(jsonPart);
-                if (jsonData.type === 'triage_complete') {
-                    setIsTriageComplete(true);
-                    setFinalEsiLevel(jsonData.esi_level);
-                    if (sessionId) onTriageComplete(sessionId);
-                }
-            } catch (e) {
-                console.error("Failed to parse final data packet:", e);
-            }
-        } else {
-            // This is just a normal text chunk, append it
-            setMessages((prev) => {
-                const lastMessage = prev[prev.length - 1];
-                const updatedMessage = { ...lastMessage, text: lastMessage.text + chunk };
-                return [...prev.slice(0, -1), updatedMessage];
-            });
+            chunk = parts[0];
+            finalDataPacket = jsonMarker + parts[1];
         }
+        if (chunk) {
+            setMessages((prev) => prev.map((msg) => 
+                msg.key === botMessageKey ? { ...msg, text: msg.text + chunk } : msg
+            ));
+        }
+      }
+
+      if (finalDataPacket) {
+        try {
+            const jsonData = JSON.parse(finalDataPacket);
+            if (jsonData.type === 'triage_complete') {
+                setIsTriageComplete(true);
+                setFinalEsiLevel(jsonData.esi_level);
+                if (sessionId) onTriageComplete(sessionId);
+            }
+        } catch (e) { console.error("Failed to parse final data packet:", e); }
       }
     } catch (error) {
       console.error("Failed to stream message:", error);
-      setMessages((prev) => [...prev, { type: 'bot', text: "Sorry, an error occurred." }]);
+      setMessages((prev) => [...prev.filter(m => m.key !== botMessageKey), { type: 'bot', text: "Sorry, an error occurred. Please try again." }]);
     } finally {
       setIsSending(false);
     }
@@ -178,30 +161,31 @@ const ChatWindow = ({ sessionId, onTriageComplete }: { sessionId: string | null;
       </div>
 
       <div className={`chatbot-messages ${isLoading ? 'loading' : ''}`}>
-        {!sessionId ? (
-          <WelcomeScreen />
-        ) : isLoading ? (
-          <div className="loading-chat">Loading conversation...</div>
-        ) : (
+        {!sessionId ? <WelcomeScreen /> : isLoading ? <div className="loading-chat">Loading conversation...</div> :
           <>
             {messages.map((msg, index) => (
-              <div key={index} className={`message-bubble ${msg.type}`}>
-                {msg.imageUrl && (
-                  <img src={msg.imageUrl} alt="User upload" className="message-image" />
-                )}
-                {msg.text && <div className="message-text">{msg.text}</div>}
+              <div key={msg.key || index} className={`message-row ${msg.type}-row`}>
+                <img 
+                  src={msg.type === 'bot' ? "/images/chatbot-icon.png" : "/images/default-patient-avatar.png"} 
+                  alt={`${msg.type} avatar`} 
+                  className="chat-avatar"
+                />
+                <div className={`message-bubble ${msg.type}`}>
+                  {msg.imageUrl && (
+                    <img src={msg.imageUrl} alt="User upload" className="message-image" />
+                  )}
+                  {msg.text && <div className="message-text">{msg.text}</div>}
+                </div>
               </div>
             ))}
             {isSending && <TypingIndicator />}
           </>
-        )}
+        }
         <div ref={messagesEndRef} />
       </div>
       
       <div className="chatbot-input-area-wrapper">
-        {isTriageComplete && finalEsiLevel && (
-            <PostTriageActions esiLevel={finalEsiLevel} />
-        )}
+        {isTriageComplete && finalEsiLevel && <PostTriageActions esiLevel={finalEsiLevel} />}
         <div className="chatbot-input-area">
           {imageFile && (
             <div className="image-preview-container">
@@ -215,11 +199,9 @@ const ChatWindow = ({ sessionId, onTriageComplete }: { sessionId: string | null;
               <Paperclip size={20} />
             </button>
             <input
-              type="text"
-              className="chatbot-input"
+              type="text" className="chatbot-input"
               placeholder={!sessionId ? "Click 'New Chat' to begin" : "Describe your symptoms..."}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
+              value={input} onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => { if (e.key === 'Enter' && !isSending) handleSendMessage(); }}
               disabled={!sessionId || isLoading || isSending}
             />

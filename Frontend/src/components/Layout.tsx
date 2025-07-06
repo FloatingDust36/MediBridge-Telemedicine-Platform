@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import './Layout.css'; // 👈 Import the custom CSS
+import './Layout.css';
 
 interface LayoutProps {
   userType: 'guest' | 'patient' | 'doctor' | 'admin';

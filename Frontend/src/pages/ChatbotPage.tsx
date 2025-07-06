@@ -38,7 +38,6 @@ const ChatbotPage = () => {
     }
   }, [userId]);
 
-  // On initial app load, we only fetch the session list. We do not set an active session.
   useEffect(() => {
     const initializeApp = async () => {
         await fetchSessions();
@@ -48,12 +47,10 @@ const ChatbotPage = () => {
   }, [fetchSessions]);
 
   const handleSelectSession = (sessionId: string) => {
-    localStorage.setItem('chatSessionId', sessionId); // Still useful for remembering across reloads
     setActiveSessionId(sessionId);
   };
 
   const handleNewChat = useCallback(async () => {
-    // Set active session to null immediately to show a loading/transition state
     setActiveSessionId(null);
     try {
       const response = await fetch(`${API_URL}/chat/start`, {
@@ -63,10 +60,8 @@ const ChatbotPage = () => {
       });
       const data = await response.json();
       if (data.session_id) {
-        // After getting the new session, refresh the list and set it as active
-        await fetchSessions(); // Get the updated list with the new session from the DB
+        await fetchSessions();
         setActiveSessionId(data.session_id);
-        localStorage.setItem('chatSessionId', data.session_id);
       }
     } catch (error) {
       console.error("Failed to start a new session:", error);
@@ -80,17 +75,32 @@ const ChatbotPage = () => {
     setSessions(prev => prev.filter(s => s.id !== sessionIdToDelete));
     if (activeSessionId === sessionIdToDelete) {
       setActiveSessionId(null);
-      localStorage.removeItem('chatSessionId');
     }
-
     try {
       const response = await fetch(`${API_URL}/session/${sessionIdToDelete}`, { method: 'DELETE' });
-      if (!response.ok) setSessions(previousSessions); // Revert on failure
+      if (!response.ok) setSessions(previousSessions);
     } catch (error) {
       console.error("Failed to delete session:", error);
-      setSessions(previousSessions); // Revert on error
+      setSessions(previousSessions);
     }
   }, [sessions, activeSessionId]);
+
+  // --- NEW FUNCTION TO HANDLE TITLE GENERATION ---
+  const handleMessageSent = useCallback((sessionId: string) => {
+    const currentSession = sessions.find(s => s.id === sessionId);
+    // Trigger title generation if the session exists and still has its default date-based title
+    // This prevents re-generating titles for old chats.
+    if (currentSession && !currentSession.has_summary) {
+        // We can add more complex logic here, e.g., only generate after 2 user messages.
+        // For now, we'll trigger it after the first user message.
+        console.log(`Triggering title generation for session: ${sessionId}`);
+        fetch(`${API_URL}/session/${sessionId}/generate-title`, { method: 'POST' });
+        // Refresh the sidebar after a short delay to allow the title to be generated and saved.
+        setTimeout(() => fetchSessions(), 2500); 
+    }
+  }, [sessions, fetchSessions]);
+  // --- END OF NEW FUNCTION ---
+
 
   if (isAppLoading) {
     return <LoadingSpinner />;
@@ -107,7 +117,14 @@ const ChatbotPage = () => {
           onDeleteSession={handleDeleteSession}
           isLoading={isAppLoading}
         />
-        <ChatWindow sessionId={activeSessionId} />
+        {/* We now pass the new handler function to ChatWindow */}
+        <ChatWindow 
+          sessionId={activeSessionId}
+          onTriageComplete={() => fetchSessions()} // Refresh sessions when triage is done
+          onMessageSent={() => {
+            if (activeSessionId) handleMessageSent(activeSessionId);
+          }}
+        />
       </div>
     </div>
   );

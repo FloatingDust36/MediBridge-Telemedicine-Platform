@@ -1,6 +1,5 @@
-/* Frontend/src/pages/ChatbotPage.css - Final Version */
+/* Frontend/src/pages/ChatbotPage.css */
 
-/* --- Global Layout & App Container --- */
 .chatbot-page-wrapper {
   display: flex;
   width: 100%;
@@ -290,6 +289,29 @@
 }
 
 .download-pdf-button:hover { background-color: rgba(255, 255, 255, 0.25); }
+
+.message-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end; 
+}
+
+.message-row.user-row {
+  flex-direction: row-reverse; /* Puts user avatar on the right */
+}
+
+.chat-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+}
+
+/* Adjust message bubble width to account for the avatar */
+.message-bubble {
+    max-width: calc(100% - 42px);
+}
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
