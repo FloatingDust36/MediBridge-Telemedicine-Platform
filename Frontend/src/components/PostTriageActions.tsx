@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldAlert, CalendarPlus, Stethoscope } from 'lucide-react';
+import { ShieldAlert, CalendarPlus, Stethoscope, Phone } from 'lucide-react';
 import './PostTriageActions.css'; // We will create this file next
 
 interface PostTriageActionsProps {
@@ -22,6 +22,15 @@ const PostTriageActions: React.FC<PostTriageActionsProps> = ({ esiLevel }) => {
     <div className="post-triage-container">
       <h4>{getTitle()}</h4>
       <div className="action-buttons-grid">
+        
+        {(esiLevel <= 2) && (
+          <button className="action-button call" onClick={() => window.location.href = 'tel:911'}>
+            <Phone size={24} />
+            <span>Call Emergency Services</span>
+            <small>Immediately connect to 911</small>
+          </button>
+        )}
+
         {(esiLevel <= 3) && (
           <button className="action-button emergency" onClick={() => navigate('/emergency')}>
             <ShieldAlert size={24} />

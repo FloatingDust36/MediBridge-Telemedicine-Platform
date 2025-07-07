@@ -64,6 +64,9 @@
 .action-button.self-care { color: #059669; }
 .action-button.self-care:hover { border-color: #34d399; }
 
+.action-button.call { color: #dc2626; }
+.action-button.call:hover { border-color: #f87171; }
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }

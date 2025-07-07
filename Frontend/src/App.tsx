@@ -1,4 +1,4 @@
-// src/App.tsx
+// Frontend/src/App.tsx
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'; // Import useNavigate
 import supabase from './lib/supabaseClient';
