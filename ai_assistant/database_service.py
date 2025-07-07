@@ -85,7 +85,7 @@ def get_sessions_for_user(user_id: str) -> list[dict] | None:
     if not supabase_client: return None
     try:
         response = supabase_client.table("ai_sessions").select(
-            "id, created_at, session_summary, final_esi_level, has_summary"
+            "id, title, created_at, session_summary, final_esi_level, has_summary"
             ).eq("user_id", user_id).order("created_at", desc=True).execute()
 
         return response.data

@@ -1,15 +1,16 @@
-// Frontend/src/components/PostTriageActions.tsx
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldAlert, CalendarPlus, Stethoscope, Phone } from 'lucide-react';
-import './PostTriageActions.css'; // We will create this file next
+import './PostTriageActions.css';
 
 interface PostTriageActionsProps {
   esiLevel: number;
+  onSelfCareRequest: () => void; // This is the new callback function
 }
 
-const PostTriageActions: React.FC<PostTriageActionsProps> = ({ esiLevel }) => {
+const EMERGENCY_PHONE_NUMBER = import.meta.env.VITE_EMERGENCY_PHONE_NUMBER || '911';
+
+const PostTriageActions: React.FC<PostTriageActionsProps> = ({ esiLevel, onSelfCareRequest }) => {
   const navigate = useNavigate();
 
   const getTitle = () => {
@@ -24,10 +25,10 @@ const PostTriageActions: React.FC<PostTriageActionsProps> = ({ esiLevel }) => {
       <div className="action-buttons-grid">
         
         {(esiLevel <= 2) && (
-          <button className="action-button call" onClick={() => window.location.href = 'tel:911'}>
+          <button className="action-button call" onClick={() => window.location.href = `tel:${EMERGENCY_PHONE_NUMBER}`}>
             <Phone size={24} />
             <span>Call Emergency Services</span>
-            <small>Immediately connect to 911</small>
+            <small>Immediately connect to {EMERGENCY_PHONE_NUMBER}</small>
           </button>
         )}
 
@@ -39,19 +40,17 @@ const PostTriageActions: React.FC<PostTriageActionsProps> = ({ esiLevel }) => {
           </button>
         )}
 
-        {(esiLevel <= 4) && (
-           <button className="action-button appointment" onClick={() => navigate('/appointments')}>
-            <CalendarPlus size={24} />
-            <span>Book a Consultation</span>
-            <small>Schedule a talk with a doctor</small>
-          </button>
-        )}
+        <button className="action-button appointment" onClick={() => navigate('/appointments')}>
+          <CalendarPlus size={24} />
+          <span>Book a Consultation</span>
+          <small>Schedule a talk with a doctor</small>
+        </button>
 
         {(esiLevel >= 4) && (
-           <button className="action-button self-care" onClick={() => alert("Continuing self-care. Remember to monitor your symptoms.")}>
+          <button className="action-button self-care" onClick={onSelfCareRequest}>
             <Stethoscope size={24} />
-            <span>Continue Self-Care</span>
-            <small>Monitor symptoms and rest</small>
+            <span>Self-Care Advice</span>
+            <small>Get tips from the AI</small>
           </button>
         )}
       </div>

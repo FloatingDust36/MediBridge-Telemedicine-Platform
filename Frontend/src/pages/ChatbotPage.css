@@ -1,16 +1,18 @@
 /* Frontend/src/pages/ChatbotPage.css */
 
+body {
+  font-family: 'Inter', sans-serif;
+}
+
 .chatbot-page-wrapper {
   display: flex;
   width: 100%;
-  /* Full viewport height minus the 60px height of a typical navbar */
   height: calc(100vh - 60px); 
   background-color: #f0f4f8; 
-  padding: 0; /* Remove padding for a flush, full-screen layout */
+  padding: 0;
   box-sizing: border-box;
   justify-content: center;
   align-items: center;
-
 }
 
 .chatbot-main-container {
@@ -18,7 +20,6 @@
   width: 100%;
   height: 100%;
   padding-top: 60px;
-  /* On larger screens, constrain the size for a better aesthetic */
   max-height: 900px;
   background-color: #fff;
   border-radius: 12px;
@@ -26,7 +27,7 @@
   overflow: hidden;
 }
 
-/* --- Loading Spinner (For Initial App Load) --- */
+/* --- Loading Spinner --- */
 .loading-spinner-container {
   display: flex;
   justify-content: center;
@@ -78,7 +79,7 @@
   margin: 0;
 }
 
-/* --- Welcome Screen (No Active Chat) --- */
+/* --- Welcome Screen --- */
 .welcome-screen {
   display: flex;
   flex-direction: column;
@@ -113,13 +114,7 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
   background-color: #ffffff;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.chatbot-messages.loading {
-  opacity: 0;
 }
 
 .message-image {
@@ -139,10 +134,6 @@
   filter: brightness(0.97);
 }
 
-.message-text:empty {
-    display: none;
-}
-
 .loading-chat {
   text-align: center;
   color: #6b7280;
@@ -150,40 +141,62 @@
   font-style: italic;
 }
 
+.message-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 12px;
+}
+
+.message-row.user-row {
+  justify-content: flex-end;
+}
+
+.chat-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+}
+
 .message-bubble {
-  padding: 12px 16px;
-  border-radius: 20px;
+  /* Prevents bubble from being wider than 75% of the container */
   max-width: 75%;
+  /* Reduces vertical padding for a better look with short messages */
+  padding: 10px 16px;
+  border-radius: 20px;
   font-family: 'Segoe UI', sans-serif;
   font-size: 15px;
   line-height: 1.6;
   word-wrap: break-word;
-  white-space: pre-wrap;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   white-space: pre-wrap;
 }
 
 .message-bubble.bot {
   background-color: #f3f4f6;
   color: #1f2937;
-  align-self: flex-start;
   border-bottom-left-radius: 6px;
 }
 
 .message-bubble.user {
   background-color: #3B82F6;
   color: white;
-  align-self: flex-end;
   border-bottom-right-radius: 6px;
 }
 
-/* --- Typing Indicator --- */
-.typing-indicator {
-  padding: 18px 20px !important;
+.message-text {
+  /* Fixes potential empty space issue with markdown */
+  margin: 0;
+  padding: 0;
 }
 
+.message-text p {
+  margin: 0; /* Removes default paragraph margin from markdown */
+}
+
+
+/* --- Typing Indicator --- */
 .typing-indicator span {
   height: 8px;
   width: 8px;
@@ -220,7 +233,7 @@
   position: relative;
   width: 70px;
   height: 70px;
-  margin-left: 60px; /* Align with input box start */
+  margin-left: 60px;
 }
 
 .image-preview-thumbnail {
@@ -253,32 +266,11 @@
   cursor: pointer; transition: background-color 0.2s;
 }
 
-.chatbot-attach-button {
-  background-color: #f3f4f6; color: #4b5563;
-}
-
-.chatbot-attach-button:active, .chatbot-send-button:active {
-  transform: scale(0.9);
-  transition: transform 0.1s ease;
-}
-
 .chatbot-attach-button:hover { background-color: #e5e7eb; }
-
-.chatbot-send-button {
-  background-color: #3B82F6; color: white;
-}
-
 .chatbot-send-button:hover { background-color: #2563eb; }
 
 .chatbot-send-button:disabled, .chatbot-attach-button:disabled {
   background-color: #e5e7eb; color: #9ca3af; cursor: not-allowed;
-}
-
-/* --- Triage Complete Indicator & PDF Button --- */
-.triage-complete-indicator {
-  padding: 10px 20px; background-color: #dcfce7;
-  color: #166534; text-align: center; font-size: 14px;
-  border-top: 1px solid #a7f3d0; flex-shrink: 0;
 }
 
 .download-pdf-button {
@@ -290,28 +282,6 @@
 
 .download-pdf-button:hover { background-color: rgba(255, 255, 255, 0.25); }
 
-.message-row {
-  display: flex;
-  gap: 10px;
-  align-items: flex-end; 
-}
-
-.message-row.user-row {
-  flex-direction: row-reverse; /* Puts user avatar on the right */
-}
-
-.chat-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  border: 1px solid #e2e8f0;
-}
-
-/* Adjust message bubble width to account for the avatar */
-.message-bubble {
-    max-width: calc(100% - 42px);
-}
 
 @keyframes spin {
   0% { transform: rotate(0deg); }

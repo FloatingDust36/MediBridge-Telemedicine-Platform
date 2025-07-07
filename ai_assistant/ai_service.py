@@ -32,11 +32,13 @@ class AIService:
             
         print(f"New AI Service initialized for user {self.user_id} with session {self.session_id}")
 
-    async def stream_user_message(self, user_message: str, image_bytes: bytes | None = None, image_content_type: str | None = None):
-        """Processes a user message and yields the AI's response as a stream of text chunks."""
+    async def get_non_streamed_response(self, user_message: str, image_bytes: bytes | None = None, image_content_type: str | None = None) -> dict:
+        """
+        Generates a complete AI response without streaming. Returns a dictionary
+        with the response text and triage completion status.
+        """
         if not self.session_id:
-            yield "Error: Session not found."
-            return
+            return {"response_text": "Error: Session not found.", "is_complete": True, "esi_level": None}
 
         pil_image = None
         if image_bytes and image_content_type:
@@ -44,7 +46,7 @@ class AIService:
                 pil_image = Image.open(io.BytesIO(image_bytes))
             except Exception as e:
                 print(f"ERROR: Could not process image file: {e}")
-        
+
         image_url = db.upload_image(image_bytes, image_content_type) if image_bytes else None
         db.log_message(self.session_id, 'user', user_message, image_url)
 
@@ -52,25 +54,32 @@ class AIService:
             chat_input = [user_message]
             if pil_image:
                 chat_input.append(pil_image)
-            
-            response_stream = self.chat.send_message(chat_input, stream=True)
-            
-            full_response_text = ""
-            for chunk in response_stream:
-                yield chunk.text
-                full_response_text += chunk.text
+
+            # Use await for the network call to the Gemini API
+            full_response = await self.chat.send_message_async(chat_input)
+            full_response_text = full_response.text
+
+            esi_level = self.parse_and_log_esi_level(full_response_text)
 
             db.log_message(self.session_id, 'bot', full_response_text)
-            
-            esi_level = self.parse_and_log_esi_level(full_response_text)
-            
+
             if esi_level is not None:
-                final_data = {"type": "triage_complete", "esi_level": esi_level}
-                yield json.dumps(final_data)
+                return {
+                    "response_text": full_response_text,
+                    "is_complete": True,
+                    "esi_level": esi_level
+                }
+            else:
+                return {
+                    "response_text": full_response_text,
+                    "is_complete": False,
+                    "esi_level": None
+                }
 
         except Exception as e:
             print(f"ERROR: Could not get response from Gemini API: {e}")
-            yield "Sorry, I encountered an error. Please try again."
+            return {"response_text": "Sorry, I encountered an error. Please try again.", "is_complete": True, "esi_level": None}
+
 
     def parse_and_log_esi_level(self, text: str) -> int | None:
         """Uses a robust regex to find the ESI level tag. If found, it triggers summary generation."""
@@ -81,12 +90,12 @@ class AIService:
             print(f"ESI Level {esi_level} detected. Logging to DB.")
             db.update_session_esi_level(self.session_id, esi_level)
             
-            self._generate_and_save_summary()
-            self._generate_and_save_title()
+            self.generate_and_save_summary()
+            self.generate_and_save_title()
             return esi_level
         return None
 
-    def _generate_and_save_summary(self):
+    def generate_and_save_summary(self):
         """Generates the final summary for the entire conversation and updates the database."""
         if not self.session_id:
             print("Cannot summarize, session not found.")
@@ -129,3 +138,25 @@ class AIService:
             db.update_session_title(self.session_id, clean_title)
         except Exception as e:
             print(f"Error generating title: {e}")
+
+    @classmethod
+    def from_existing_session(cls, user_id: str, session_id: str, history: list[dict]):
+        """Creates an AIService instance by loading existing chat history."""
+        instance = cls.__new__(cls)
+        instance.user_id = user_id
+        instance.session_id = session_id
+        
+        gemini_history = []
+        for message in history:
+            role = "user" if message.get('type') == 'user' else "model"
+            if message.get('text'):
+                gemini_history.append({'role': role, 'parts': [{'text': message['text']}]})
+        
+        instance.model = genai.GenerativeModel(
+            "gemini-2.5-flash",
+            system_instruction=TRIAGE_SYSTEM_PROMPT
+        )
+        instance.chat = instance.model.start_chat(history=gemini_history)
+        
+        print(f"Restored AI Service for user {instance.user_id} from session {instance.session_id}")
+        return instance

@@ -14,6 +14,13 @@ export interface Session {
   has_summary: boolean;
 }
 
+export interface Message {
+  type: 'bot' | 'user';
+  text: string;
+  imageUrl?: string;
+  key?: string;
+}
+
 const LoadingSpinner = () => (
     <div className="loading-spinner-container">
         <div className="loading-spinner"></div>
@@ -22,9 +29,10 @@ const LoadingSpinner = () => (
 
 const ChatbotPage = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(
+    () => sessionStorage.getItem('activeSessionId') || null
+  );
   const [isAppLoading, setIsAppLoading] = useState(true);
-
   const userId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
   
   const fetchSessions = useCallback(async () => {
@@ -37,6 +45,14 @@ const ChatbotPage = () => {
       console.error("Failed to fetch sessions:", error);
     }
   }, [userId]);
+
+  useEffect(() => {
+    if (activeSessionId) {
+      sessionStorage.setItem('activeSessionId', activeSessionId);
+    } else {
+      sessionStorage.removeItem('activeSessionId');
+    }
+  }, [activeSessionId]);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -76,6 +92,8 @@ const ChatbotPage = () => {
     if (activeSessionId === sessionIdToDelete) {
       setActiveSessionId(null);
     }
+    // Remove the deleted session's messages from the session storage cache
+    sessionStorage.removeItem(`messages_${sessionIdToDelete}`);
     try {
       const response = await fetch(`${API_URL}/session/${sessionIdToDelete}`, { method: 'DELETE' });
       if (!response.ok) setSessions(previousSessions);
@@ -85,22 +103,12 @@ const ChatbotPage = () => {
     }
   }, [sessions, activeSessionId]);
 
-  // --- NEW FUNCTION TO HANDLE TITLE GENERATION ---
   const handleMessageSent = useCallback((sessionId: string) => {
     const currentSession = sessions.find(s => s.id === sessionId);
-    // Trigger title generation if the session exists and still has its default date-based title
-    // This prevents re-generating titles for old chats.
-    if (currentSession && !currentSession.has_summary) {
-        // We can add more complex logic here, e.g., only generate after 2 user messages.
-        // For now, we'll trigger it after the first user message.
-        console.log(`Triggering title generation for session: ${sessionId}`);
-        fetch(`${API_URL}/session/${sessionId}/generate-title`, { method: 'POST' });
-        // Refresh the sidebar after a short delay to allow the title to be generated and saved.
-        setTimeout(() => fetchSessions(), 2500); 
+    if (currentSession && !currentSession.title) {
+        setTimeout(() => fetchSessions(), 800);
     }
   }, [sessions, fetchSessions]);
-  // --- END OF NEW FUNCTION ---
-
 
   if (isAppLoading) {
     return <LoadingSpinner />;
@@ -117,10 +125,9 @@ const ChatbotPage = () => {
           onDeleteSession={handleDeleteSession}
           isLoading={isAppLoading}
         />
-        {/* We now pass the new handler function to ChatWindow */}
         <ChatWindow 
           sessionId={activeSessionId}
-          onTriageComplete={() => fetchSessions()} // Refresh sessions when triage is done
+          onTriageComplete={() => fetchSessions()}
           onMessageSent={() => {
             if (activeSessionId) handleMessageSent(activeSessionId);
           }}
