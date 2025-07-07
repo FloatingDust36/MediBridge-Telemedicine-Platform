@@ -51,23 +51,30 @@ async def start_chat(request: StartChatRequest):
     active_sessions[service.session_id] = service
     return StartChatResponse(session_id=service.session_id)
 
-@app.post("/chat/stream-message")
-async def stream_message(
+@app.post("/chat/message")
+async def send_message(
     session_id: str = Form(...),
     user_message: str = Form(...),
     image: UploadFile = File(None)
 ):
     service = active_sessions.get(session_id)
-    if not service:
-        raise HTTPException(status_code=404, detail="Session not found or has expired.")
 
-    image_bytes = await image.read() if image else None
+    if not service:
+        # ... (the code for restoring a session remains the same)
+        print(f"Session {session_id} not in memory. Attempting to restore from DB.")
+        session_details = db.get_session_details(session_id)
+        if session_details and 'messages' in session_details:
+            user_id = str(session_details["user_id"])
+            service = AIService.from_existing_session(user_id, session_id, session_details['messages'])
+            active_sessions[session_id] = service
+        else:
+            raise HTTPException(status_code=404, detail="Session not found in memory or database.")
+
+    image_bytes = await image.read() if image else None # Use await for reading the file
     image_content_type = image.content_type if image else None
 
-    return StreamingResponse(
-        service.stream_user_message(user_message, image_bytes, image_content_type),
-        media_type="text/event-stream"
-    )
+    # Use await to call the new async service function
+    return await service.get_non_streamed_response(user_message, image_bytes, image_content_type)
 
 @app.post("/chat/end", status_code=204)
 async def end_chat(request: EndChatRequest):

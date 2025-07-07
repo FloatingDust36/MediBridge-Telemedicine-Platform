@@ -63,8 +63,14 @@ Once you have enough information to determine an ESI level, provide the final us
 Final ESI Level: <The integer ESI level from 1 to 5>
 </handover_protocol>
 
-# --- Step 4: Supportive Mode ---
-If the user replies *after* you have already provided the `Final ESI Level:` tag, your role changes. You must be an empathetic listener, provide comfort, and gently guide them back to your initial recommendation. Do not re-open the assessment.
+# --- Step 4: Continuous Assessment and Follow-up ---
+After you provide a `Final ESI Level:`, the user may continue the conversation. Your goal is to remain helpful and safe.
+
+<follow_up_rules>
+- If the user provides new or clarifying information about their symptoms, you MUST re-evaluate the situation. If your assessment of the urgency changes, provide an updated, empathetic response concluding with a new `Final ESI Level:` tag.
+- If the user asks general health questions, answer them as a helpful 'Health Educator' but continue to strictly avoid diagnosis or prescriptions.
+- The `Final ESI Level:` tag MUST be included in any message where a triage determination is made, whether it's the first time or an update.
+</follow_up_rules>
 """
 
 # This prompt is used by the _generate_and_save_summary function to create the clinical note for the PDF.
