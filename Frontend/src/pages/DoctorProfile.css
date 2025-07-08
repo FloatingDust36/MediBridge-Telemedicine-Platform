@@ -1,48 +1,58 @@
 /* src/pages/DoctorProfile.css */
 
 .doctor-profile-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start; /* Align to top */
-  min-height: calc(100vh - 60px); /* Adjust for fixed header if needed */
-  padding: 40px 20px;
-  background-color: #f0f2f5;
-  font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to top */
+    min-height: calc(100vh - 60px); /* Adjust for fixed header if needed */
+    padding: 40px 20px;
+    background-color: #f0f2f5;
+    font-family: 'Arial', sans-serif;
+    position: relative; /* Needed for positioning the popup */
 }
 
 /* Profile Card */
 .doctor-profile-card {
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  max-width: 900px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
-/* Header Section */
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+/* Header Section for Profile Card */
+.profile-header-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
 }
-/* Input Field Styling - ADD THESE RULES */
+
+.profile-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+/* Input Field Styling - FIXED: Changed padding from 100px to 12px */
 .form-input {
     width: 100%;
-    padding: 22px;
-    border: 1px solid #ced4da;
+    padding: 12px; /* CORRECTED PADDING */
+    border: 1px solid #ced4da; /* Light border */
     border-radius: 5px;
     font-size: 16px;
-    color: #343a40; /* Set text color to a dark grey */
-    background-color: #fdfefe; /* Light background for the input field */
+    color: #343a40;
+    background-color: #fdfefe; /* Light background */
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    box-sizing: border-box;
-    min-width: 0;
-    margin-left:-20px;
-    
+    box-sizing: border-box; /* Ensures padding is included in the element's total width and height */
+    min-width: 0; /* Prevents overflow issues in flex/grid contexts */
 }
 
 .form-input:focus {
@@ -52,8 +62,8 @@
 }
 
 .form-input[disabled] {
-    background-color: #e9ecef;
-    color: #6C757D; /* Readable color for disabled input text */
+    background-color: #e9ecef; /* Slightly darker for disabled */
+    color: #6C757D;
     cursor: not-allowed;
 }
 
@@ -62,128 +72,222 @@ textarea.form-input {
     min-height: 80px;
 }
 
-/* Display text for non-editable fields or when not in edit mode - ADD THESE RULES */
+/* Display text for non-editable fields or when not in edit mode - Ensures consistent boxed look */
 .profile-display-text {
-    padding: 12px;
-    background-color: #ffffff; /* Light background for the display text box */
-    border: 1px solid #ffffff;
+    padding: 12px; /* Consistent with form-input */
+    background-color: #ffffff; /* White background */
+    border: 1px solid #ffffff; /* Consistent light border */
     border-radius: 5px;
     font-size: 16px;
-    color: #495057; /* Set text color to a dark grey */
-    min-height: 44px; /* Ensure consistent height with inputs */
+    color: #495057;
+    min-height: 44px; /* Approximate height of form-input for visual consistency */
     display: flex;
     align-items: center;
     box-sizing: border-box;
     word-break: break-all;
     overflow-wrap: break-word;
-    margin-left: -20px
 }
 
-/* Form Group Labels - Ensure they are dark too */
+/* Form Group Labels */
 .form-label {
     font-weight: 600;
-    color: #495057; /* Ensure labels are dark */
+    color: #495057;
     margin-bottom: 8px;
     font-size: 15px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: block;
 }
 
-/* General body text color as a fallback (good practice) */
+/* General body text color as a fallback */
 body {
-    color: #333; /* Default dark color for all text on the page */
-}
-.profile-image {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #0099ff;
+    color: #333;
 }
 
-.profile-details {
-  display: flex;
-  flex-direction: column;
+/* Form Group Layout */
+.doctor-form-area {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
 }
 
-.profile-name {
-  font-size: 26px;
-  font-weight: bold;
-  color: #333;
+.form-group {
+    display: flex;
+    flex-direction: column;
 }
 
-.profile-specialty {
-  font-size: 16px;
-  color: #555;
+.form-input-container {
+    flex-grow: 1; /* Allows the input/display text to take available space */
 }
 
-/* Information Rows */
-.profile-info-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
+/* Checkbox specific styling - MODIFIED to place label above */
+.checkbox-group {
+    display: flex; /* Use flexbox for alignment */
+    flex-direction: column; /* Stack label and checkbox vertically */
+    align-items: flex-start; /* Align label and checkbox to the left */
+    gap: 5px; /* Space between label and checkbox */
 }
 
-.profile-info-box {
-  flex: 1 1 45%;
-  background-color: #f9f9f9;
-  padding: 16px 20px;
-  border-radius: 10px;
-  border-left: 4px solid #0099ff;
+/* Ensure the label within the checkbox group doesn't have extra bottom margin */
+.checkbox-group .form-label {
+    margin-bottom: 0;
 }
 
-.profile-info-title {
-  font-weight: bold;
-  color: #666;
-  margin-bottom: 8px;
-  font-size: 14px;
+.form-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    vertical-align: middle;
 }
 
-.profile-info-content {
-  font-size: 16px;
-  color: #333;
+/* --- BUTTON STYLES --- */
+.edit-button,
+.cancel-button,
+.submit-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    min-width: 120px;
+    text-align: center;
 }
 
-/* Schedule Section */
-.profile-schedule {
-  margin-top: 20px;
+.edit-button {
+    background-color: #007bff;
+    color: white;
 }
 
-.schedule-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 12px;
+.edit-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
 }
 
-.schedule-list {
-  list-style: none;
-  padding-left: 0;
+.edit-mode-buttons {
+    display: flex;
+    gap: 10px;
 }
 
-.schedule-item {
-  padding: 12px 16px;
-  background-color: #eef6ff;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  font-size: 15px;
-  color: #333;
+.cancel-button {
+    background-color: #6c757d;
+    color: white;
 }
+
+.cancel-button:hover {
+    background-color: #5a6266;
+    transform: translateY(-2px);
+}
+
+.submit-button {
+    background-color: #28a745;
+    color: white;
+}
+
+.submit-button:hover:not(:disabled) {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+.submit-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.submit-button:disabled::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* --- POPUP MESSAGE STYLES --- */
+.popup-message-container {
+    position: fixed;
+    top: -80px; /* Start off-screen */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    opacity: 0; /* Start invisible */
+    transition: top 0.5s ease-out, opacity 0.5s ease-out; /* Smooth transition */
+    min-width: 250px;
+    text-align: center;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-message-container.show {
+    top: 70px; /* Slide into view */
+    opacity: 1; /* Become visible */
+}
+
+.popup-message-container.success {
+    background-color: #4CAF50; /* Green for success */
+}
+
+.popup-message-container.error {
+    background-color: #f44336; /* Red for error */
+}
+
 
 /* Responsive */
 @media (max-width: 768px) {
-  .profile-info-box {
-    flex: 1 1 100%;
-  }
+    .profile-header-area {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
 
-  .profile-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+    .profile-title {
+        font-size: 24px;
+    }
 
-  .profile-image {
-    width: 100px;
-    height: 100px;
-  }
+    .edit-mode-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .edit-button,
+    .cancel-button,
+    .submit-button {
+        width: 100%;
+    }
+
+    .doctor-form-area {
+        grid-template-columns: 1fr;
+    }
+
+    .form-input,
+    .profile-display-text {
+        /* Adjusted padding for smaller screens if needed, still consistent */
+        padding: 10px;
+    }
+
+    .popup-message-container {
+        width: 90%;
+        left: 5%;
+        transform: translateX(0);
+    }
 }
