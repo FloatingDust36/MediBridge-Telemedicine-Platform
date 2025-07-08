@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import supabase from '../lib/supabaseClient'; // 👈 1. Import Supabase client
 import ChatWindow from '../components/ChatWindow';
 import HistorySidebar from '../components/HistorySidebar';
 import { useChatStore } from '../store/chatStore';
@@ -30,9 +31,30 @@ const ChatbotPage = () => {
   const { sessions, activeSessionId, setSessions, setActiveSessionId } = useChatStore();
   
   const [isAppLoading, setIsAppLoading] = useState(true);
-  const userId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
+  const [userId, setUserId] = useState<string | null>(null); // 👈 2. Use state for the user ID
+
+  // 👈 3. Get the currently logged-in user's ID from Supabase
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          setUserId(user.id);
+        } else {
+          console.error("User not authenticated.");
+          // Optionally, redirect to login page here
+          setIsAppLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        setIsAppLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
   
   const fetchSessions = useCallback(async () => {
+    if (!userId) return; // Don't fetch if there's no user
     try {
       const response = await fetch(`${API_URL}/sessions/user/${userId}`);
       if (!response.ok) throw new Error("Failed to fetch sessions");
@@ -41,27 +63,31 @@ const ChatbotPage = () => {
     } catch (error) {
       console.error("Failed to fetch sessions:", error);
     }
-  }, [userId, setSessions]);
+  }, [userId, setSessions]); // 👈 4. Depend on the dynamic userId
 
+  // This effect now fetches sessions only after the userId is set
   useEffect(() => {
     const initializeApp = async () => {
-        await fetchSessions();
-        setIsAppLoading(false);
+        if (userId) {
+            await fetchSessions();
+            setIsAppLoading(false);
+        }
     };
     initializeApp();
-  }, [fetchSessions]);
+  }, [userId, fetchSessions]);
 
   const handleSelectSession = (sessionId: string) => {
     setActiveSessionId(sessionId);
   };
 
   const handleNewChat = useCallback(async () => {
+    if (!userId) return; // Don't start a new chat if there's no user
     setActiveSessionId(null);
     try {
       const response = await fetch(`${API_URL}/chat/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId }),
+        body: JSON.stringify({ user_id: userId }), // Use dynamic userId
       });
       const data = await response.json();
       if (data.session_id) {
@@ -71,7 +97,7 @@ const ChatbotPage = () => {
     } catch (error) {
       console.error("Failed to start a new session:", error);
     }
-  }, [userId, fetchSessions, setActiveSessionId]);
+  }, [userId, fetchSessions, setActiveSessionId]); // Depend on dynamic userId
 
   const handleDeleteSession = useCallback(async (sessionIdToDelete: string) => {
     if (!window.confirm("Are you sure you want to delete this conversation?")) return;

@@ -11,7 +11,7 @@ const INACTIVITY_TIMEOUT = 120000; // 2 minutes
 
 const WelcomeScreen = () => (
   <div className="welcome-screen">
-    <img src="/src/assets/pictures/chatbot-villamor.jpg" alt="MedBot" className="welcome-icon" />
+    <img src="/src/assets/MediBridge_LogoClear.png" alt="MedBot" className="welcome-icon" />
     <h2>MediBridge AI Assistant</h2>
     <p>Your personal health guide. Select a past conversation or click "New Chat" to begin.</p>
   </div>
@@ -157,7 +157,7 @@ const ChatWindow = ({
   return (
     <div className="chatbot-card">
       <div className="chatbot-header">
-        <img src="/src/assets/pictures/chatbot-villamor.jpg" alt="Chatbot Icon" className="chatbot-icon" />
+        <img src="/src/assets/MediBridge_LogoClear.png" alt="Chatbot Icon" className="chatbot-icon" />
         <h3 className="chatbot-title">AI Health Assistant</h3>
         {finalEsiLevel && activeSessionId && (
           <a href={`${API_URL}/session/${activeSessionId}/summary/pdf`} target="_blank" rel="noopener noreferrer" className="download-pdf-button">
@@ -177,7 +177,7 @@ const ChatWindow = ({
                     {msg.text && <div className="message-text"><ReactMarkdown>{msg.text}</ReactMarkdown></div>}
                   </div>
                   <img 
-                    src={"/images/default-patient-avatar.png"} 
+                    src={"/src/assets/pictures/chatbot-icon.png"} 
                     alt="user avatar" 
                     className="chat-avatar"
                   />
@@ -185,7 +185,7 @@ const ChatWindow = ({
               ) : (
                 <>
                   <img 
-                    src={"/images/chatbot-icon.png"} 
+                    src={"/src/assets/MediBridge_LogoClear.png"} 
                     alt="bot avatar" 
                     className="chat-avatar"
                   />
