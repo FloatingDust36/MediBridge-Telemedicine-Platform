@@ -2,110 +2,249 @@ import React, { useEffect, useState } from 'react';
 import supabase from '../lib/supabaseClient';
 import './DoctorDashboard.css';
 
+interface Appointment {
+  id: string;
+  start_time: string;
+  end_time: string;
+  patients: { first_name: string; last_name: string; user_id: string } | null;
+}
+
+interface DoctorInfo {
+  full_name: string;
+  first_name: string;
+  last_name: string;
+  middle_name: string | null;
+  specialization: string;
+  is_available: boolean;
+}
+
 const DoctorDashboard: React.FC = () => {
-  const [doctorName, setDoctorName] = useState<string>('Loading...');
+  const [doctorInfo, setDoctorInfo] = useState<DoctorInfo | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<string>('');
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [consultationNotes, setConsultationNotes] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [appointments, setAppointments] = useState<any[]>([]);
-  const [patientList, setPatientList] = useState<string[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [patientList, setPatientList] = useState<{ name: string; id: string }[]>([]);
   const [currentDate, setCurrentDate] = useState<string>('');
+  const [consultationsDone, setConsultationsDone] = useState<number>(0);
+  const [pendingMessages, setPendingMessages] = useState<number>(0);
 
-  useEffect(() => {
-    const fetchDoctorData = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      const userId = session?.user?.id;
+  // Function to fetch all dashboard data
+  const fetchDoctorDashboardData = async () => {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    const userId = session?.user?.id;
 
-      if (!userId) {
-        console.error('No logged-in doctor');
-        return;
-      }
+    if (sessionError || !userId) {
+      console.error('No logged-in doctor or session error:', sessionError?.message);
+      return;
+    }
 
-      // Fetch doctor name from users table
-      const { data: user, error: userError } = await supabase
-        .from('users')
-        .select('full_name')
+    try {
+      // Fetch doctor information from both users and doctors tables
+      const { data: doctorData, error: doctorError } = await supabase
+        .from('doctors')
+        .select(`
+          first_name,
+          last_name,
+          middle_name,
+          specialization,
+          is_available,
+          users!inner (
+            full_name
+          )
+        `)
         .eq('user_id', userId)
         .single();
 
-      if (userError) {
-        console.error('Error fetching doctor name:', userError.message);
-        return;
+      if (doctorError || !doctorData) {
+        console.error('Error fetching doctor info:', doctorError?.message);
+        setDoctorInfo({
+          full_name: 'Dr. Unknown',
+          first_name: 'Unknown',
+          last_name: '',
+          middle_name: null,
+          specialization: 'General',
+          is_available: false
+        });
+      } else {
+        // Use individual names from doctors table if available, otherwise parse from full_name
+        const parseFullName = (fullName: string) => {
+          const nameParts = fullName.trim().split(' ');
+          if (nameParts.length === 1) {
+            return { first_name: nameParts[0], middle_name: '', last_name: '' };
+          } else if (nameParts.length === 2) {
+            return { first_name: nameParts[0], middle_name: '', last_name: nameParts[1] };
+          } else {
+            return {
+              first_name: nameParts[0],
+              middle_name: nameParts.slice(1, -1).join(' '),
+              last_name: nameParts[nameParts.length - 1]
+            };
+          }
+        };
+
+        const parsedNames = parseFullName(doctorData.users.full_name || '');
+
+        setDoctorInfo({
+          full_name: doctorData.users.full_name || 'Dr. Unknown',
+          first_name: doctorData.first_name || parsedNames.first_name,
+          last_name: doctorData.last_name || parsedNames.last_name,
+          middle_name: doctorData.middle_name || parsedNames.middle_name || null,
+          specialization: doctorData.specialization || 'General',
+          is_available: doctorData.is_available || false
+        });
       }
 
-      setDoctorName(user.full_name);
+      // Fetch Today's Appointments
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
 
-      // Fetch appointments (Mock: filter by today only)
       const { data: appts, error: apptError } = await supabase
         .from('appointments')
-        .select('id, start_time, end_time, patients(first_name, last_name)')
-        .eq('doctor_id', userId);
+        .select(`
+          id,
+          start_time,
+          end_time,
+          patients!inner (
+            user_id,
+            first_name,
+            last_name
+          )
+        `)
+        .eq('doctor_id', userId)
+        .gte('start_time', today.toISOString())
+        .lt('start_time', tomorrow.toISOString())
+        .order('start_time', { ascending: true });
 
       if (apptError) {
         console.error('Error fetching appointments:', apptError.message);
-        return;
+        setAppointments([]);
+      } else {
+        const formattedAppts: Appointment[] = appts.map((appt: any) => ({
+          id: appt.id,
+          start_time: appt.start_time,
+          end_time: appt.end_time,
+          patients: appt.patients ? {
+            user_id: appt.patients.user_id,
+            first_name: appt.patients.first_name,
+            last_name: appt.patients.last_name,
+          } : null,
+        }));
+        setAppointments(formattedAppts);
+
+        const patientListData = formattedAppts
+          .filter(appt => appt.patients)
+          .map(appt => ({
+            name: `${appt.patients?.first_name} ${appt.patients?.last_name}`,
+            id: appt.patients?.user_id || '',
+          }));
+        setPatientList(patientListData);
+
+        if (patientListData.length > 0) {
+          setSelectedPatient(patientListData[0].name);
+          setSelectedPatientId(patientListData[0].id);
+        }
       }
 
-      const today = new Date().toISOString().slice(0, 10);
-      const todayAppts = appts?.filter((appt: any) => appt.date === today) || [];
+      // Fetch Consultations Done
+      const { count: consultationsCount, error: notesError } = await supabase
+        .from('consultation_notes')
+        .select('*', { count: 'exact' })
+        .eq('doctor_id', userId);
 
-      setAppointments(todayAppts);
-      setPatientList(todayAppts.map((a: any) => `${a.patients?.[0]?.first_name} ${a.patients?.[0]?.last_name}`));
-      if (todayAppts.length > 0) { const patient = todayAppts[0].patients?.[0];
-      if (patient) {setSelectedPatient(`${patient.first_name} ${patient.last_name}`);
-      }}
-      
+      if (notesError) {
+        console.error('Error fetching consultation count:', notesError.message);
+      } else {
+        setConsultationsDone(consultationsCount || 0);
+      }
+
+      // Fetch Pending Messages
+      const { count: messagesCount, error: messagesError } = await supabase
+        .from('session_messages')
+        .select('*', { count: 'exact' })
+        .eq('receiver_id', userId)
+        .neq('sender_id', userId);
+
+      if (messagesError) {
+        console.error('Error fetching pending messages:', messagesError.message);
+      } else {
+        setPendingMessages(messagesCount || 0);
+      }
+
       const formattedDate = new Date().toLocaleDateString('en-US', {
         weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
       });
       setCurrentDate(formattedDate);
+
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDoctorDashboardData();
+
+    // Listen for profile updates
+    const handleProfileUpdate = () => {
+      fetchDoctorDashboardData();
     };
 
-    fetchDoctorData();
+    window.addEventListener('doctorProfileUpdated', handleProfileUpdate);
+
+    return () => {
+      window.removeEventListener('doctorProfileUpdated', handleProfileUpdate);
+    };
   }, []);
 
   const handleSaveNotes = async () => {
-  if (!consultationNotes.trim()) {
-    alert('Please enter consultation notes before saving.');
-    return;
-  }
+    if (!consultationNotes.trim()) {
+      alert('Please enter consultation notes before saving.');
+      return;
+    }
 
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-  const doctorId = session?.user?.id;
+    if (!selectedPatientId) {
+      alert('Please select a patient.');
+      return;
+    }
 
-  if (!doctorId) {
-    alert('Doctor not logged in.');
-    return;
-  }
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    const doctorId = session?.user?.id;
 
-  // Fetch patient_id from patient name
-  const { data: patient, error: patientError } = await supabase
-    .from('patients')
-    .select('user_id')
-    .eq('full_name', selectedPatient)
-    .single();
+    if (!doctorId) {
+      alert('Doctor not logged in.');
+      return;
+    }
 
-  if (patientError || !patient) {
-    console.error('Error finding patient:', patientError?.message);
-    alert('Failed to find patient.');
-    return;
-  }
+    const selectedAppt = appointments.find(
+      appt => appt.patients?.user_id === selectedPatientId
+    );
 
-  const { error: insertError } = await supabase.from('consultation_notes').insert({
-    doctor_id: doctorId,
-    patient_id: patient.user_id,
-    notes: consultationNotes,
-  });
+    const { error: insertError } = await supabase.from('consultation_notes').insert({
+      doctor_id: doctorId,
+      patient_id: selectedPatientId,
+      notes: consultationNotes,
+      appointment_id: selectedAppt?.id || null,
+    });
 
-  if (insertError) {
-    console.error('Error saving note:', insertError.message);
-    alert('Failed to save note.');
-  } else {
-    alert('Consultation notes saved successfully!');
-    setConsultationNotes('');
-  }
-};
-
+    if (insertError) {
+      console.error('Error saving note:', insertError.message);
+      alert('Failed to save note: ' + insertError.message);
+    } else {
+      alert('Consultation notes saved successfully!');
+      setConsultationNotes('');
+      
+      // Update consultations count
+      const { count: newConsultationsCount } = await supabase
+        .from('consultation_notes')
+        .select('*', { count: 'exact' })
+        .eq('doctor_id', doctorId);
+      
+      setConsultationsDone(newConsultationsCount || 0);
+    }
+  };
 
   const handleSearch = () => {
     if (!searchQuery.trim()) {
@@ -114,13 +253,25 @@ const DoctorDashboard: React.FC = () => {
     }
 
     console.log(`Searching for patient: ${searchQuery}`);
-    alert(`Searching for: ${searchQuery}`);
+    alert(`Searching for: ${searchQuery} (Search functionality not yet implemented)`);
+  };
+
+  // Get display name for welcome message
+  const getDisplayName = () => {
+    if (doctorInfo?.first_name && doctorInfo?.last_name) {
+      return `${doctorInfo.first_name} ${doctorInfo.last_name}`;
+    }
+    return doctorInfo?.full_name?.replace(/^Dr\.\s*/, '') || 'Unknown';
   };
 
   return (
     <div className="main-content-area doctor-dashboard-wrapper">
       <div className="welcome-section">
-        <h1>Welcome, Dr. {doctorName}</h1>
+        <h1>Welcome, Dr. {getDisplayName()}</h1>
+        <p>
+          Specialization: {doctorInfo?.specialization || 'General'} | 
+          Status: {doctorInfo?.is_available ? 'Available' : 'Unavailable'}
+        </p>
         <p>Manage your appointments, view patient records, and conduct consultations.</p>
         <span className="current-date">{currentDate}</span>
       </div>
@@ -132,11 +283,11 @@ const DoctorDashboard: React.FC = () => {
         </div>
         <div className="card">
           <h3>Consultations Done</h3>
-          <p className="card-value">3</p> {/* Optional: fetch from backend */}
+          <p className="card-value">{consultationsDone}</p>
         </div>
         <div className="card">
           <h3>Pending Messages</h3>
-          <p className="card-value">4</p> {/* Optional: fetch from backend */}
+          <p className="card-value">{pendingMessages}</p>
         </div>
       </div>
 
@@ -147,10 +298,12 @@ const DoctorDashboard: React.FC = () => {
             {appointments.length > 0 ? (
               appointments.map((appt) => (
                 <div className="appointment-item" key={appt.id}>
-                  <p className="patient-name"> Patient: {appt.patients?.[0]?.first_name} {appt.patients?.[0]?.last_name} 
+                  <p className="patient-name">
+                    Patient: {appt.patients?.first_name} {appt.patients?.last_name}
                   </p>
                   <p className="appointment-time">
-                    {new Date(appt.start_time).toLocaleString()} - {new Date(appt.end_time).toLocaleTimeString()}
+                    {new Date(appt.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+                    {new Date(appt.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
               ))
@@ -167,11 +320,20 @@ const DoctorDashboard: React.FC = () => {
                 id="select-patient"
                 className="input-field2"
                 value={selectedPatient}
-                onChange={(e) => setSelectedPatient(e.target.value)}
+                onChange={(e) => {
+                  const selectedName = e.target.value;
+                  setSelectedPatient(selectedName);
+                  const patient = patientList.find(p => p.name === selectedName);
+                  setSelectedPatientId(patient ? patient.id : null);
+                }}
               >
-                {patientList.map((name, idx) => (
-                  <option value={name} key={idx}>{name}</option>
-                ))}
+                {patientList.length > 0 ? (
+                  patientList.map((patient, idx) => (
+                    <option value={patient.name} key={idx}>{patient.name}</option>
+                  ))
+                ) : (
+                  <option value="">No patients available</option>
+                )}
               </select>
             </div>
 
@@ -190,7 +352,7 @@ const DoctorDashboard: React.FC = () => {
             <button
               className="save-notes-button"
               onClick={handleSaveNotes}
-              disabled={!consultationNotes.trim()}
+              disabled={!consultationNotes.trim() || !selectedPatientId}
             >
               Save Notes
             </button>

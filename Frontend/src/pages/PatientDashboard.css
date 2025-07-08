@@ -250,29 +250,6 @@ body {
     margin-bottom: 0;
 }
 
-/* --- Styles specific to MedicalHistorySection --- */
-.medical-history-section .medical-history-list {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-}
-
-.medical-history-section .medical-history-item {
-    background-color: #f8f8f8;
-    padding: 10px 15px;
-    border-radius: 5px;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: #444;
-}
-.medical-history-section .medical-history-item strong {
-    font-weight: 600;
-    color: #000;
-}
-.medical-history-section .medical-history-item:last-child {
-    margin-bottom: 0;
-}
-
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .navbar {

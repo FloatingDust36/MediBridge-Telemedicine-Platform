@@ -329,4 +329,175 @@ box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
         padding: 6px 10px;
         font-size: 14px;
     }
+    
+}
+/* Clock Time Picker Styles - Add these to your AddSchedule.css */
+
+.clock-time-picker-container {
+  position: relative;
+  width: 100%;
+}
+
+.clock-time-picker-button {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #c0c0c0;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 15px;
+  color: #555;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.clock-time-picker-button:hover {
+  border-color: #a0a0a0;
+  background-color: #f0f0f0;
+}
+
+.clock-time-picker-button:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.clock-time-picker-text {
+  color: #555;
+}
+
+.clock-time-picker-icon {
+  width: 20px;
+  height: 20px;
+  color: #888;
+}
+
+.clock-time-picker-dropdown {
+  position: absolute;
+  z-index: 1000;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  min-width: 280px;
+}
+
+.clock-time-picker-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.clock-time-picker-mode-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.clock-time-picker-current-time {
+  font-size: 14px;
+  color: #666;
+}
+
+.clock-time-picker-clock-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.clock-time-picker-svg {
+  cursor: pointer;
+  user-select: none;
+}
+
+.clock-time-picker-number {
+  font-size: 14px;
+  font-weight: 500;
+  fill: #374151;
+  pointer-events: none;
+}
+
+.clock-time-picker-number.selected {
+  fill: white;
+  font-weight: 600;
+}
+
+.clock-time-picker-ampm {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.clock-time-picker-ampm-container {
+  display: flex;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.clock-time-picker-ampm-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: transparent;
+  color: #6b7280;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clock-time-picker-ampm-button:hover {
+  color: #374151;
+}
+
+.clock-time-picker-ampm-button.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.clock-time-picker-instructions {
+  text-align: center;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Responsive adjustments for the clock picker */
+@media (max-width: 768px) {
+  .clock-time-picker-dropdown {
+    right: 0;
+    left: auto;
+    min-width: 260px;
+  }
+  
+  .clock-time-picker-svg {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .clock-time-picker-dropdown {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    max-width: 300px;
+    margin-top: 0;
+  }
+  
+  .clock-time-picker-svg {
+    width: 160px;
+    height: 160px;
+  }
 }
