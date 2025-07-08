@@ -3,18 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import supabase from '../lib/supabaseClient';
 import './PatientProfile.css';
 
+// Define the interface for PatientData, reflecting combined data from 'users' and 'patients' tables
 interface PatientData {
   user_id: string;
   first_name: string;
   last_name: string;
   middle_name?: string;
-  email: string; // This will come from the 'users' table
-  date_of_birth: string; // This will come from the 'patients' table
-  phone_number: string; // This will come from the 'users' table
-  address: string; // This will come from the 'patients' table
-  contact_number?: string; // This is a distinct field in 'patients' table
-  emergency_contact?: string;
-  allergies?: string;
+  email: string; // From 'users' table
+  date_of_birth: string; // Present in both 'patients' and 'users' in schema
+  phone_number: string; // From 'users' table
+  address: string; // Present in both 'patients' and 'users' in schema
+  contact_number?: string; // From 'patients' table (patient-specific contact)
+  emergency_contact?: string; // From 'patients' table
+  allergies?: string; // From 'patients' table
 }
 
 const PatientProfile: React.FC = () => {
@@ -45,6 +46,8 @@ const PatientProfile: React.FC = () => {
 
       const userId = session.user.id;
 
+      // Fetch from 'patients' table and join with 'users' to get email, phone_number, full_name, etc.
+      // Ensure date_of_birth and address are fetched from both if they exist in both tables
       const { data: patientInfo, error: patientError } = await supabase
         .from('patients')
         .select(`
@@ -59,7 +62,10 @@ const PatientProfile: React.FC = () => {
           allergies,
           users!inner(
             email,
-            phone_number
+            phone_number,
+            full_name,
+            date_of_birth,
+            address
           )
         `)
         .eq('user_id', userId)
@@ -70,26 +76,27 @@ const PatientProfile: React.FC = () => {
         throw new Error('Failed to fetch patient data: ' + (patientError?.message || 'No data returned'));
       }
 
-      // Access the nested users object safely (following DoctorProfile pattern)
+      // Extract user-specific data from the joined 'users' table
       const userData = (patientInfo as any).users || {};
 
-      // Build the combined data with proper null checks
+      // Combine data into the PatientData interface
+      // Prioritize data from 'patients' table for shared fields, fallback to 'users' table
       const combinedData: PatientData = {
         user_id: patientInfo.user_id,
         first_name: patientInfo.first_name || '',
         last_name: patientInfo.last_name || '',
         middle_name: patientInfo.middle_name || '',
-        email: userData.email || '',
-        date_of_birth: patientInfo.date_of_birth || '',
-        phone_number: userData.phone_number || '',
-        address: patientInfo.address || '',
-        contact_number: patientInfo.contact_number || '',
-        emergency_contact: patientInfo.emergency_contact || '',
-        allergies: patientInfo.allergies || '',
+        email: userData.email || '', // From users table
+        date_of_birth: patientInfo.date_of_birth || userData.date_of_birth || '', // Prefer patients DOB, fallback users DOB
+        phone_number: userData.phone_number || '', // From users table
+        address: patientInfo.address || userData.address || '', // Prefer patients Address, fallback users Address
+        contact_number: patientInfo.contact_number || '', // From patients table
+        emergency_contact: patientInfo.emergency_contact || '', // From patients table
+        allergies: patientInfo.allergies || '', // From patients table
       };
 
       setPatientData(combinedData);
-      setEditedData(combinedData);
+      setEditedData(combinedData); // Initialize editedData with fetched data
 
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
@@ -106,7 +113,7 @@ const PatientProfile: React.FC = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
-    setEditedData(patientData);
+    setEditedData(patientData); // Revert editedData to the last saved patientData
   };
 
   const handleSave = async () => {
@@ -115,14 +122,15 @@ const PatientProfile: React.FC = () => {
     try {
       setSaving(true);
 
+      // --- Update 'patients' table fields ---
       const { error: patientError } = await supabase
         .from('patients')
         .update({
           first_name: editedData.first_name,
           last_name: editedData.last_name,
           middle_name: editedData.middle_name,
-          date_of_birth: editedData.date_of_birth,
-          address: editedData.address,
+          date_of_birth: editedData.date_of_birth, // Update patient's DOB
+          address: editedData.address,             // Update patient's Address
           contact_number: editedData.contact_number,
           emergency_contact: editedData.emergency_contact,
           allergies: editedData.allergies,
@@ -131,19 +139,29 @@ const PatientProfile: React.FC = () => {
 
       if (patientError) throw patientError;
 
+      // --- Update 'users' table fields (for Dashboard display consistency) ---
+      // Construct full_name from edited first, middle, last names
+      const newFullName = `${editedData.first_name} ${editedData.middle_name ? editedData.middle_name + ' ' : ''}${editedData.last_name}`;
+
       const { error: usersError } = await supabase
         .from('users')
         .update({
+          full_name: newFullName,          // Update full_name for dashboard display
           phone_number: editedData.phone_number,
+          date_of_birth: editedData.date_of_birth, // Also update user's DOB
+          address: editedData.address,             // Also update user's Address
         })
         .eq('user_id', patientData.user_id);
 
       if (usersError) throw usersError;
 
+      // Update local state with the saved data
       setPatientData(editedData);
       setIsEditing(false);
       alert('Profile updated successfully!');
 
+      // --- CRITICAL CONNECTION POINT ---
+      // Dispatch a custom event to notify other components (e.g., PatientDashboard) to refresh their data
       window.dispatchEvent(new Event('patientProfileUpdated'));
 
     } catch (err: unknown) {
@@ -185,6 +203,7 @@ const PatientProfile: React.FC = () => {
     return <div className="patient-profile-no-data">No patient data available.</div>;
   }
 
+  // Use editedData when in editing mode, otherwise use patientData
   const currentData = isEditing ? editedData : patientData;
 
   return (
@@ -218,12 +237,13 @@ const PatientProfile: React.FC = () => {
         <div className="profile-section">
           <h2>Personal Information</h2>
 
+          {/* Email is typically not editable from profile, managed by Auth */}
           <div className="profile-field">
             <label>Email:</label>
             <input
               type="email"
               value={currentData?.email || ''}
-              disabled={true}
+              disabled={true} // Email is read-only
               className="profile-input disabled"
             />
           </div>
@@ -273,7 +293,7 @@ const PatientProfile: React.FC = () => {
           </div>
 
           <div className="profile-field">
-            <label>Phone Number:</label>
+            <label>Phone Number (from Users table):</label>
             <input
               type="tel"
               value={currentData?.phone_number || ''}
@@ -291,6 +311,17 @@ const PatientProfile: React.FC = () => {
               className={`profile-input ${!isEditing ? 'disabled' : ''}`}
               onChange={(e) => handleInputChange('address', e.target.value)}
               rows={3}
+            />
+          </div>
+
+          <div className="profile-field">
+            <label>Contact Number (Patient Specific):</label>
+            <input
+              type="text"
+              value={currentData?.contact_number || ''}
+              disabled={!isEditing}
+              className={`profile-input ${!isEditing ? 'disabled' : ''}`}
+              onChange={(e) => handleInputChange('contact_number', e.target.value)}
             />
           </div>
 
