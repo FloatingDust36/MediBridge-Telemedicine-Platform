@@ -4,8 +4,6 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'; // Impo
 import supabase from './lib/supabaseClient';
 import OAuthRegisterCallback from './pages/OAuthRegisterCallback';
 
-
-
 import Layout from './components/Layout'; // Ensure correct path for Layout
 
 // Import your pages
