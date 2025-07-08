@@ -19,31 +19,26 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchCountsAndUsers = async () => {
-  // Count total users
-  const { count: usersCount, error: userErr } = await supabase
-    .from('users')
-    .select('*', { count: 'exact', head: true });
+      const { count: usersCount, error: userErr } = await supabase
+        .from('users')
+        .select('*', { count: 'exact', head: true });
 
-  // Count doctors (based on role)
- const { count: doctorCount, error: doctorErr } = await supabase
-  .from('doctors')
-  .select('*', { count: 'exact', head: true });
-    
-  // Count patients (based on role)
-  const { count: patientCount, error: patientErr } = await supabase
-  .from('patients')
-  .select('*', { count: 'exact', head: true });
-    
+      const { count: doctorCount, error: doctorErr } = await supabase
+        .from('doctors')
+        .select('*', { count: 'exact', head: true });
 
-  // Fetch user list
-  const { data: usersData, error: usersError } = await supabase
-    .from('users')
-    .select('user_id, full_name, email, role');
+      const { count: patientCount, error: patientErr } = await supabase
+        .from('patients')
+        .select('*', { count: 'exact', head: true });
 
-  if (userErr || doctorErr || patientErr || usersError) {
-    console.error('Fetch error:', userErr || doctorErr || patientErr || usersError);
-    return;
-  }
+      const { data: usersData, error: usersError } = await supabase
+        .from('users')
+        .select('user_id, full_name, email, role');
+
+      if (userErr || doctorErr || patientErr || usersError) {
+        console.error('Fetch error:', userErr || doctorErr || patientErr || usersError);
+        return;
+      }
 
       setTotalUsers(usersCount ?? 0);
       setTotalDoctors(doctorCount ?? 0);
@@ -58,7 +53,6 @@ const AdminDashboard: React.FC = () => {
     <div className="admin-panel-container">
       <div className="admin-panel-content">
 
-        {/* Hero Section */}
         <div className="admin-hero-section">
           <div className="admin-hero-text">
             <h1>Welcome, Admin</h1>
@@ -69,7 +63,6 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Summary Cards */}
         <div className="summary-cards">
           <div className="card">
             <h3>Total Users</h3>
@@ -85,7 +78,6 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Manage Users Table */}
         <div className="manage-users-section panel-box">
           <h2>Manage Users</h2>
           <div className="table-responsive">

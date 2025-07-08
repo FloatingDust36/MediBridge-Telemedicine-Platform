@@ -1,9 +1,7 @@
-// src/pages/CompletePatientProfile.tsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import supabase from '../lib/supabaseClient';
-// import './CompletePatientProfile.css'; // REMOVE OR COMMENT OUT THIS LINE TEMPORARILY
 
 const CompletePatientProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -22,7 +20,7 @@ const CompletePatientProfile: React.FC = () => {
   useEffect(() => {
   const fetchUser = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    setUser(session?.user ?? null); // store full user object
+    setUser(session?.user ?? null);
   };
   fetchUser();
 }, []);
@@ -38,7 +36,6 @@ const CompletePatientProfile: React.FC = () => {
   const userId = user.id;
   const email = user.email;
 
-  // Step 1: Upsert into `users` table
   const { error: userError } = await supabase
   .from('users')
   .upsert(
@@ -62,7 +59,6 @@ const CompletePatientProfile: React.FC = () => {
     return;
   }
 
-  // Step 2: Insert into `patients` table
   const { error: patientError } = await supabase
     .from('patients')
     .upsert(
@@ -88,11 +84,9 @@ const CompletePatientProfile: React.FC = () => {
     return;
   }
 
-  // Redirect to patient dashboard
   navigate('/patientdashboard');
 };
 
-  // Define inline styles directly in the component
   const styles: { [key: string]: React.CSSProperties } = {
     patientProfileContainerWrapper: {
       display: 'flex',
@@ -100,7 +94,7 @@ const CompletePatientProfile: React.FC = () => {
       alignItems: 'center',
       minHeight: '100vh',
       backgroundColor: '#f0f2f5',
-      padding: '20px',
+      padding: '60px',
       boxSizing: 'border-box',
     },
     patientProfileCard: {
@@ -119,7 +113,7 @@ const CompletePatientProfile: React.FC = () => {
     profileTitle: {
       fontSize: '28px',
       fontWeight: 'bold',
-      fontFamily: 'Roboto, sans-serif', // Ensure Roboto is loaded globally or remove if not needed
+      fontFamily: 'Roboto, sans-serif',
       color: '#333',
       marginBottom: '25px',
       textAlign: 'left',
@@ -156,7 +150,7 @@ const CompletePatientProfile: React.FC = () => {
       padding: '0 12px',
       boxSizing: 'border-box',
       transition: 'border-color 0.2s ease-in-out',
-      position: 'relative', // Needed for calendar icon positioning
+      position: 'relative',
     },
     formInput: {
       flexGrow: 1,
@@ -169,8 +163,6 @@ const CompletePatientProfile: React.FC = () => {
       padding: '0',
       boxSizing: 'border-box',
     },
-    // No specific inline style for ::placeholder or ::-webkit-calendar-picker-indicator
-    // as they cannot be applied inline. We'll rely on global/external CSS for these if needed.
     calendarIcon: {
       position: 'absolute',
       right: '12px',
@@ -198,7 +190,6 @@ const CompletePatientProfile: React.FC = () => {
       transition: 'background-color 0.3s ease, transform 0.2s ease',
       alignSelf: 'flex-start',
     },
-    // Note: :hover and :active states cannot be applied via inline styles.
   };
 
    return (

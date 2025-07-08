@@ -15,89 +15,83 @@ const CompleteDoctorProfile: React.FC = () => {
   const [contactNumber, setContactNumber] = useState('');
   const [emergencyContact, setEmergencyContact] = useState('');
 
- useEffect(() => {
-  const fetchUser = async () => {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    const userId = session?.user?.id;
-    setUserId(userId ?? null);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      setUserId(userId ?? null);
 
-    if (!userId) return;
+      if (!userId) return;
 
-    // Check if user already exists in public.users
-    const { data: existingUser, error: findError } = await supabase
-      .from('users')
-      .select('user_id')
-      .eq('user_id', userId)
-      .single();
+      const { data: existingUser, error: findError } = await supabase
+        .from('users')
+        .select('user_id')
+        .eq('user_id', userId)
+        .single();
 
-    if (!existingUser) {
-      // Insert user into public.users
-      const { error: insertError } = await supabase.from('users').insert({
-        user_id: userId,
-        email: session?.user?.email,
-        full_name: '', // you will update this later in handleSubmit
-        role: 'doctor',
-        created_at: new Date().toISOString()
-      });
+      if (!existingUser) {
+        const { error: insertError } = await supabase.from('users').insert({
+          user_id: userId,
+          email: session?.user?.email,
+          full_name: '',
+          role: 'doctor',
+          created_at: new Date().toISOString()
+        });
 
-      if (insertError) {
-        console.error('Failed to insert into users table:', insertError.message);
+        if (insertError) {
+          console.error('Failed to insert into users table:', insertError.message);
+        }
       }
-    }
-  };
+    };
 
-  fetchUser();
-}, []);
-
+    fetchUser();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!userId) {
-      alert('User not logged in');
+      console.log('User not logged in');
       return;
     }
 
-      const { error: userError } = await supabase
-    .from('users')
-    .update({
-      full_name: `${firstName} ${middleName} ${lastName}`,
-      phone_number: contactNumber,
-      role: 'doctor',
-    })
-    .eq('user_id', userId);
+    const { error: userError } = await supabase
+      .from('users')
+      .update({
+        full_name: `${firstName} ${middleName} ${lastName}`,
+        phone_number: contactNumber,
+        role: 'doctor',
+      })
+      .eq('user_id', userId);
 
-  if (userError) {
-    console.error('Error updating user table:', userError.message);
-    alert('Failed to update user information.');
-    return;
-  }
+    if (userError) {
+      console.error('Error updating user table:', userError.message);
+      console.log('Failed to update user information.');
+      return;
+    }
 
-  // 2. Insert into `doctors` table
-  const { error: doctorError } = await supabase.from('doctors').upsert([
-  {
-    user_id: userId,
-    license_number: licenseNumber,
-    specialization: speciality,
-    emergency_contact: emergencyContact,
-    first_name: firstName,
-    last_name: lastName,
-    middle_name: middleName,
-    is_available: true,
-    role: 'doctor',
-  },
-]);
+    const { error: doctorError } = await supabase.from('doctors').upsert([
+      {
+        user_id: userId,
+        license_number: licenseNumber,
+        specialization: speciality,
+        emergency_contact: emergencyContact,
+        first_name: firstName,
+        last_name: lastName,
+        middle_name: middleName,
+        is_available: true,
+        role: 'doctor',
+      },
+    ]);
 
-if (doctorError) {
-  console.error('Doctor insert failed:', doctorError);
-  alert(`Failed to save doctor profile: ${doctorError.message}`);
-  return;
-}
-  
+    if (doctorError) {
+      console.error('Doctor insert failed:', doctorError);
+      console.log(`Failed to save doctor profile: ${doctorError.message}`);
+      return;
+    }
 
-  // Redirect after successful save
-  navigate('/addschedule');
-};
+    navigate('/addschedule');
+  };
 
   return (
     <div className="doctor-profile-container">

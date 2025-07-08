@@ -1,359 +1,315 @@
-/* src/pages/Home.css - Now only contains Home-specific styles and global utilities */
-
-/* Global Box Sizing & Body Resets - IMPORTANT, ensure these are NOT duplicated elsewhere */
 html {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 *, *::before, *::after {
-  box-sizing: inherit;
+    box-sizing: inherit;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: "Segoe UI", sans-serif;
-  width: 100vw;
-  min-height: 100vh; /* Ensures the body is at least viewport height */
-  overflow-x: hidden;
-  position: relative;
-  background-color: #f0f2f5;
-
-  /* This is the key: Make body a flex container for its children */
-  display: flex;
-  flex-direction: column; /* Stack children vertically */
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", sans-serif;
+    width: 100vw;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    background-color: #f0f5fa;
+    display: flex;
+    flex-direction: column;
 }
 
-/* If you have a separate div like .main-app-container wrapping content and footer: */
-.main-app-container { /* You might call this .home-container or something similar */
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1; /* Makes this container take up all available space within body */
-  width: 100%;
-  /* No min-height: 100vh here, as body handles it and flex-grow expands it */
+.main-app-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    width: 100%;
 }
 
-/* Home Page Container - now acts as a wrapper for the page content */
 .home-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  width: 100%;
-  /* No padding-top here directly, as it's handled by .page-content-wrapper */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
 }
 
-/* NEW: Global Page Content Wrapper (for content below fixed navbar) */
 .page-content-wrapper {
-  flex-grow: 1; /* Allows content to fill available vertical space */
-  display: flex; /* Makes it a flex container for its children */
-  flex-direction: column; /* Stacks children vertically */
-  width: 100%; /* Ensures it takes full width */
-  box-sizing: border-box; /* Inherited, but explicit is fine */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/* Hero Section (Home page specific) */
 .hero-section {
-  display: flex;
-  flex-wrap: wrap;
-  background: linear-gradient(to bottom right, #f7f9fc, #ffffff);
-  padding: 3rem;
-  align-items: center;
-  border-bottom: 5px solid #b33838;
-  /* margin-top is no longer needed here if using .page-content-wrapper */
-  /* min-height is set in Home.tsx inline style for demo, consider moving to CSS if consistent */
-
-  position: relative; /* <--- NEW: Make this the positioning context for absolute children */
-  overflow: hidden; /* <--- NEW: Crucial to hide parts of images during transition */
+    display: flex;
+    flex-wrap: wrap;
+    background: linear-gradient(to bottom right, #f0f5fa, #ffffff);
+    padding: 3rem;
+    align-items: center;
+    border-bottom: 5px solid #800000;
+    position: relative;
+    overflow: hidden;
 }
 
-/* NEW: Styles for the cycling background image container */
 .hero-background-cycler {
-  position: absolute; /* <--- NEW: Position it absolutely within .hero-section */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 1; /* <--- NEW: Default opacity */
-  transition: opacity 1s ease-in-out; /* <--- NEW: Smooth fade transition */
-  z-index: 0; /* <--- NEW: Ensure it's behind the overlay and text */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+    z-index: 0;
 }
 
-/* Hero Overlay */
 .hero-overlay {
-  position: relative; /* <--- Changed from absolute to relative to simplify layering with z-index */
-  z-index: 1; /* <--- NEW: Ensure overlay is on top of hero-background-cycler */
-  width: 100%; /* Ensure it spans the width */
-  height: 100%; /* Ensure it spans the height */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .hero-text {
-  flex: 1;
-  min-width: 300px;
-  position: relative;
-  z-index: 2; /* <--- NEW: Ensure text is on top of the overlay */
-  padding-right: 20px; /* Added for spacing on desktop */
+    flex: 1;
+    min-width: 300px;
+    position: relative;
+    z-index: 2;
+    padding-right: 20px;
 }
 
 .hero-text h1,
 .hero-text h2,
 .hero-text p {
-  color: #000;
+    color: #333333;
 }
 
 .hero-text .red {
-  color: #800000;
+    color: #800000;
 }
 
 .hero-text h1 {
-  font-size: 3rem;
-  margin: 0;
+    font-size: 3rem;
+    margin: 0;
 }
 
 .hero-text h2 {
-  font-size: 1.5rem;
-  font-weight: normal;
-  margin-top: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: normal;
+    margin-top: 0.5rem;
 }
 
 .hero-text p {
-  margin-top: 1rem;
-  font-size: 1rem;
-  max-width: 500px;
+    margin-top: 1rem;
+    font-size: 1rem;
+    max-width: 500px;
 }
 
-/* How It Works */
 .how-it-works {
-  background: #f5f5f5;
-  padding: 2rem;
-  text-align: center;
-  width: 100%;
-  margin: 0 auto; /* Center content */
+    background: #f0f5fa;
+    padding: 2rem;
+    text-align: center;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .how-it-works h2,
 .step h3,
 .step h4,
 .step p {
-  color: #000;
+    color: #333333;
 }
 
 .how-it-works h2 {
-  font-size: 2rem;
-  margin-bottom: 2rem;
+    font-size: 2rem;
+    margin-bottom: 2rem;
 }
 
 .steps {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  gap: 1.5rem;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1.5rem;
 }
 
 .step {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  width: 300px;
+    background: #FFFFFF;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
 }
 
 .step h3 {
-  margin: 0;
-  color: #0077cc;
+    margin: 0;
+    color: #007bff;
 }
 
 .step h4 {
-  margin: 0.5rem 0;
+    margin: 0.5rem 0;
 }
 
 .step p {
-  font-size: 0.95rem;
+    font-size: 0.95rem;
 }
 
-/* NEW: What is MediBridge section styles */
 .description {
-  background: #f0f5fa; /* A clean white background */
-  padding: 3rem 2rem; /* More vertical padding, consistent horizontal padding */
-  text-align: center;
-  width: 100%;
-  margin: 0 auto;
-  border-top: 5px solid #b33838; /* A subtle separator from the section above */
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); /* Soft shadow at the top */
-  flex: 1;
+    background: #f0f5fa;
+    padding: 3rem 2rem;
+    text-align: center;
+    width: 100%;
+    margin: 0 auto;
+    border-top: 5px solid #800000;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    flex: 1;
 }
 
 .description h2 {
-  font-size: 2rem;
-  color: #333; /* Darker text for headings */
-  margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: #333333;
+    margin-bottom: 1.5rem;
 }
 
 .description .desc {
-  max-width: 1200px; /* Limit width for readability */
-  margin: 0 auto; /* Center the content */
-  text-align: left; /* Align text left within its container */
-  color: #555; /* Slightly softer text color */
-  line-height: 1.6; /* Improve readability */
-  font-size: 1.1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: left;
+    color: #333333;
+    line-height: 1.6;
+    font-size: 1.1rem;
 }
 
-.description .desc h3 { /* Style for subheadings within the description */
-  color: #800000; /* Use your primary red color */
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
-  font-size: 1.4rem;
+.description .desc h3 {
+    color: #800000;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
 }
 
-.description .desc p { /* Style for paragraphs within the description */
-  margin-bottom: 1rem;
+.description .desc p {
+    margin-bottom: 1rem;
 }
 
-/* Add responsive adjustments within your existing media queries in Home.css */
 @media (max-width: 768px) {
-  /* ... existing media queries ... */
-  .description {
-    padding: 2rem 1rem; /* Adjust padding for smaller screens */
-  }
-  .description .desc {
-    font-size: 1rem; /* Adjust font size for readability */
-  }
+    .description {
+        padding: 2rem 1rem;
+    }
+    .description .desc {
+        font-size: 1rem;
+    }
 }
 
-/* Responsive adjustments for Home page content */
 @media (max-width: 768px) {
-  .hero-section {
-    flex-direction: column;
-    padding: 2rem;
-    min-height: unset; /* Remove min-height */
-    height: auto; /* Auto height */
-  }
-  .hero-text {
-    padding-right: 0;
-    text-align: center;
-    min-width: unset;
-    width: 100%;
-  }
-  .hero-text h1 {
-    font-size: 2.5rem;
-  }
-  .how-it-works {
-    padding: 1.5rem;
-  }
-  .steps {
-    flex-direction: column;
-    align-items: center;
-  }
-  .step {
-    width: 80%; /* Make steps wider on small screens */
-    max-width: 300px;
-  }
-  .page-content-wrapper {
-    padding-top: 100px; /* Adjust if navbar height increases on mobile */
-  }
+    .hero-section {
+        flex-direction: column;
+        padding: 2rem;
+        min-height: unset;
+        height: auto;
+    }
+    .hero-text {
+        padding-right: 0;
+        text-align: center;
+        min-width: unset;
+        width: 100%;
+    }
+    .hero-text h1 {
+        font-size: 2.5rem;
+    }
+    .how-it-works {
+        padding: 1.5rem;
+    }
+    .steps {
+        flex-direction: column;
+        align-items: center;
+    }
+    .step {
+        width: 80%;
+        max-width: 300px;
+    }
+    .page-content-wrapper {
+        padding-top: 100px;
+    }
 }
 @media (max-width: 480px) {
-  .hero-section {
-    padding: 1.5rem;
-  }
-  .hero-text h1 {
-    font-size: 2rem;
-  }
-  .hero-text h2 {
-    font-size: 1.2rem;
-  }
-  .how-it-works {
-    padding: 1rem;
-  }
-  .page-content-wrapper {
-    padding-top: 120px; /* Further adjustment for very small screens */
-  }
+    .hero-section {
+        padding: 1.5rem;
+    }
+    .hero-text h1 {
+        font-size: 2rem;
+    }
+    .hero-text h2 {
+        font-size: 1.2rem;
+    }
+    .how-it-works {
+        padding: 1rem;
+    }
+    .page-content-wrapper {
+        padding-top: 120px;
+    }
 }
-/* Apply styles specifically for mobile screens */
+
 @media (max-width: 768px) {
-      /* ----- Step B: Center content within the panel ----- */
-
-    /* For the toggles (Register/Login text/buttons at the very top) */
-   /* Adjust this breakpoint if needed (common for mobile/tablet) */
-
-    .login-register-popup { /* Replace with the actual class/ID of your popup */
-        /* Core Centering Properties */
-        position: fixed; /* Ensures it's positioned relative to the viewport */
-        top: 50%;        /* Moves the top edge of the popup to the vertical center */
-        left: 50%;       /* Moves the left edge of the popup to the horizontal center */
-        transform: translate(-50%, -50%); /* Shifts the popup back by half its own width and half its own height, perfectly centering it */
-        
-        /* Ensure it's on top of other content */
-        z-index: 1000; 
-
-        /* Styling for the popup's appearance (adjust as per your design) */
-        background-color: white; /* The white background you see */
-        padding: 20px; /* Internal spacing */
-        border-radius: 8px; /* Rounded corners */
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Soft shadow for "pop" effect */
-
-        /* Mobile Responsiveness for Width */
-        width: 90%;      /* Take up 90% of the screen width on mobile */
-        max-width: 350px; /* Prevent it from getting too wide on slightly larger mobile screens */
-        height: auto;    /* Adjust height based on content */
-        max-height: 90vh; /* Prevent it from exceeding viewport height on tall content */
-        overflow-y: auto; /* Add scroll if content is too tall */
-
-        /* If your popup is animated, ensure transitions are smooth */
-        transition: transform 0.3s ease-out, opacity 0.3s ease-out; /* Example transitions */
+    .login-register-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        background-color: #FFFFFF;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        width: 90%;
+        max-width: 350px;
+        height: auto;
+        max-height: 90vh;
+        overflow-y: auto;
+        transition: transform 0.3s ease-out, opacity 0.3s ease-out;
     }
 
-    /* Optional: Overlay background (highly recommended for modals/popups) */
-    .modal-overlay { /* Add a div with this class behind your popup in HTML */
+    .modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.6); /* Dark, semi-transparent background */
-        z-index: 999; /* Just below the popup */
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 999;
     }
 
-    /* Additionally, ensure elements *inside* the popup are centered */
-    /* Based on your Home.tsx, your selected role buttons and register button. */
-    /* If they are not centered, you might need to apply these: */
-    .role-selection-buttons { /* Assuming this wraps Patient/Doctor buttons */
+    .role-selection-buttons {
         display: flex;
-        justify-content: center; /* Centers the buttons horizontally */
-        margin-top: 15px; /* Add some space above */
-        margin-bottom: 15px; /* Add some space below */
+        justify-content: center;
+        margin-top: 15px;
+        margin-bottom: 15px;
     }
 
-    /* For individual block-level buttons like "Register" and "Sign in with Google" */
     .register-button,
-    .google-signin-button { /* Use the actual classes of these buttons */
-        display: block; /* Make it a block element */
-        width: 85%; /* Adjust width as needed, often slightly less than 100% */
-        margin: 10px auto; /* Centers horizontally and adds vertical spacing */
-        text-align: center; /* Ensures text inside is centered */
-        padding: 12px 0; /* Add vertical padding */
+    .google-signin-button {
+        display: block;
+        width: 85%;
+        margin: 10px auto;
+        text-align: center;
+        padding: 12px 0;
     }
 
-    /* For the Login/Register toggles at the very top of the popup */
     .login-toggle,
     .register-toggle {
-        /* Remove any 'float' or 'left' positioning that might be applied */
-        display: inline-block; /* Or flex on their parent */
-        margin: 0 10px; /* Add horizontal spacing between them */
-        /* If they are in a flex container, remove margin: 0 auto; from here */
-    }
-    /* If they are in a container, center that container's content */
-    .auth-panel-header { /* Example: parent of login-toggle and register-toggle */
-        display: flex;
-        justify-content: center; /* Centers children within this header */
-        width: 100%;
+        display: inline-block;
+        margin: 0 10px;
     }
 
+    .auth-panel-header {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
 }

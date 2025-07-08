@@ -1,19 +1,18 @@
 import React from 'react';
-import './ConsultationSummary.css'; // Import the new CSS file
-import './Home.css'; // Assuming Home.css contains global styles like navbar
-import logo from '../assets/MediBridge_LogoClear.png'; // adjust the path as needed
+import './ConsultationSummary.css';
+import './Home.css';
+import logo from '../assets/MediBridge_LogoClear.png';
 import { Link } from 'react-router-dom';
 
 const ConsultationSummary: React.FC = () => {
-  // Example consultation data - in a real app, this would come from an API
   const recentConsultations = [
     {
       doctor: 'Dr. Emily Santos',
       date: 'June 10, 2025',
       summary: 'Discussed recurring skin rash and recommended topical ointment. Scheduled a follow-up in two weeks.',
       prescription: 'Hydrocortisone cream 1%',
-      status: 'Completed', // Added for enhancement
-      followUpDate: 'June 24, 2025' // Added for enhancement
+      status: 'Completed',
+      followUpDate: 'June 24, 2025'
     },
     {
       doctor: 'Dr. Alex Chen',
@@ -23,14 +22,13 @@ const ConsultationSummary: React.FC = () => {
       status: 'Completed',
       followUpDate: 'N/A'
     },
-    // You can add more consultations here to see how the list grows
   ];
 
   return (
     <div className="consultation-summary-container">
       <nav className="navbar">
         <div className="logo">
-          <img src={"path/to/your/logo.png"} alt="MedBridge Logo" className="logo-img" /> {/* Replace with your logo path */}
+          <img src={"path/to/your/logo.png"} alt="MedBridge Logo" className="logo-img" />
           <span className="logo-text">MedBridge</span>
         </div>
         <ul className="nav-links">
@@ -42,7 +40,6 @@ const ConsultationSummary: React.FC = () => {
       </nav>
 
       <div className="consultation-summary-content">
-        {/* Header Section */}
         <div className="summary-header">
           <h1>Online Consultation Summary</h1>
           <div className="header-info">
@@ -51,7 +48,6 @@ const ConsultationSummary: React.FC = () => {
           </div>
         </div>
 
-        {/* Recent Consultations Section */}
         <div className="recent-consultations-section">
           <h2>Recent Consultations</h2>
 
@@ -74,7 +70,6 @@ const ConsultationSummary: React.FC = () => {
                 </div>
                 <div className="consultation-actions">
                   <button className="view-details-button">View Full Details</button>
-                  {/* You could add more actions here like 'Print', 'Download', etc. */}
                 </div>
               </div>
             ))

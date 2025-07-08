@@ -1,10 +1,8 @@
-// Home.tsx
-import React, { useState, useEffect } from 'react'; // <--- Added useEffect
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import medibridge from '../assets/MediBridge_Home1.png';
-import medibridge2 from '../assets/MediBridge_Home2.jpg'; // <--- Add your second image path here
-import medibridge3 from '../assets/MediBridge_Home3.jpg'; // <--- Add your third image path here
-// Add more image imports if you have more images, e.g., import medibridge4 from '../assets/MediBridge_Home4.png';
+import medibridge2 from '../assets/MediBridge_Home2.jpg';
+import medibridge3 from '../assets/MediBridge_Home3.jpg';
 
 import './Home.css';
 import supabase from '../lib/supabaseClient';
@@ -14,32 +12,27 @@ const Home = () => {
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState<'doctor' | 'patient' | null>(null);
 
-  // Array of your background images
   const backgroundImages = [
     medibridge,
     medibridge2,
     medibridge3,
-    // Add all your image paths to this array
   ];
 
-  // State to keep track of the current image index
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // useEffect to handle the image cycling
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) =>
-        (prevIndex + 1) % backgroundImages.length // Cycle through indices
+        (prevIndex + 1) % backgroundImages.length
       );
-    }, 5000); // Change image every 5 seconds (5000 ms)
+    }, 5000);
 
-    // Cleanup the interval when the component unmounts
     return () => clearInterval(interval);
-  }, [backgroundImages.length]); // Dependency array
+  }, [backgroundImages.length]);
 
   const handleGoogleRegister = async () => {
     if (!selectedRole) {
-      alert('Please select a role (Doctor or Patient) before continuing.');
+      console.log('Please select a role (Doctor or Patient) before continuing.');
       return;
     }
 
@@ -53,25 +46,21 @@ const Home = () => {
 
     if (error) {
       console.error('OAuth Error:', error.message);
-      alert('Google sign-in failed.');
+      console.log('Google sign-in failed.');
     }
   };
 
   return (
     <div className="home-container">
       <div className="page-content-wrapper">
-        {/* Hero Section */}
         <header
           className="hero-section"
           style={{
-            // Removed backgroundImage here, it's now handled by hero-background-cycler
-            backgroundSize: 'cover', // Keep if you still want a fallback linear gradient
-            backgroundPosition: 'center', // Keep if you still want a fallback linear gradient
-            backgroundRepeat: 'no-repeat', // Keep if you still want a fallback linear gradient
-            // minHeight: '400px', // Kept this as it was in your provided code
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
           }}
         >
-          {/* NEW: This div will hold the dynamically changing background image */}
           <div
             className="hero-background-cycler"
             style={{ backgroundImage: `url(${backgroundImages[currentImageIndex]})` }}
@@ -89,7 +78,6 @@ const Home = () => {
           </div>
         </header>
 
-        {/* How It Works */}
         <section className="how-it-works">
           <h2>How it Works</h2>
           <div className="steps">
@@ -116,7 +104,6 @@ const Home = () => {
           </div>
         </section>
 
-        {/* What is MediBridge */}
         <section className="description">
           <div className="desc">
             <p>Welcome to MediBridge, your innovative gateway to accessible healthcare, anytime, anywhere. We're a cutting-edge telemedicine platform designed to bridge the gaps in healthcare access, connecting you with certified medical professionals and vital health resources, no matter where you are.</p>

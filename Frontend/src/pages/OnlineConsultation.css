@@ -1,32 +1,21 @@
-/* src/pages/OnlineConsultation.css */
-
 .jitsi-container {
     width: 100%;
-    height: calc(100vh - var(--navbar-height, 60px)); /* Adjust height to account for navbar */
-    margin-top: var(--navbar-height, 60px); /* Push container down by navbar height */
-    /* You might need to adjust --navbar-height based on your actual navbar height */
-    /* Example: If your navbar is 70px tall, set --navbar-height: 70px; */
-
-    /* Ensure it fills the remaining space, if it's within a flex container */
-    flex-grow: 1; /* If it's inside a flexbox parent */
-
-    /* Make sure it's positioned correctly */
-    position: relative; /* Or absolute, depending on parent layout */
-    overflow: hidden; /* Prevent content overflowing the container */
-
-    /* Optional: Add some styling for visual clarity */
-    background-color: #000; /* Black background for video calls */
-    border: 1px solid #333;
-    box-sizing: border-box; /* Include padding/border in element's total width and height */
+    height: calc(100vh - var(--navbar-height, 60px));
+    margin-top: var(--navbar-height, 60px);
+    flex-grow: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: #000000;
+    border: 1px solid #007bff;
+    box-sizing: border-box;
 }
 
-/* You might want a simple loading indicator */
 .jitsi-loading {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Or match jitsi-container height logic */
+    height: 100vh;
     font-size: 1.5em;
-    color: #eee;
-    background-color: #222;
+    color: #FFFFFF;
+    background-color: #333333;
 }
