@@ -16,6 +16,8 @@ app = FastAPI(
 )
 
 origins = [
+    "http://192.168.1.76:5174", # Your frontend's network address
+    "http://localhost:5174",
     "http://localhost:5173",
     "http://localhost",
 ]
