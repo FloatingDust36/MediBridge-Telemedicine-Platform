@@ -25,38 +25,8 @@ const PatientDashboardSection: React.FC<{ data: any }> = ({ data }) => {
   );
 };
 
-const NotesSection: React.FC = () => {
-  const [patientNotes, setPatientNotes] = useState<string[]>([]);
-  const [newNote, setNewNote] = useState("");
-
-  const handleAddNote = () => {
-    if (newNote.trim() !== "") {
-      setPatientNotes([...patientNotes, newNote.trim()]);
-      setNewNote("");
-    }
-  };
-
-  return (
-    <div className="card-base notes-section">
-      <h3 className="notes-title">📝 Patient Notes</h3>
-      <div className="card-content">
-        <ul className="notes-list">
-          {patientNotes.map((note, index) => (
-            <li key={index}>{note}</li>
-          ))}
-        </ul>
-        <textarea
-          className="add-note-textarea"
-          placeholder="Add a new note..."
-          value={newNote}
-          onChange={(e) => setNewNote(e.target.value)}
-          rows={3}
-        ></textarea>
-        <button className="add-note-button" onClick={handleAddNote}>Add Note</button>
-      </div>
-    </div>
-  );
-};
+// NotesSection component has been removed as requested.
+// PrescriptionsSection component has been removed as requested.
 
 const ConsultationAppointmentsSection: React.FC = () => {
   return (
@@ -64,17 +34,6 @@ const ConsultationAppointmentsSection: React.FC = () => {
       <h3 className="consultation-section-title">🗓️ Consultation Appointments</h3>
       <div className="card-content">
         <p>No appointments to display.</p>
-      </div>
-    </div>
-  );
-};
-
-const PrescriptionsSection: React.FC = () => {
-  return (
-    <div className="card-base prescriptions-section">
-      <h3 className="prescriptions-title">💊 Prescriptions</h3>
-      <div className="card-content">
-        <p>No prescriptions found.</p>
       </div>
     </div>
   );
@@ -195,14 +154,10 @@ const PatientDashboard: React.FC = () => {
       <section className="dashboard-section card-margin-bottom">
         <PatientDashboardSection data={patientData} />
       </section>
-      <section className="notes-section card-margin-bottom">
-        <NotesSection />
-      </section>
+      {/* Patient Notes section removed as requested. */}
+      {/* Prescriptions section removed as requested. */}
       <section className="consultation-section card-margin-bottom">
         <ConsultationAppointmentsSection />
-      </section>
-      <section className="prescriptions-section card-margin-bottom">
-        <PrescriptionsSection />
       </section>
     </div>
   );
