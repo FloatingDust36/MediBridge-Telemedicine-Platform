@@ -9,6 +9,17 @@ interface Appointment {
   patients: { first_name: string; last_name: string; user_id: string } | null;
 }
 
+interface DoctorWithUser {
+  first_name: string;
+  last_name: string;
+  middle_name: string | null;
+  specialization: string;
+  is_available: boolean;
+  users: {
+    full_name: string;
+  };
+}
+
 interface DoctorInfo {
   full_name: string;
   first_name: string;
@@ -48,12 +59,12 @@ const DoctorDashboard: React.FC = () => {
           middle_name,
           specialization,
           is_available,
-          users!inner (
+          users (
             full_name
           )
         `)
         .eq('user_id', userId)
-        .single();
+        .single<DoctorWithUser>();
 
       if (doctorError || !doctorData) {
         console.error('Error fetching doctor info:', doctorError?.message);
@@ -104,7 +115,7 @@ const DoctorDashboard: React.FC = () => {
           id,
           start_time,
           end_time,
-          patients!inner (
+          patients (
             user_id,
             first_name,
             last_name
@@ -145,28 +156,20 @@ const DoctorDashboard: React.FC = () => {
         }
       }
 
-      const { count: consultationsCount, error: notesError } = await supabase
+      const { count: consultationsCount } = await supabase
         .from('consultation_notes')
         .select('*', { count: 'exact' })
         .eq('doctor_id', userId);
 
-      if (notesError) {
-        console.error('Error fetching consultation count:', notesError.message);
-      } else {
-        setConsultationsDone(consultationsCount || 0);
-      }
+      setConsultationsDone(consultationsCount || 0);
 
-      const { count: messagesCount, error: messagesError } = await supabase
+      const { count: messagesCount } = await supabase
         .from('session_messages')
         .select('*', { count: 'exact' })
         .eq('receiver_id', userId)
         .neq('sender_id', userId);
 
-      if (messagesError) {
-        console.error('Error fetching pending messages:', messagesError.message);
-      } else {
-        setPendingMessages(messagesCount || 0);
-      }
+      setPendingMessages(messagesCount || 0);
 
       const formattedDate = new Date().toLocaleDateString('en-US', {
         weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
@@ -193,27 +196,13 @@ const DoctorDashboard: React.FC = () => {
   }, []);
 
   const handleSaveNotes = async () => {
-    if (!consultationNotes.trim()) {
-      console.log('Please enter consultation notes before saving.');
-      return;
-    }
+    if (!consultationNotes.trim() || !selectedPatientId) return;
 
-    if (!selectedPatientId) {
-      console.log('Please select a patient.');
-      return;
-    }
-
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    const { data: { session } } = await supabase.auth.getSession();
     const doctorId = session?.user?.id;
+    if (!doctorId) return;
 
-    if (!doctorId) {
-      console.log('Doctor not logged in.');
-      return;
-    }
-
-    const selectedAppt = appointments.find(
-      appt => appt.patients?.user_id === selectedPatientId
-    );
+    const selectedAppt = appointments.find(appt => appt.patients?.user_id === selectedPatientId);
 
     const { error: insertError } = await supabase.from('consultation_notes').insert({
       doctor_id: doctorId,
@@ -222,37 +211,26 @@ const DoctorDashboard: React.FC = () => {
       appointment_id: selectedAppt?.id || null,
     });
 
-    if (insertError) {
-      console.error('Error saving note:', insertError.message);
-      console.log('Failed to save note: ' + insertError.message);
-    } else {
-      console.log('Consultation notes saved successfully!');
+    if (!insertError) {
       setConsultationNotes('');
-      
       const { count: newConsultationsCount } = await supabase
         .from('consultation_notes')
         .select('*', { count: 'exact' })
         .eq('doctor_id', doctorId);
-      
       setConsultationsDone(newConsultationsCount || 0);
     }
   };
 
   const handleSearch = () => {
-    if (!searchQuery.trim()) {
-      console.log('Please enter a patient name or ID to search.');
-      return;
-    }
-
+    if (!searchQuery.trim()) return;
     console.log(`Searching for patient: ${searchQuery}`);
-    console.log(`Searching for: ${searchQuery} (Search functionality not yet implemented)`);
   };
 
   const getDisplayName = () => {
     if (doctorInfo?.first_name && doctorInfo?.last_name) {
       return `${doctorInfo.first_name} ${doctorInfo.last_name}`;
     }
-    return doctorInfo?.full_name?.replace(/^Dr\.\s*/, '') || 'Unknown';
+    return doctorInfo?.full_name?.replace(/^Dr\.?\s*/, '') || 'Unknown';
   };
 
   return (
@@ -260,7 +238,7 @@ const DoctorDashboard: React.FC = () => {
       <div className="welcome-section">
         <h1>Welcome, Dr. {getDisplayName()}</h1>
         <p>
-          Specialization: {doctorInfo?.specialization || 'General'} | 
+          Specialization: {doctorInfo?.specialization || 'General'} |
           Status: {doctorInfo?.is_available ? 'Available' : 'Unavailable'}
         </p>
         <p>Manage your appointments, view patient records, and conduct consultations.</p>
@@ -293,7 +271,7 @@ const DoctorDashboard: React.FC = () => {
                     Patient: {appt.patients?.first_name} {appt.patients?.last_name}
                   </p>
                   <p className="appointment-time">
-                    {new Date(appt.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+                    {new Date(appt.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -
                     {new Date(appt.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>

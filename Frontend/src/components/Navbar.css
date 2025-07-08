@@ -2,98 +2,98 @@
 
 /* Navbar Base */
 .navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 40px; /* Consistent navbar height */
-  background: rgba(255, 255, 255, 0.9); /* Opaque background with slight transparency */
-  backdrop-filter: blur(8px); /* Less aggressive blur */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 2rem;
-  z-index: 1001;
-  box-sizing: border-box;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08); /* Subtle shadow */
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05); /* Very subtle bottom border */
-  transition: background-color 0.3s ease; /* Smooth transition for background on user type change */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40px; /* Consistent navbar height */
+    background: rgba(255, 255, 255, 0.9); /* Opaque background with slight transparency */
+    backdrop-filter: blur(8px); /* Less aggressive blur */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    z-index: 1001;
+    box-sizing: border-box;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05); /* Very subtle bottom border */
+    transition: background-color 0.3s ease; /* Smooth transition for background on user type change */
 }
 
 /* User-Type specific Navbar backgrounds (Examples) */
 .guest-navbar {
-  background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.9);
 }
 
 .patient-navbar {
-  background: rgba(230, 247, 255, 0.9); /* Light blueish for patient */
-  border-bottom: 1px solid #a8d7f7;
+    background: rgba(230, 247, 255, 0.9); /* Light blueish for patient */
+    border-bottom: 1px solid #a8d7f7;
 }
 
 .doctor-navbar {
-  background: rgba(230, 255, 230, 0.9); /* Light greenish for doctor */
-  border-bottom: 1px solid #a8f7a8;
+    background: rgba(230, 255, 230, 0.9); /* Light greenish for doctor */
+    border-bottom: 1px solid #a8f7a8;
 }
 
 .admin-navbar {
-  background: rgba(255, 240, 240, 0.9); /* Light reddish for admin */
-  border-bottom: 1px solid #f7a8a8;
+    background: rgba(255, 240, 240, 0.9); /* Light reddish for admin */
+    border-bottom: 1px solid #f7a8a8;
 }
 
 
 /* Logo section */
 .logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
 }
 
 .logo-img {
-  height: 30px; /* Slightly larger logo */
-  width: auto;
-  object-fit: contain;
+    height: 30px; /* Slightly larger logo */
+    width: auto;
+    object-fit: contain;
 }
 
 .logo-text {
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #333; /* Darker text for better contrast */
-  line-height: 40px; /* Vertically center text */
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333; /* Darker text for better contrast */
+    line-height: 40px; /* Vertically center text */
 }
 
 /* Navigation links */
 .nav-links {
-  display: flex;
-  list-style: none;
-  gap: 2.5rem; /* Adjusted gap */
-  margin: 0;
-  padding: 0;
-  flex-wrap: wrap;
-  align-items: center;
+    display: flex;
+    list-style: none;
+    gap: 2.5rem; /* Adjusted gap */
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 .nav-links li {
-  line-height: 40px; /* Match navbar height */
-  white-space: nowrap;
-  cursor: pointer;
-  color: #555; /* Default link color */
-  font-weight: 500;
-  transition: all 0.3s ease; /* Smooth transitions for all properties */
-  position: relative;
+    line-height: 40px; /* Match navbar height */
+    white-space: nowrap;
+    cursor: pointer;
+    color: #555; /* Default link color */
+    font-weight: 500;
+    transition: all 0.3s ease; /* Smooth transitions for all properties */
+    position: relative;
 }
 
 .nav-links a {
-  color: inherit; /* Inherit color from parent li */
-  text-decoration: none;
-  display: block;
-  line-height: inherit;
-  padding: 0 5px; /* Adds clickable area */
+    color: inherit; /* Inherit color from parent li */
+    text-decoration: none;
+    display: block;
+    line-height: inherit;
+    padding: 0 5px; /* Adds clickable area */
 }
 
 .nav-links li:hover,
 .nav-links a:hover {
-  color: #007bff; /* Blue on hover */
+    color: #007bff; /* Blue on hover */
 }
 
 /* Active Navigation Item */
@@ -150,299 +150,320 @@
 /* Login & Register Popup Base Styles (Desktop) */
 .login-popup,
 .register-popup {
-  position: fixed; /* Keep fixed so they stay in place on scroll */
-  top: 70px; /* Navbar height (40px) + 30px margin - this is for desktop */
-  right: 20px; /* For desktop positioning */
-  width: 320px; /* Slightly wider */
-  background: #fff;
-  padding: 1.5rem; /* More generous padding */
-  border: 1px solid #e0e0e0; /* Softer border */
-  border-radius: 12px; /* More rounded corners */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Stronger, more diffused shadow */
-  z-index: 1001; /* Above navbar */
+    position: fixed; /* Keep fixed so they stay in place on scroll */
+    top: 70px; /* Navbar height (40px) + 30px margin - this is for desktop */
+    right: 20px; /* For desktop positioning */
+    width: 320px; /* Slightly wider */
+    background: #fff;
+    padding: 1.5rem; /* More generous padding */
+    border: 1px solid #e0e0e0; /* Softer border */
+    border-radius: 12px; /* More rounded corners */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Stronger, more diffused shadow */
+    z-index: 1001; /* Above navbar */
 }
 
 .login-form,
 .register-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem; /* Consistent spacing between direct children of the form */
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem; /* Consistent spacing between direct children of the form */
 }
 
 /* Unified input group styling */
 .input-group {
-  /* Removed margin-bottom here to rely solely on the parent form's 'gap' property */
-  display: flex; /* Make input-group a flex container */
-  flex-direction: column; /* Stack label and input */
-  /* Remove any existing gap/margin-bottom that doubles up */
+    /* Removed margin-bottom here to rely solely on the parent form's 'gap' property */
+    display: flex; /* Make input-group a flex container */
+    flex-direction: column; /* Stack label and input */
+    /* Remove any existing gap/margin-bottom that doubles up */
 }
 
 .login-form h3,
 .register-form h2 {
-  color: #333;
-  text-align: center;
-  margin-bottom: 1rem;
-  font-weight: 700;
-  font-size: 1.5rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    font-size: 1.5rem;
 }
 
 .input-group label {
-  display: block;
-  margin-bottom: 0.4rem; /* Space between label and input */
-  color: #555;
-  font-weight: 500;
-  font-size: 0.9em;
+    display: block;
+    margin-bottom: 0.4rem; /* Space between label and input */
+    color: #555;
+    font-weight: 500;
+    font-size: 0.9em;
 }
 
 .login-form input,
 .register-form input {
-  padding: 0.75rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  width: 100%;
-  font-size: 1em;
-  box-sizing: border-box;
-  background-color: #fcfcfc;
-  color: #333;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 1em;
+    box-sizing: border-box;
+    background-color: #fcfcfc;
+    color: #333;
 }
 
 /* Placeholder text color */
 .login-form input::placeholder,
 .register-form input::placeholder {
-  color: #888;
-  opacity: 1;
+    color: #888;
+    opacity: 1;
 }
 
 .login-form input:focus,
 .register-form input:focus {
-  border-color: #007bff;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
 }
 
 .checkbox-label { /* Used for single checkboxes like "Remember me" or "Show Password" */
-  font-size: 0.9em;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: #555;
-  /* Added margin-top to separate it from the element above */
-  margin-top: 0.8rem; /* Aligning with the form's gap */
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #555;
+    /* Added margin-top to separate it from the element above */
+    margin-top: 0.8rem; /* Aligning with the form's gap */
 }
 
 .checkbox-label input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  cursor: pointer;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
 }
 
 .login-form button[type="submit"],
 .register-submit {
-  padding: 0.75rem;
-  background: #800000; /* Primary button color */
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1.1em;
-  font-weight: 600;
-  margin-top: 1rem; /* Consistent margin before submit button */
-  transition: background 0.2s ease, transform 0.1s ease;
+    padding: 0.75rem;
+    background: #800000; /* Primary button color */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-top: 1rem; /* Consistent margin before submit button */
+    transition: background 0.2s ease, transform 0.1s ease;
 }
 
 .login-form button[type="submit"]:hover,
 .register-submit:hover {
-  background: #660000;
-  transform: translateY(-1px);
+    background: #660000;
+    transform: translateY(-1px);
 }
 .login-form button[type="submit"]:active,
 .register-submit:active {
-  transform: translateY(0);
+    transform: translateY(0);
 }
 
 
 /* Register Specific Styles - only unique elements */
 .password-strength-info {
-  margin-top: 4px; /* Tiny space between input and strength text */
-  margin-bottom: 0px; /* Ensure no extra gap after it within the input-group */
+    margin-top: 4px; /* Tiny space between input and strength text */
+    margin-bottom: 0px; /* Ensure no extra gap after it within the input-group */
 }
 .password-strength-info p {
     margin: 0; /* Reset default paragraph margin */
 }
 
 .role-selection {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 0.8rem; /* Consistent margin-top with other form elements */
-  margin-bottom: 0.8rem; /* Consistent margin-bottom */
-  gap: 10px;
+    display: flex;
+    justify-content: space-around;
+    margin-top: 0.8rem; /* Consistent margin-top with other form elements */
+    margin-bottom: 0.8rem; /* Consistent margin-bottom */
+    gap: 10px;
 }
 
 .role-btn {
-  flex: 1;
-  padding: 0.6rem 0;
-  border-radius: 20px;
-  background: #e9e9e9;
-  border: 1px solid #ccc;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.9em;
-  color: #444;
+    flex: 1;
+    padding: 0.6rem 0;
+    border-radius: 20px;
+    background: #e9e9e9;
+    border: 1px solid #ccc;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9em;
+    color: #444;
 }
 
 .role-btn.active {
-  background: #1075b9; /* Changed to a more distinct blue for active role */
-  color: white;
-  border-color: #1075b9;
-  box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); /* Adjusted shadow color */
+    background: #1075b9; /* Changed to a more distinct blue for active role */
+    color: white;
+    border-color: #1075b9;
+    box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); /* Adjusted shadow color */
 }
 
 .role-btn:not(.active):hover {
-  background: #f0f0f0;
-  border-color: #a0a0a0;
+    background: #f0f0f0;
+    border-color: #a0a0a0;
 }
 
 /* Social icons (shared styles for both forms) */
 .social-icons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 1.5rem; /* More space before social icons as they act as a separator */
-  gap: 20px;
-  padding-top: 1rem;
-  border-top: 1px solid #eee;
+    display: flex;
+    justify-content: center; /* Center the icons */
+    align-items: center;
+    margin-top: 1.5rem; /* More space before social icons as they act as a separator */
+    gap: 20px; /* Space between icons */
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    position: relative; /* Needed for the pseudo-element */
+}
+
+.social-icons::before {
+    content: "Or continue with"; /* Text to display */
+    position: absolute;
+    top: -15px; /* Position above the border-top line */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff; /* Match popup background to create a "cutout" effect */
+    padding: 0 10px; /* Padding around the text to separate it from the line */
+    font-size: 0.85em;
+    color: #888;
+    white-space: nowrap; /* Prevent text from wrapping */
 }
 
 .social-icons img {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease; /* Added background-color and border-color to transition */
+    border: 1px solid #ddd; /* Subtle border */
+    background-color: #f7f7f7; /* Light background for icons */
 }
 
 .social-icons img:hover {
-  transform: scale(1.15);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: scale(1.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow on hover */
+    background-color: #e9e9e9; /* Slightly darker background on hover */
+    border-color: #ccc; /* Darker border on hover */
 }
 
 /* Responsive adjustments for Navbar and Popups */
 @media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    height: auto;
-    padding: 10px 1rem;
-    gap: 10px;
-  }
-  .logo-text {
-    line-height: normal;
-  }
-  .nav-links {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    width: 100%;
-  }
-  .nav-links li {
-    line-height: normal;
-  }
-  .nav-links li.active::after {
-    bottom: 0px;
-  }
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 1rem;
+        gap: 10px;
+    }
+    .logo-text {
+        line-height: normal;
+    }
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        width: 100%;
+    }
+    .nav-links li {
+        line-height: normal;
+    }
+    .nav-links li.active::after {
+        bottom: 0px;
+    }
 
-  /* --- CRITICAL MOBILE POPUP CENTERING FIXES --- */
-  .login-popup,
-  .register-popup {
-    /* Use !important to override any potentially conflicting desktop or less specific rules */
-    position: fixed !important; /* Ensure it's fixed relative to the viewport */
-    top: 50% !important;        /* Move its top edge to the vertical center of the viewport */
-    left: 50% !important;       /* Move its left edge to the horizontal center of the viewport */
-    transform: translate(-50%, -50%) !important; /* Shift it back by half its own width and half its own height, ensuring perfect centering */
+    /* --- CRITICAL MOBILE POPUP CENTERING FIXES --- */
+    .login-popup,
+    .register-popup {
+        /* Use !important to override any potentially conflicting desktop or less specific rules */
+        position: fixed !important; /* Ensure it's fixed relative to the viewport */
+        top: 50% !important;        /* Move its top edge to the vertical center of the viewport */
+        left: 50% !important;      /* Move its left edge to the horizontal center of the viewport */
+        transform: translate(-50%, -50%) !important; /* Shift it back by half its own width and half its own height, ensuring perfect centering */
 
-    /* Override any conflicting positioning from desktop styles */
-    right: auto !important;     /* Ensure no 'right' property is pushing it */
-    margin: auto !important;    /* Clear any conflicting margins */
-    
-    width: 90% !important;      /* Make it take up 90% of the screen width */
-    max-width: 350px !important; /* Prevent it from becoming too wide on larger mobile screens */
-    
-    padding: 1rem !important; /* Maintain consistent internal padding for mobile */
-    
-    z-index: 1001 !important; /* Keep it on top of other elements */
-    
-    max-height: 90vh !important; /* Limit height to 90% of viewport height to prevent overflow on smaller screens */
-    overflow-y: auto !important; /* Add vertical scroll if content exceeds max-height */
+        /* Override any conflicting positioning from desktop styles */
+        right: auto !important;    /* Ensure no 'right' property is pushing it */
+        margin: auto !important;   /* Clear any conflicting margins */
 
-    /* Keep existing background, border, shadow for styling */
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  }
+        width: 90% !important;     /* Make it take up 90% of the screen width */
+        max-width: 350px !important; /* Prevent it from becoming too wide on larger mobile screens */
 
-  /* Ensure elements inside the now-centered popup are also centered if they are block elements */
-  .login-form button[type="submit"],
-  .register-submit,
-  .social-icons {
-      width: 90% !important; /* Give them a specific width */
-      margin-left: auto !important;
-      margin-right: auto !important; 
-    /* Center block elements horizontally */
-  }
-  
-  .role-selection { /* Parent of Patient/Doctor buttons */
-      justify-content: center !important; /* Centers flex items horizontally */
-      width: 100% !important; /* Ensure it takes full width for centering to be effective */
-  }
+        padding: 1rem !important; /* Maintain consistent internal padding for mobile */
 
-  /* Titles inside the popup */
-  .login-form h3,
-  .register-form h2 {
-      text-align: center !important; /* Ensure the titles are horizontally centered */
-  }
+        z-index: 1001 !important; /* Keep it on top of other elements */
+
+        max-height: 90vh !important; /* Limit height to 90% of viewport height to prevent overflow on smaller screens */
+        overflow-y: auto !important; /* Add vertical scroll if content exceeds max-height */
+
+        /* Keep existing background, border, shadow for styling */
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Ensure elements inside the now-centered popup are also centered if they are block elements */
+    .login-form button[type="submit"],
+    .register-submit {
+        width: 90% !important; /* Give them a specific width */
+        margin-left: auto !important;
+        margin-right: auto !important;
+        /* Center block elements horizontally */
+    }
+
+    .role-selection { /* Parent of Patient/Doctor buttons */
+        justify-content: center !important; /* Centers flex items horizontally */
+        width: 100% !important; /* Ensure it takes full width for centering to be effective */
+    }
+
+    /* Titles inside the popup */
+    .login-form h3,
+    .register-form h2 {
+        text-align: center !important; /* Ensure the titles are horizontally centered */
+    }
 }
 
 @media (max-width: 480px) {
-  .navbar {
-    padding: 8px 0.5rem;
-  }
-  .logo-img {
-    height: 25px;
-  }
-  .logo-text {
-    font-size: 1rem;
-  }
-  .nav-links {
-    gap: 10px;
-  }
-  .nav-links li {
-    font-size: 14px;
-  }
-  /* --- CRITICAL MOBILE POPUP CENTERING FIXES FOR VERY SMALL SCREENS --- */
-  .login-popup,
-  .register-popup {
-    top: 330px !important; /* Re-affirm vertical centering */
-    width: 95% !important; /* Allow it to take up slightly more width on very small screens */
-    /* All other !important centering properties from 768px media query will still apply */
-  }
-  /* Inner elements also apply !important here if they're still off */
-  .login-form h3,
-  .register-form h2 {
-    font-size: 1.3em !important;
-  }
-  .login-form input,
-  .register-form input {
-    padding: 0.6rem !important;
-  }
-  .login-form button[type="submit"],
-  .register-submit {
-    font-size: 1em !important;
-    padding: 0.6rem !important;
-  }
-  .social-icons img {
-    width: 30px !important;
-    height: 30px !important;
-  }
+    .navbar {
+        padding: 8px 0.5rem;
+    }
+    .logo-img {
+        height: 25px;
+    }
+    .logo-text {
+        font-size: 1rem;
+    }
+    .nav-links {
+        gap: 10px;
+    }
+    .nav-links li {
+        font-size: 14px;
+    }
+    /* --- CRITICAL MOBILE POPUP CENTERING FIXES FOR VERY SMALL SCREENS --- */
+    .login-popup,
+    .register-popup {
+        top: 50% !important; /* Re-affirm vertical centering */
+        width: 95% !important; /* Allow it to take up slightly more width on very small screens */
+        /* All other !important centering properties from 768px media query will still apply */
+    }
+    /* Inner elements also apply !important here if they're still off */
+    .login-form h3,
+    .register-form h2 {
+        font-size: 1.3em !important;
+    }
+    .login-form input,
+    .register-form input {
+        padding: 0.6rem !important;
+    }
+    .login-form button[type="submit"],
+    .register-submit {
+        font-size: 1em !important;
+        padding: 0.6rem !important;
+    }
+    .social-icons img {
+        width: 30px !important;
+        height: 30px !important;
+    }
+    .social-icons::before {
+        font-size: 0.75em; /* Smaller text for very small screens */
+        top: -12px; /* Adjust position for smaller font size */
+    }
 }
