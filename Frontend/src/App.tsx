@@ -32,6 +32,7 @@ import AdminDashboard from './pages/AdminDashboard';
 
 import "./pages/Home.css"; // Keep this if Home.css is specifically for the Home page
 import OAuthCallback from './pages/OAuthCallback';
+import RoomManager from './pages/RoomManager';
 
 
 type UserRole = 'guest' | 'patient' | 'doctor' | 'admin';
@@ -272,7 +273,7 @@ function App() {
             path="consultation"
             element={
               <ProtectedRoute allowedRoles={['doctor', 'patient']}>
-                <OnlineConsultation />
+                <RoomManager />
               </ProtectedRoute>
             }
           />

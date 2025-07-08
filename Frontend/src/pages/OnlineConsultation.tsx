@@ -1,109 +1,198 @@
-import React, { useState } from 'react';
-import './OnlineConsultation.css'; // Import the new CSS file
-import './Home.css'; // Assuming Home.css contains global styles like navbar
-import logo from '../assets/MediBridge_LogoClear.png'; // adjust the path as needed
-import { Link } from 'react-router-dom';
+// Inside OnlineConsultation.tsx
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import './OnlineConsultation.css';
 
-const OnlineConsultation: React.FC = () => {
-  const [message, setMessage] = useState<string>('');
-  const [chatMessages, setChatMessages] = useState<
-    { sender: string; text: string; isUser: boolean }[]
-  >([
-    {
-      sender: 'Dr. JM. Nave',
-      text: 'Hello Jane, I see you\'ve been experiencing frequent headaches. How often do they occur?',
-      isUser: false,
-    },
-    {
-      sender: 'Jane',
-      text: 'Almost every other day for the past two weeks.',
-      isUser: true,
-    },
-    {
-      sender: 'Dr. JM. Nave',
-      text: 'Do they usually come with nausea or vision problems?',
-      isUser: false,
-    },
-  ]);
+declare global {
+    interface Window {
+        JitsiMeetExternalAPI: any;
+    }
+}
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      setChatMessages([...chatMessages, { sender: 'You', text: message, isUser: true }]);
-      setMessage('');
-      // In a real app, you'd send this message via a websocket or API
-    }
-  };
+interface OnlineConsultationProps {
+    roomName: string;
+    jwt: string;
+    onHangup: () => void;
+    userDisplayName: string;
+    userEmail: string;
+    userId: string;
+}
 
-  return (
-    <div className="online-consultation-container">
+const OnlineConsultation: React.FC<OnlineConsultationProps> = ({
+    roomName,
+    jwt,
+    onHangup,
+    userDisplayName,
+    userEmail,
+    userId
+}) => {
+    const jitsiContainerRef = useRef<HTMLDivElement>(null);
+    const apiRef = useRef<any>(null);
+    const [jitsiApiLoaded, setJitsiApiLoaded] = useState(false);
 
-      <div className="online-consultation-content">
-        {/* Main Video Call Area */}
-        <div className="video-call-area">
-          <div className="video-placeholder-top">
-            {/* Placeholder for local video stream */}
-            <p>placeholder</p>
-            <div className="video-stream-box your-video"></div>
-          </div>
-          <div className="video-placeholder-bottom">
-            {/* Placeholder for remote video stream */}
-            <div className="video-stream-box patient-video"></div>
-            <p>placeholder</p>
-          </div>
-          {/* Controls for video call (mute, end call, etc.) could go here */}
-        </div>
+    const loadJitsiScript = useCallback(() => {
+        if (document.getElementById('jitsi-external-api-script')) {
+            return Promise.resolve(true); // Script already loaded
+        }
 
-        {/* Right Sidebar */}
-        <div className="consultation-sidebar">
-          <div className="sidebar-header panel-box-header">
-            <p className="details-text">Details</p>
-            <p className="name-info">name doctor / name patient</p>
-          </div>
+        const script = document.createElement('script');
+        script.src = 'https://8x8.vc/external_api.js';
+        script.id = 'jitsi-external-api-script';
+        script.async = true;
+        document.body.appendChild(script);
 
-          <div className="patient-info panel-box">
-            <h3>Patient Information</h3>
-            <p><strong>Name:</strong> Jane Doe</p>
-            <p><strong>Age:</strong> 32</p>
-            <p><strong>Allergies:</strong> Penicillin</p>
-          </div>
+        return new Promise((resolve) => {
+            script.onload = () => {
+                // Wait for JitsiMeetExternalAPI to be available on window
+                const checkJitsiApi = setInterval(() => {
+                    if (window.JitsiMeetExternalAPI) {
+                        clearInterval(checkJitsiApi);
+                        console.log("JitsiMeetExternalAPI found on window.");
+                        resolve(true);
+                    }
+                }, 100); // Check every 100ms
 
-          <div className="doctor-info panel-box">
-            <h3>Doctor Information</h3>
-            <p><strong>Name:</strong> Dr. JM Nave</p>
-            <p><strong>Age:</strong> 25</p>
-            <p><strong>Specialty:</strong> BBC</p>
-            <p><strong>Previous Diagnosis:</strong> Mild migraine (2023)</p>
-          </div>
+                setTimeout(() => { // Add a timeout to prevent infinite loop if it never appears
+                    if (!window.JitsiMeetExternalAPI) {
+                        clearInterval(checkJitsiApi);
+                        console.error("JitsiMeetExternalAPI did not become available after timeout.");
+                        resolve(false);
+                    }
+                }, 5000); // Max wait of 5 seconds
+            };
+            script.onerror = () => {
+                console.error("Failed to load Jitsi Meet External API script via onerror event.");
+                resolve(false);
+            };
+        });
+    }, []);
 
-          <div className="chat-box panel-box">
-            <div className="chat-messages">
-              {chatMessages.map((msg, index) => (
-                <div key={index} className={`chat-message ${msg.isUser ? 'user-message' : 'other-message'}`}>
-                  <span className="sender-name">{msg.sender}:</span> {msg.text}
-                </div>
-              ))}
-              {/* This is a placeholder as the screenshot has "Chat box here" text */}
-              {chatMessages.length === 0 && <p className="chat-placeholder">Chat box here</p>}
-            </div>
-            <div className="chat-input-area">
-              <input
-                type="text"
-                placeholder="Type your message..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSendMessage();    
-                  }
-                }}
-              />
-              <button onClick={handleSendMessage}>Send</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    const initializeJitsi = useCallback(async () => {
+        if (!jitsiContainerRef.current || !jwt || !roomName || apiRef.current) {
+            return;
+        }
+
+        console.log("Attempting to initialize Jitsi API...");
+        const scriptLoadedAndApiAvailable = await loadJitsiScript(); // This will now wait for window.JitsiMeetExternalAPI
+
+        if (!scriptLoadedAndApiAvailable || !window.JitsiMeetExternalAPI) {
+            console.error("Jitsi Meet External API is still not available after loading and check.");
+            setJitsiApiLoaded(false); // Indicate failure
+            return;
+        }
+
+        // If we reach here, JitsiMeetExternalAPI should definitely be on the window object
+        setJitsiApiLoaded(true); // Indicate that Jitsi API is ready to be used
+
+        const domain = '8x8.vc';
+        const options = {
+            roomName: roomName,
+            jwt: jwt,
+            parentNode: jitsiContainerRef.current,
+            width: '100%',
+            height: '100%',
+            configOverwrite: {
+                startWithVideoMuted: false,
+                startWithAudioMuted: false,
+                disableSimulcast: false,
+                disableLocalVideoFlip: true,
+                desktopSharingSources: ['screen', 'window'],
+                prejoinPageEnabled: false,
+            },
+            interfaceConfigOverwrite: {
+                DEFAULT_REMOTE_DISPLAY_NAME: 'New Participant',
+                APP_NAME: 'MediBridge Consult',
+                SHOW_JITSI_WATERMARK: false,
+                SHOW_WATERMARK_FOR_GUESTS: false,
+                HIDE_INVITE_MORE_BUTTON: true,
+                TOOLBAR_BUTTONS: [
+                    'microphone', 'camera', 'desktop', 'fullscreen',
+                    'fodeviceselection', 'profile', 'chat',
+                    'settings', 'raisehand', 'videoquality',
+                    'tileview', 'mute-everyone', 'etherpad', 'sharedvideo',
+                ],
+            },
+            userInfo: {
+                displayName: userDisplayName,
+                email: userEmail,
+            },
+        };
+
+        try {
+            const newApi = new window.JitsiMeetExternalAPI(domain, options);
+            apiRef.current = newApi;
+
+            newApi.addEventListener('readyToClose', () => {
+                console.log('Jitsi API ready to close. Handling hangup...');
+                onHangup();
+            });
+
+            newApi.addEventListener('participantLeft', (participant: any) => {
+                console.log('Participant Left:', participant);
+            });
+
+            newApi.addEventListener('participantJoined', (participant: any) => {
+                console.log('Participant Joined:', participant);
+            });
+
+            newApi.addEventListener('videoConferenceLeft', (data: any) => {
+                console.log('Video conference left:', data);
+                onHangup();
+            });
+
+            newApi.addEventListener('externalApiReady', () => {
+                console.log('Jitsi External API Ready Event Fired');
+                if (newApi.executeCommand) {
+                    newApi.executeCommand('displayName', userDisplayName);
+                    newApi.executeCommand('email', userEmail);
+                }
+            });
+
+            console.log("Jitsi API initialized successfully.");
+
+        } catch (error) {
+            console.error("Error initializing Jitsi Meet External API instance:", error);
+        }
+    }, [roomName, jwt, onHangup, loadJitsiScript, userDisplayName, userEmail]);
+
+    useEffect(() => {
+        console.log("OnlineConsultation useEffect: Running Jitsi initialization...");
+        initializeJitsi();
+
+        return () => {
+            console.log("OnlineConsultation useEffect Cleanup: Disposing Jitsi API...");
+            if (apiRef.current) {
+                apiRef.current.dispose();
+                apiRef.current = null;
+                console.log("Jitsi API disposed.");
+            }
+        };
+    }, [initializeJitsi]);
+
+    if (!jitsiApiLoaded && jitsiContainerRef.current) {
+        return <div className="jitsi-loading">Loading video conference...</div>;
+    }
+
+    return (
+    <div id="jitsi-container" ref={jitsiContainerRef} className="jitsi-container">
+        {/* You can add a small overlay or fixed div for the room code */}
+        <div style={{
+            position: 'absolute',
+            top: '10px',
+            left: '10px',
+            background: 'rgba(0,0,0,0.7)',
+            color: 'white',
+            padding: '5px 10px',
+            borderRadius: '5px',
+            fontSize: '0.9em',
+            zIndex: 1000 // Ensure it's above Jitsi UI elements
+        }}>
+            Room Code: <strong>{roomName}</strong>
+            {/* Optional: Add a copy button */}
+            <button onClick={() => navigator.clipboard.writeText(roomName)} style={{ marginLeft: '10px', background: 'none', border: '1px solid white', color: 'white', cursor: 'pointer' }}>Copy</button>
+        </div>
+        {/* The Jitsi iframe will be injected here */}
+    </div>
+    );
 };
 
 export default OnlineConsultation;

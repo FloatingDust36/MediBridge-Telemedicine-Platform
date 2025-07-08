@@ -1,0 +1,89 @@
+/* src/pages/RoomManager.css */
+.room-manager-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.room-manager-header {
+  color: #343a40;
+  margin-bottom: 30px;
+  font-size: 2.2em;
+  text-align: center;
+}
+
+.doctor-section, .patient-section {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 20px;
+}
+
+.doctor-section h3, .patient-section h3 {
+  color: #007bff;
+  margin-bottom: 20px;
+  font-size: 1.6em;
+}
+
+.patient-section input[type="text"] {
+  width: calc(100% - 20px);
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+.doctor-section button, .patient-section button {
+  padding: 12px 25px;
+  font-size: 1.1em;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #28a745; /* Green for doctor/join */
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.patient-section button {
+    background-color: #007bff; /* Blue for patient join */
+}
+
+.doctor-section button:hover, .patient-section button:hover {
+  background-color: #218838; /* Darker green */
+}
+.patient-section button:hover {
+    background-color: #0056b3; /* Darker blue */
+}
+
+.doctor-section button:disabled, .patient-section button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.manager-status {
+  margin-top: 20px;
+  font-size: 1.1em;
+  color: #6c757d;
+}
+
+.manager-error {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+  font-size: 1.1em;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
