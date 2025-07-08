@@ -81,22 +81,50 @@ function App() {
 
     // Initial check for session on app load
     const checkSession = async () => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-            const user = session.user;
-            const userRole = (user.user_metadata?.user_role as UserRole) || 'patient';
-            setCurrentUser({
-                id: user.id,
-                role: userRole,
-                email: user.email || '',
-            });
-        } else {
-            // If no Supabase session, use the mock user for initial display
-            // Only set mock user if Supabase session is genuinely null
-            setCurrentUser(MOCK_USERS[mockUserRole]); // Set initial currentUser from mockUserRole
-        }
-        setLoadingUser(false);
-    };
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (session) {
+    const user = session.user;
+    const userRole = (user.user_metadata?.user_role as UserRole) || 'patient';
+
+    // ✅ Profile Completion Redirect Logic
+    if (userRole === 'doctor') {
+      const { data: doctorData } = await supabase
+        .from('doctors')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!doctorData) {
+        navigate('/completedoctorprofile');
+        return;
+      }
+    } else if (userRole === 'patient') {
+      const { data: patientData } = await supabase
+        .from('patients')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!patientData) {
+        navigate('/completepatientprofile');
+        return;
+      }
+    }
+
+    // ✅ Now safe to set the current user
+    setCurrentUser({
+      id: user.id,
+      role: userRole,
+      email: user.email || '',
+    });
+  } else {
+    setCurrentUser(MOCK_USERS[mockUserRole]);
+  }
+
+  setLoadingUser(false);
+};
+
 
     checkSession();
 
