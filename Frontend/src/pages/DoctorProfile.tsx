@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import supabase from '../lib/supabaseClient';
-import './DoctorProfile.css';
+import './DoctorProfile.css'; // Make sure this CSS file contains the popup styles
 import { useNavigate } from 'react-router-dom';
 
 // Define interfaces for data structure
@@ -47,28 +47,43 @@ const DoctorProfile: React.FC = () => {
     const [doctorData, setDoctorData] = useState<ProfileData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [editMode, setEditMode] = useState<boolean>(false);
-    const [message, setMessage] = useState<string | null>(null);
-    const [messageType, setMessageType] = useState<'success' | 'error' | null>(null); // New state for message type
-    const [showPopup, setShowPopup] = useState<boolean>(false); // New state for popup visibility
     const [editedData, setEditedData] = useState<ProfileData | null>(null);
+
+    // ONLY THESE STATES ARE NEEDED FOR THE NEW POPUP SYSTEM
+    const [popupMessage, setPopupMessage] = useState<string | null>(null);
+    const [popupMessageType, setPopupMessageType] = useState<'success' | 'error' | null>(null);
+    const [showPopup, setShowPopup] = useState<boolean>(false);
+
+    // HELPER FUNCTION TO SHOW TEMPORARY POPUP
+    const showTemporaryMessage = (msg: string, type: 'success' | 'error') => {
+        setPopupMessage(msg);
+        setPopupMessageType(type);
+        setShowPopup(true);
+        setTimeout(() => {
+            setShowPopup(false);
+            // Optional: Clear message content after animation completes
+            setTimeout(() => {
+                setPopupMessage(null);
+                setPopupMessageType(null);
+            }, 500); // This should match your CSS transition duration for opacity/top
+        }, 3000); // Message visible for 3 seconds
+    };
 
     useEffect(() => {
         const fetchDoctorProfile = async () => {
             setLoading(true);
-            setMessage(null);
-            setMessageType(null); // Reset message type
-            setShowPopup(false); // Hide popup on new fetch
+            // Clear any existing popup message when fetching new data
+            setPopupMessage(null);
+            setPopupMessageType(null);
+            setShowPopup(false);
 
             const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
             if (sessionError || !session) {
-                setMessage('Please log in to view your profile.');
-                setMessageType('error');
-                setShowPopup(true); // Show error message as a popup
+                // Using the new popup function
+                showTemporaryMessage('Please log in to view your profile.', 'error');
                 setLoading(false);
                 navigate('/login');
-                // Auto-hide the message after some time
-                setTimeout(() => setShowPopup(false), 3000);
                 return;
             }
 
@@ -96,15 +111,13 @@ const DoctorProfile: React.FC = () => {
 
             if (fetchError || !profile) {
                 console.error('Error fetching doctor profile:', fetchError?.message);
-                setMessage(`Failed to load profile data. Error: ${fetchError?.message}`);
-                setMessageType('error');
-                setShowPopup(true); // Show error message as a popup
+                // Using the new popup function for errors
+                showTemporaryMessage(`Failed to load profile data. Error: ${fetchError?.message}`, 'error');
                 setLoading(false);
-                setTimeout(() => setShowPopup(false), 3000);
                 return;
             }
 
-            const userData = profile?.users || { email: '', full_name: '', phone_number: '' };
+            const userData = profile.users;
 
             const parseFullName = (fullName: string) => {
                 const nameParts = fullName.trim().split(' ');
@@ -124,17 +137,17 @@ const DoctorProfile: React.FC = () => {
             const parsedNames = parseFullName(userData.full_name || '');
 
             const combinedData: ProfileData = {
-                user_id: profile?.user_id || userId,
+                user_id: profile.user_id,
                 email: userData.email,
                 full_name: userData.full_name,
                 phone_number: userData.phone_number,
-                first_name: profile?.first_name || parsedNames.first_name,
-                last_name: profile?.last_name || parsedNames.last_name,
-                middle_name: profile?.middle_name || parsedNames.middle_name || null,
-                specialization: profile?.specialization || '',
-                license_number: profile?.license_number || '',
-                is_available: profile?.is_available || false,
-                emergency_contact: profile?.emergency_contact || null,
+                first_name: profile.first_name || parsedNames.first_name,
+                last_name: profile.last_name || parsedNames.last_name,
+                middle_name: profile.middle_name || parsedNames.middle_name || null,
+                specialization: profile.specialization,
+                license_number: profile.license_number,
+                is_available: profile.is_available,
+                emergency_contact: profile.emergency_contact || null,
             };
 
             setDoctorData(combinedData);
@@ -160,17 +173,15 @@ const DoctorProfile: React.FC = () => {
 
     const handleSave = async () => {
         if (!editedData || !doctorData) {
-            setMessage('No data to save.');
-            setMessageType('error');
-            setShowPopup(true);
-            setTimeout(() => setShowPopup(false), 3000);
+            showTemporaryMessage('No data to save.', 'error');
             return;
         }
 
         setLoading(true);
-        setMessage(null);
-        setMessageType(null);
-        setShowPopup(false); // Hide any previous popup before new save attempt
+        // Clear any existing popup message before attempting to save
+        setPopupMessage(null);
+        setPopupMessageType(null);
+        setShowPopup(false);
 
         try {
             const newFullName = `${editedData.first_name} ${editedData.middle_name ? editedData.middle_name + ' ' : ''}${editedData.last_name}`.trim();
@@ -202,52 +213,57 @@ const DoctorProfile: React.FC = () => {
 
             setDoctorData(editedData);
             setEditMode(false);
-            setMessage('Profile updated successfully!');
-            setMessageType('success');
-            setShowPopup(true);
+            // Using the new popup function for success
+            showTemporaryMessage('Profile updated successfully!', 'success');
 
             window.dispatchEvent(new Event('doctorProfileUpdated'));
 
         } catch (error: any) {
             console.error('Error updating profile:', error.message);
-            setMessage('Failed to update profile: ' + error.message);
-            setMessageType('error');
-            setShowPopup(true);
+            // Using the new popup function for errors
+            showTemporaryMessage('Failed to update profile: ' + error.message, 'error');
         } finally {
             setLoading(false);
-            // Clear message after a few seconds
-            setTimeout(() => {
-                setShowPopup(false);
-                setMessage(null);
-                setMessageType(null);
-            }, 3000); // Popup will fade out and then message state will clear
         }
     };
 
     const handleCancel = () => {
         setEditMode(false);
         setEditedData(doctorData); // Revert changes
-        setMessage(null);
-        setMessageType(null);
-        setShowPopup(false); // Hide popup on cancel
+        // Clear any popup message on cancel
+        setPopupMessage(null);
+        setPopupMessageType(null);
+        setShowPopup(false);
     };
 
     if (loading) {
         return <div className="doctor-profile-loading">Loading Doctor Profile...</div>;
     }
 
-    if (!doctorData && !loading) {
-        return <div className="doctor-profile-error">{message || 'No doctor profile data found.'}</div>;
+    if (!doctorData) {
+        // If there's an error message from fetch, display it using the popup mechanism
+        // Only show the message if it's explicitly set by showTemporaryMessage
+        return (
+            <div className="doctor-profile-error">
+                {popupMessage ? (
+                    <div className={`popup-message-container ${popupMessageType} show`}>
+                        {popupMessage}
+                    </div>
+                ) : (
+                    'No doctor profile data found.' // Fallback if no specific popup message
+                )}
+            </div>
+        );
     }
 
     const currentData = editMode ? editedData : doctorData;
 
     return (
         <div className="doctor-profile-container">
-            {/* Pop-up Message */}
-            {message && (
-                <div className={`popup-message-container ${messageType} ${showPopup ? 'show' : ''}`}>
-                    {message}
+            {/* THIS IS THE ONLY PLACE WHERE THE POPUP MESSAGE JSX SHOULD BE */}
+            {popupMessage && (
+                <div className={`popup-message-container ${popupMessageType} ${showPopup ? 'show' : ''}`}>
+                    {popupMessage}
                 </div>
             )}
 
@@ -269,13 +285,6 @@ const DoctorProfile: React.FC = () => {
                         </div>
                     )}
                 </div>
-
-                {/* Removed the inline message div as it's now handled by the popup */}
-                {/* {message && (
-                    <div className={`profile-message ${message.includes('successfully') ? 'success' : 'error'}`}>
-                        {message}
-                    </div>
-                )} */}
 
                 <form onSubmit={(e) => e.preventDefault()} className="doctor-form-area">
                     {/* Email Field (Non-editable) - always from users table */}
@@ -409,7 +418,7 @@ const DoctorProfile: React.FC = () => {
 
                     {/* Is Available Toggle */}
                     <div className="form-group checkbox-group">
-                        <label htmlFor="is_available" className="form-label">Available for appointments</label>
+                        <label htmlFor="is_available" className="form-label">Available for Appointments</label>
                         <div className="form-input-container">
                             {editMode ? (
                                 <input

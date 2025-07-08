@@ -32,12 +32,12 @@ interface DoctorInfo {
 
 const DoctorDashboard: React.FC = () => {
   const [doctorInfo, setDoctorInfo] = useState<DoctorInfo | null>(null);
-  const [selectedPatient, setSelectedPatient] = useState<string>('');
-  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
-  const [consultationNotes, setConsultationNotes] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedPatient, setSelectedPatient] = useState<string>(''); // No longer needed for 'Add Patient Consultation Notes'
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null); // No longer needed for 'Add Patient Consultation Notes'
+  const [consultationNotes, setConsultationNotes] = useState<string>(''); // No longer needed for 'Add Patient Consultation Notes'
+  const [searchQuery, setSearchQuery] = useState<string>(''); // No longer needed for 'Search Patient Records'
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [patientList, setPatientList] = useState<{ name: string; id: string }[]>([]);
+  const [patientList, setPatientList] = useState<{ name: string; id: string }[]>([]); // No longer needed for 'Add Patient Consultation Notes'
   const [currentDate, setCurrentDate] = useState<string>('');
   const [consultationsDone, setConsultationsDone] = useState<number>(0);
   const [pendingMessages, setPendingMessages] = useState<number>(0);
@@ -144,17 +144,17 @@ const DoctorDashboard: React.FC = () => {
         }));
         setAppointments(formattedAppts);
 
+        // This section is now technically not needed if 'Add Patient Consultation Notes' is removed
         const patientListData = formattedAppts
           .filter(appt => appt.patients)
           .map(appt => ({
             name: `${appt.patients?.first_name} ${appt.patients?.last_name}`,
             id: appt.patients?.user_id || '',
           }));
-        setPatientList(patientListData);
-
+        setPatientList(patientListData); // You can keep this if patient list is used elsewhere
         if (patientListData.length > 0) {
-          setSelectedPatient(patientListData[0].name);
-          setSelectedPatientId(patientListData[0].id);
+          setSelectedPatient(patientListData[0].name); // Remove if not needed
+          setSelectedPatientId(patientListData[0].id); // Remove if not needed
         }
       }
 
@@ -198,51 +198,13 @@ const DoctorDashboard: React.FC = () => {
     };
   }, [fetchDoctorDashboardData]); // Dependency array for useEffect
 
+  // These handlers are no longer needed if the sections are removed
   const handleSaveNotes = async () => {
-    if (!consultationNotes.trim() || !selectedPatientId) {
-      alert('Please select a patient and enter consultation notes.');
-      return;
-    }
-
-    const { data: { session } } = await supabase.auth.getSession();
-    const doctorId = session?.user?.id;
-    if (!doctorId) {
-      alert('Doctor not logged in.');
-      return;
-    }
-
-    const selectedAppt = appointments.find(appt => appt.patients?.user_id === selectedPatientId);
-
-    const { error: insertError } = await supabase.from('consultation_notes').insert({
-      doctor_id: doctorId,
-      patient_id: selectedPatientId,
-      notes: consultationNotes,
-      appointment_id: selectedAppt?.id || null, // Link to appointment if found
-    });
-
-    if (!insertError) {
-      setConsultationNotes('');
-      alert('Consultation notes saved successfully!');
-      // Re-fetch consultations done count
-      const { count: newConsultationsCount } = await supabase
-        .from('consultation_notes')
-        .select('*', { count: 'exact' })
-        .eq('doctor_id', doctorId);
-      setConsultationsDone(newConsultationsCount || 0);
-    } else {
-      console.error('Error saving consultation notes:', insertError.message);
-      alert('Failed to save notes: ' + insertError.message);
-    }
+    // This function can be removed
   };
 
   const handleSearch = () => {
-    if (!searchQuery.trim()) {
-      alert('Please enter a patient name or ID to search.');
-      return;
-    }
-    console.log(`Searching for patient: ${searchQuery}`);
-    // Implement actual search logic here, e.g., navigate to a patient records page
-    // or display search results within the dashboard.
+    // This function can be removed
   };
 
   const getDisplayName = () => {
@@ -300,68 +262,6 @@ const DoctorDashboard: React.FC = () => {
             ) : (
               <p>No appointments for today.</p>
             )}
-          </div>
-
-          <div className="add-consultation-notes panel-box">
-            <h2>Add Patient Consultation Notes</h2>
-            <div className="form-group">
-              <label htmlFor="select-patient">Select Patient</label>
-              <select
-                id="select-patient"
-                className="input-field2"
-                value={selectedPatient}
-                onChange={(e) => {
-                  const selectedName = e.target.value;
-                  setSelectedPatient(selectedName);
-                  const patient = patientList.find(p => p.name === selectedName);
-                  setSelectedPatientId(patient ? patient.id : null);
-                }}
-              >
-                {patientList.length > 0 ? (
-                  patientList.map((patient, idx) => (
-                    <option value={patient.name} key={idx}>{patient.name}</option>
-                  ))
-                ) : (
-                  <option value="">No patients available</option>
-                )}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="consultation-details">Consultation Details</label>
-              <textarea
-                id="consultation-details"
-                className="input-field textarea-field"
-                placeholder="Enter consultation details, symptoms, diagnosis, treatment plan..."
-                value={consultationNotes}
-                onChange={(e) => setConsultationNotes(e.target.value)}
-                rows={5}
-              />
-            </div>
-
-            <button
-              className="save-notes-button"
-              onClick={handleSaveNotes}
-              disabled={!consultationNotes.trim() || !selectedPatientId}
-            >
-              Save Notes
-            </button>
-          </div>
-        </div>
-
-        <div className="section-right">
-          <div className="search-patient-records panel-box">
-            <h2>Search Patient Records</h2>
-            <input
-              type="text"
-              placeholder="Enter patient name or ID"
-              className="input-field"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button className="search-button" onClick={handleSearch}>
-              Search
-            </button>
           </div>
         </div>
       </div>
