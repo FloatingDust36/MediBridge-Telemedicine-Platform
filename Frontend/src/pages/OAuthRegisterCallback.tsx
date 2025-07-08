@@ -26,7 +26,7 @@ const OAuthRegisterCallback = () => {
         .from('users')
         .select('email')
         .eq('email', email)
-        .single();
+        .maybeSingle();
 
       if (existingUser) {
         await supabase.auth.signOut();
@@ -58,12 +58,33 @@ const OAuthRegisterCallback = () => {
         },
       ]);
 
+      // ✅ Only insert empty profile if truly new
       if (selectedRole === 'doctor') {
-        await supabase.from('doctors').insert([{ user_id: userId }]);
+        const { data: existingDoctor } = await supabase
+          .from('doctors')
+          .select('id')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (!existingDoctor) {
+          await supabase.from('doctors').insert([{ user_id: userId }]);
+        }
+
         navigate('/completedoctorprofile');
+
       } else if (selectedRole === 'patient') {
-        await supabase.from('patients').insert([{ user_id: userId }]);
+        const { data: existingPatient } = await supabase
+          .from('patients')
+          .select('id')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (!existingPatient) {
+          await supabase.from('patients').insert([{ user_id: userId }]);
+        }
+
         navigate('/completepatientprofile');
+
       } else {
         navigate('/');
       }

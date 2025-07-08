@@ -79,50 +79,65 @@ function App() {
     );
 
     // Initial check for session on app load
-    const checkSession = async () => {
+   const checkSession = async () => {
   const { data: { session } } = await supabase.auth.getSession();
 
   if (session) {
     const user = session.user;
     const userRole = (user.user_metadata?.user_role as UserRole) || 'patient';
 
-    // ✅ Profile Completion Redirect Logic
-    if (userRole === 'doctor') {
-      const { data: doctorData } = await supabase
-        .from('doctors')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (!doctorData) {
-        navigate('/completedoctorprofile');
-        return;
-      }
-    } else if (userRole === 'patient') {
-      const { data: patientData } = await supabase
-        .from('patients')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (!patientData) {
-        navigate('/completepatientprofile');
-        return;
-      }
-    }
-
-    // ✅ Now safe to set the current user
     setCurrentUser({
       id: user.id,
       role: userRole,
       email: user.email || '',
     });
+
+    // 🔍 1. Check if profile exists
+    if (userRole === 'patient') {
+      const { data: patientData, error: patientError } = await supabase
+        .from('patients')
+        .select('user_id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!patientData || patientError) {
+        // ❌ No patient profile: new user
+        navigate('/completepatientprofile');
+      } else {
+        // ✅ Existing patient
+        navigate('/patientdashboard');
+      }
+
+    } else if (userRole === 'doctor') {
+      const { data: doctorData, error: doctorError } = await supabase
+        .from('doctors')
+        .select('user_id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!doctorData || doctorError) {
+        // ❌ No doctor profile: new user
+        navigate('/completedoctorprofile');
+      } else {
+        // ✅ Existing doctor
+        navigate('/doctordashboard');
+      }
+    }
+
+    // ✅ Optional: You can also auto-redirect admin here
+    if (userRole === 'admin') {
+      navigate('/admindashboard');
+    }
+
   } else {
+    // No session: fallback to guest mock
     setCurrentUser(MOCK_USERS[mockUserRole]);
   }
 
   setLoadingUser(false);
 };
+
+
 
 
     checkSession();
