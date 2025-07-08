@@ -86,17 +86,18 @@
 
 /* --- Styles specific to Add Schedule Card --- */
 .add-schedule-card {
-max-width: 100%;
-height: 55vh; /* This height might need adjustment based on actual content */
-background-color: #f0f0f0;
+    max-width: 100%;
+    height: 55vh; /* This height might need adjustment based on actual content */
+    background-color: #f0f0f0;
     padding: 15px;
     border-radius: 5px;
     border: 1px solid #e0e0e0;
-padding: 20px;
-box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex; /* Make it a flex container */
+    flex-direction: column; /* Stack its children vertically */
 }
 
-/* Removed .form-group and .form-group2 as they were less specific */
 .add-schedule-card .input-group { /* New class for grouping label and input */
     margin-bottom: 20px;
 }
@@ -188,7 +189,8 @@ box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
     margin-top: -19px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-
+    /* Push button to the bottom if using flex column on parent */
+    margin-top: auto; /* This pushes it to the bottom */
 }
 
 .add-schedule-card .publish-schedule-button:hover {
@@ -199,12 +201,44 @@ box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 /* --- Styles specific to Existing Schedules Card --- */
 .existing-schedules-card {
     /* Inherits .card-base */
+    display: flex; /* Make the card a flex container */
+    flex-direction: column; /* Stack its children (title, list) vertically */
+    height: 55vh; /* Set a specific height for the card to enable internal scrolling */
+}
+
+.existing-schedules-card .card-title {
+    /* Existing styles for card title */
+    margin-bottom: 15px; /* Ensure space below the title */
+    flex-shrink: 0; /* Prevent the title from shrinking */
 }
 
 .existing-schedules-card .schedule-list {
     list-style: none;
     padding: 0;
     margin: 0;
+    flex-grow: 1; /* Allow the list to take up available vertical space */
+    overflow-y: auto; /* Enables vertical scrolling when content exceeds available height */
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: #007bff #f1f1f1; /* For Firefox (thumb color track color) */
+}
+
+/* For Webkit browsers (Chrome, Safari, Edge) */
+.existing-schedules-card .schedule-list::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+.existing-schedules-card .schedule-list::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of the track */
+  border-radius: 10px;
+}
+
+.existing-schedules-card .schedule-list::-webkit-scrollbar-thumb {
+  background: #007bff; /* Color of the scroll thumb */
+  border-radius: 10px;
+}
+
+.existing-schedules-card .schedule-list::-webkit-scrollbar-thumb:hover {
+  background: #0056b3; /* Color when hovered */
 }
 
 .existing-schedules-card .schedule-item {
@@ -289,6 +323,15 @@ box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
         padding-left: 15px;
         padding-right: 15px;
     }
+    /* Ensure cards take full width and manage their own heights */
+    .add-schedule-card,
+    .existing-schedules-card {
+        height: auto; /* Allow height to adjust on smaller screens */
+        max-height: none; /* Remove any fixed max-height */
+    }
+    .existing-schedules-card .schedule-list {
+        max-height: 300px; /* Re-introduce max-height for scrolling list on small screens */
+    }
     .existing-schedules-card .schedule-item {
         flex-direction: column; /* Stack info and button on small screens */
         align-items: flex-start;
@@ -323,7 +366,7 @@ box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     }
     .add-schedule-card .publish-schedule-button {
         font-size: 15px;
-        margin-top: 0px;
+        margin-top: auto; /* Ensure it stays at the bottom */
     }
     .delete-schedule-button {
         padding: 6px 10px;
@@ -331,173 +374,173 @@ box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     }
     
 }
-/* Clock Time Picker Styles - Add these to your AddSchedule.css */
+/* Clock Time Picker Styles */
 
 .clock-time-picker-container {
-  position: relative;
-  width: 100%;
+    position: relative;
+    width: 100%;
 }
 
 .clock-time-picker-button {
-  width: 100%;
-  padding: 10px 15px;
-  border: 1px solid #c0c0c0;
-  border-radius: 4px;
-  background-color: #f8f8f8;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 15px;
-  color: #555;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #c0c0c0;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    color: #555;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .clock-time-picker-button:hover {
-  border-color: #a0a0a0;
-  background-color: #f0f0f0;
+    border-color: #a0a0a0;
+    background-color: #f0f0f0;
 }
 
 .clock-time-picker-button:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
 .clock-time-picker-text {
-  color: #555;
+    color: #555;
 }
 
 .clock-time-picker-icon {
-  width: 20px;
-  height: 20px;
-  color: #888;
+    width: 20px;
+    height: 20px;
+    color: #888;
 }
 
 .clock-time-picker-dropdown {
-  position: absolute;
-  z-index: 1000;
-  top: 100%;
-  left: 0;
-  margin-top: 8px;
-  background-color: white;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  padding: 16px;
-  min-width: 280px;
+    position: absolute;
+    z-index: 1000;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    min-width: 280px;
 }
 
 .clock-time-picker-header {
-  text-align: center;
-  margin-bottom: 16px;
+    text-align: center;
+    margin-bottom: 16px;
 }
 
 .clock-time-picker-mode-title {
-  font-size: 18px;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 4px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
 }
 
 .clock-time-picker-current-time {
-  font-size: 14px;
-  color: #666;
+    font-size: 14px;
+    color: #666;
 }
 
 .clock-time-picker-clock-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
 }
 
 .clock-time-picker-svg {
-  cursor: pointer;
-  user-select: none;
+    cursor: pointer;
+    user-select: none;
 }
 
 .clock-time-picker-number {
-  font-size: 14px;
-  font-weight: 500;
-  fill: #374151;
-  pointer-events: none;
+    font-size: 14px;
+    font-weight: 500;
+    fill: #374151;
+    pointer-events: none;
 }
 
 .clock-time-picker-number.selected {
-  fill: white;
-  font-weight: 600;
+    fill: white;
+    font-weight: 600;
 }
 
 .clock-time-picker-ampm {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 12px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
 }
 
 .clock-time-picker-ampm-container {
-  display: flex;
-  background-color: #f3f4f6;
-  border-radius: 8px;
-  padding: 4px;
+    display: flex;
+    background-color: #f3f4f6;
+    border-radius: 8px;
+    padding: 4px;
 }
 
 .clock-time-picker-ampm-button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  background-color: transparent;
-  color: #6b7280;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: transparent;
+    color: #6b7280;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .clock-time-picker-ampm-button:hover {
-  color: #374151;
+    color: #374151;
 }
 
 .clock-time-picker-ampm-button.active {
-  background-color: #3b82f6;
-  color: white;
+    background-color: #3b82f6;
+    color: white;
 }
 
 .clock-time-picker-instructions {
-  text-align: center;
-  font-size: 12px;
-  color: #6b7280;
+    text-align: center;
+    font-size: 12px;
+    color: #6b7280;
 }
 
 /* Responsive adjustments for the clock picker */
 @media (max-width: 768px) {
-  .clock-time-picker-dropdown {
-    right: 0;
-    left: auto;
-    min-width: 260px;
-  }
-  
-  .clock-time-picker-svg {
-    width: 180px;
-    height: 180px;
-  }
+    .clock-time-picker-dropdown {
+        right: 0;
+        left: auto;
+        min-width: 260px;
+    }
+    
+    .clock-time-picker-svg {
+        width: 180px;
+        height: 180px;
+    }
 }
 
 @media (max-width: 480px) {
-  .clock-time-picker-dropdown {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90vw;
-    max-width: 300px;
-    margin-top: 0;
-  }
-  
-  .clock-time-picker-svg {
-    width: 160px;
-    height: 160px;
-  }
+    .clock-time-picker-dropdown {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90vw;
+        max-width: 300px;
+        margin-top: 0;
+    }
+    
+    .clock-time-picker-svg {
+        width: 160px;
+        height: 160px;
+    }
 }

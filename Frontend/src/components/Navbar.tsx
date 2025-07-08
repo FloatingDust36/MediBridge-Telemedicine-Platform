@@ -418,11 +418,7 @@ const Navbar: React.FC<NavbarProps> = ({ userType, onUserTypeChange }) => {
           </>
         ) : (
           <>
-            {currentUser && (
-              <li className="user-info">
-                Welcome, {currentUser.full_name || currentUser.email}
-              </li>
-            )}
+            {/* Removed the 'Welcome, [Name]' display */}
             <li onClick={handleLogout} className="logout-button">
               Logout
             </li>

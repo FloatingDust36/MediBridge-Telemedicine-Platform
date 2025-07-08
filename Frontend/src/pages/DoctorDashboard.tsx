@@ -30,6 +30,22 @@ const DoctorDashboard: React.FC = () => {
   const [consultationsDone, setConsultationsDone] = useState<number>(0);
   const [pendingMessages, setPendingMessages] = useState<number>(0);
 
+  // Function to parse full name into first, middle, and last names
+  const parseFullName = (fullName: string) => {
+    const nameParts = fullName.trim().split(' ');
+    if (nameParts.length === 1) {
+      return { first_name: nameParts[0], middle_name: null, last_name: '' };
+    } else if (nameParts.length === 2) {
+      return { first_name: nameParts[0], middle_name: null, last_name: nameParts[1] };
+    } else {
+      return {
+        first_name: nameParts[0],
+        middle_name: nameParts.slice(1, -1).join(' ') || null,
+        last_name: nameParts[nameParts.length - 1]
+      };
+    }
+  };
+
   // Function to fetch all dashboard data
   const fetchDoctorDashboardData = async () => {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -59,6 +75,7 @@ const DoctorDashboard: React.FC = () => {
 
       if (doctorError || !doctorData) {
         console.error('Error fetching doctor info:', doctorError?.message);
+        // Fallback to a default or partially known info
         setDoctorInfo({
           full_name: 'Dr. Unknown',
           first_name: 'Unknown',
@@ -68,29 +85,15 @@ const DoctorDashboard: React.FC = () => {
           is_available: false
         });
       } else {
-        // Use individual names from doctors table if available, otherwise parse from full_name
-        const parseFullName = (fullName: string) => {
-          const nameParts = fullName.trim().split(' ');
-          if (nameParts.length === 1) {
-            return { first_name: nameParts[0], middle_name: '', last_name: '' };
-          } else if (nameParts.length === 2) {
-            return { first_name: nameParts[0], middle_name: '', last_name: nameParts[1] };
-          } else {
-            return {
-              first_name: nameParts[0],
-              middle_name: nameParts.slice(1, -1).join(' '),
-              last_name: nameParts[nameParts.length - 1]
-            };
-          }
-        };
-
-        const parsedNames = parseFullName(doctorData.users.full_name || '');
+        // Safely access the nested users object
+        const userData = (doctorData as any).users || {}; 
+        const parsedNames = parseFullName(userData.full_name || '');
 
         setDoctorInfo({
-          full_name: doctorData.users.full_name || 'Dr. Unknown',
+          full_name: userData.full_name || 'Dr. Unknown',
           first_name: doctorData.first_name || parsedNames.first_name,
           last_name: doctorData.last_name || parsedNames.last_name,
-          middle_name: doctorData.middle_name || parsedNames.middle_name || null,
+          middle_name: doctorData.middle_name || parsedNames.middle_name,
           specialization: doctorData.specialization || 'General',
           is_available: doctorData.is_available || false
         });
@@ -166,7 +169,7 @@ const DoctorDashboard: React.FC = () => {
         .from('session_messages')
         .select('*', { count: 'exact' })
         .eq('receiver_id', userId)
-        .neq('sender_id', userId);
+        .neq('sender_id', userId); // Assuming messages from patient to doctor are "pending" for the doctor
 
       if (messagesError) {
         console.error('Error fetching pending messages:', messagesError.message);
@@ -187,7 +190,7 @@ const DoctorDashboard: React.FC = () => {
   useEffect(() => {
     fetchDoctorDashboardData();
 
-    // Listen for profile updates
+    // Listen for profile updates from DoctorProfile component
     const handleProfileUpdate = () => {
       fetchDoctorDashboardData();
     };
@@ -197,7 +200,7 @@ const DoctorDashboard: React.FC = () => {
     return () => {
       window.removeEventListener('doctorProfileUpdated', handleProfileUpdate);
     };
-  }, []);
+  }, []); // Empty dependency array means this effect runs once on mount
 
   const handleSaveNotes = async () => {
     if (!consultationNotes.trim()) {
@@ -218,6 +221,8 @@ const DoctorDashboard: React.FC = () => {
       return;
     }
 
+    // Find the appointment ID for the selected patient for today's appointments
+    // This assumes a patient will only have one appointment per day with this doctor
     const selectedAppt = appointments.find(
       appt => appt.patients?.user_id === selectedPatientId
     );
@@ -226,7 +231,7 @@ const DoctorDashboard: React.FC = () => {
       doctor_id: doctorId,
       patient_id: selectedPatientId,
       notes: consultationNotes,
-      appointment_id: selectedAppt?.id || null,
+      appointment_id: selectedAppt?.id || null, // Link to appointment if found
     });
 
     if (insertError) {
@@ -235,13 +240,13 @@ const DoctorDashboard: React.FC = () => {
     } else {
       alert('Consultation notes saved successfully!');
       setConsultationNotes('');
-      
-      // Update consultations count
+
+      // Re-fetch consultations count after saving a new note
       const { count: newConsultationsCount } = await supabase
         .from('consultation_notes')
         .select('*', { count: 'exact' })
         .eq('doctor_id', doctorId);
-      
+
       setConsultationsDone(newConsultationsCount || 0);
     }
   };
@@ -252,15 +257,19 @@ const DoctorDashboard: React.FC = () => {
       return;
     }
 
+    // In a real application, you would implement the search logic here,
+    // possibly navigating to a patient record page or displaying results.
     console.log(`Searching for patient: ${searchQuery}`);
-    alert(`Searching for: ${searchQuery} (Search functionality not yet implemented)`);
+    alert(`Searching for: ${searchQuery} (Search functionality not yet implemented in this view)`);
   };
 
-  // Get display name for welcome message
+  // Get display name for welcome message, prioritizing first/middle/last from doctorInfo
   const getDisplayName = () => {
     if (doctorInfo?.first_name && doctorInfo?.last_name) {
-      return `${doctorInfo.first_name} ${doctorInfo.last_name}`;
+      const middleNamePart = doctorInfo.middle_name ? `${doctorInfo.middle_name} ` : '';
+      return `${doctorInfo.first_name} ${middleNamePart}${doctorInfo.last_name}`;
     }
+    // Fallback to full_name from users table if individual names are not populated
     return doctorInfo?.full_name?.replace(/^Dr\.\s*/, '') || 'Unknown';
   };
 
@@ -269,7 +278,7 @@ const DoctorDashboard: React.FC = () => {
       <div className="welcome-section">
         <h1>Welcome, Dr. {getDisplayName()}</h1>
         <p>
-          Specialization: {doctorInfo?.specialization || 'General'} | 
+          Specialization: {doctorInfo?.specialization || 'General'} |
           Status: {doctorInfo?.is_available ? 'Available' : 'Unavailable'}
         </p>
         <p>Manage your appointments, view patient records, and conduct consultations.</p>
@@ -302,7 +311,7 @@ const DoctorDashboard: React.FC = () => {
                     Patient: {appt.patients?.first_name} {appt.patients?.last_name}
                   </p>
                   <p className="appointment-time">
-                    {new Date(appt.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+                    {new Date(appt.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -
                     {new Date(appt.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>

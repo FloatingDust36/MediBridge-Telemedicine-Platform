@@ -1,409 +1,324 @@
-import React, { useState, useEffect } from 'react';
-import supabase from '../lib/supabaseClient';
-import './DoctorProfile.css';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import supabase from '../lib/supabaseClient';
+import './PatientProfile.css';
 
-// Define interfaces for data structure
-interface UserProfileData {
+interface PatientData {
   user_id: string;
-  email: string;
-  full_name: string;
-  phone_number: string;
-}
-
-interface DoctorSpecificData {
-  user_id: string;
-  specialization: string;
-  license_number: string;
-  is_available: boolean;
-  emergency_contact: string | null;
   first_name: string;
   last_name: string;
-  middle_name: string | null;
+  middle_name?: string;
+  email: string; // This will come from the 'users' table
+  date_of_birth: string; // This will come from the 'patients' table
+  phone_number: string; // This will come from the 'users' table
+  address: string; // This will come from the 'patients' table
+  contact_number?: string; // This is a distinct field in 'patients' table
+  emergency_contact?: string;
+  allergies?: string;
 }
 
-// Combined type for the form
-type ProfileData = UserProfileData & DoctorSpecificData;
-
-const DoctorProfile: React.FC = () => {
+const PatientProfile: React.FC = () => {
   const navigate = useNavigate();
-  const [doctorData, setDoctorData] = useState<ProfileData | null>(null);
+  const [patientData, setPatientData] = useState<PatientData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [editMode, setEditMode] = useState<boolean>(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [editedData, setEditedData] = useState<ProfileData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editedData, setEditedData] = useState<PatientData | null>(null);
+  const [saving, setSaving] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchDoctorProfile = async () => {
+    fetchPatientData();
+  }, []);
+
+  const fetchPatientData = async () => {
+    try {
       setLoading(true);
-      setMessage(null);
+      setError(null);
 
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
       if (sessionError || !session) {
-        setMessage('Please log in to view your profile.');
-        setLoading(false);
-        navigate('/login');
+        console.error('Session error:', sessionError?.message);
+        navigate('/');
         return;
       }
 
       const userId = session.user.id;
 
-      // Fetch from 'doctors' table and join with 'users'
-      const { data: profile, error: fetchError } = await supabase
-        .from('doctors')
+      const { data: patientInfo, error: patientError } = await supabase
+        .from('patients')
         .select(`
           user_id,
-          specialization,
-          license_number,
-          is_available,
-          emergency_contact,
           first_name,
           last_name,
           middle_name,
-          users!inner (
+          date_of_birth,
+          address,
+          contact_number,
+          emergency_contact,
+          allergies,
+          users!inner(
             email,
-            full_name,
             phone_number
           )
         `)
         .eq('user_id', userId)
         .single();
 
-      if (fetchError || !profile) {
-        console.error('Error fetching doctor profile:', fetchError?.message);
-        setMessage(`Failed to load profile data. Error: ${fetchError?.message}`);
-        setLoading(false);
-        return;
+      if (patientError || !patientInfo) {
+        console.error('Error fetching patient profile:', patientError?.message);
+        throw new Error('Failed to fetch patient data: ' + (patientError?.message || 'No data returned'));
       }
 
-      // Parse name from full_name if individual name fields are empty
-      const parseFullName = (fullName: string) => {
-        const nameParts = fullName.trim().split(' ');
-        if (nameParts.length === 1) {
-          return { first_name: nameParts[0], middle_name: '', last_name: '' };
-        } else if (nameParts.length === 2) {
-          return { first_name: nameParts[0], middle_name: '', last_name: nameParts[1] };
-        } else {
-          return {
-            first_name: nameParts[0],
-            middle_name: nameParts.slice(1, -1).join(' '),
-            last_name: nameParts[nameParts.length - 1]
-          };
-        }
+      // Access the nested users object safely (following DoctorProfile pattern)
+      const userData = (patientInfo as any).users || {};
+
+      // Build the combined data with proper null checks
+      const combinedData: PatientData = {
+        user_id: patientInfo.user_id,
+        first_name: patientInfo.first_name || '',
+        last_name: patientInfo.last_name || '',
+        middle_name: patientInfo.middle_name || '',
+        email: userData.email || '',
+        date_of_birth: patientInfo.date_of_birth || '',
+        phone_number: userData.phone_number || '',
+        address: patientInfo.address || '',
+        contact_number: patientInfo.contact_number || '',
+        emergency_contact: patientInfo.emergency_contact || '',
+        allergies: patientInfo.allergies || '',
       };
 
-      const parsedNames = parseFullName(profile.users.full_name || '');
-
-      // Combine fetched data
-      const combinedData: ProfileData = {
-        user_id: profile.user_id,
-        email: profile.users.email,
-        full_name: profile.users.full_name,
-        phone_number: profile.users.phone_number,
-        first_name: profile.first_name || parsedNames.first_name,
-        last_name: profile.last_name || parsedNames.last_name,
-        middle_name: profile.middle_name || parsedNames.middle_name || null,
-        specialization: profile.specialization,
-        license_number: profile.license_number,
-        is_available: profile.is_available,
-        emergency_contact: profile.emergency_contact || null,
-      };
-
-      setDoctorData(combinedData);
+      setPatientData(combinedData);
       setEditedData(combinedData);
-      setLoading(false);
-    };
 
-    fetchDoctorProfile();
-  }, [navigate]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-    
-    setEditedData((prevData) => {
-      if (!prevData) return prevData;
-      return {
-        ...prevData,
-        [name]: type === 'checkbox' ? checked : value,
-      };
-    });
-  };
-
-  const handleSave = async () => {
-    if (!editedData || !doctorData) {
-      setMessage('No data to save.');
-      return;
-    }
-
-    setLoading(true);
-    setMessage(null);
-
-    try {
-      // Construct full_name for the 'users' table update
-      const newFullName = `${editedData.first_name} ${editedData.middle_name ? editedData.middle_name + ' ' : ''}${editedData.last_name}`.trim();
-
-      // Update 'users' table - ONLY update fields that exist in your schema
-      const { error: userUpdateError } = await supabase
-        .from('users')
-        .update({
-          full_name: newFullName,
-          phone_number: editedData.phone_number,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', editedData.user_id);
-
-      if (userUpdateError) throw userUpdateError;
-
-      // Update 'doctors' table
-      const { error: doctorUpdateError } = await supabase
-        .from('doctors')
-        .update({
-          specialization: editedData.specialization,
-          license_number: editedData.license_number,
-          emergency_contact: editedData.emergency_contact,
-          is_available: editedData.is_available,
-          first_name: editedData.first_name,
-          last_name: editedData.last_name,
-          middle_name: editedData.middle_name,
-        })
-        .eq('user_id', editedData.user_id);
-
-      if (doctorUpdateError) throw doctorUpdateError;
-
-      setDoctorData(editedData);
-      setEditMode(false);
-      setMessage('Profile updated successfully!');
-      
-      // Dispatch event to notify dashboard to refresh
-      window.dispatchEvent(new Event('doctorProfileUpdated'));
-
-    } catch (error: any) {
-      console.error('Error updating profile:', error.message);
-      setMessage('Failed to update profile: ' + error.message);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      console.error('Error fetching patient data:', errorMessage);
+      setError('Failed to load patient profile. Please try again. ' + errorMessage);
     } finally {
       setLoading(false);
-      setTimeout(() => setMessage(null), 3000);
     }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
   };
 
   const handleCancel = () => {
-    setEditMode(false);
-    setEditedData(doctorData);
-    setMessage(null);
+    setIsEditing(false);
+    setEditedData(patientData);
+  };
+
+  const handleSave = async () => {
+    if (!editedData || !patientData) return;
+
+    try {
+      setSaving(true);
+
+      const { error: patientError } = await supabase
+        .from('patients')
+        .update({
+          first_name: editedData.first_name,
+          last_name: editedData.last_name,
+          middle_name: editedData.middle_name,
+          date_of_birth: editedData.date_of_birth,
+          address: editedData.address,
+          contact_number: editedData.contact_number,
+          emergency_contact: editedData.emergency_contact,
+          allergies: editedData.allergies,
+        })
+        .eq('user_id', patientData.user_id);
+
+      if (patientError) throw patientError;
+
+      const { error: usersError } = await supabase
+        .from('users')
+        .update({
+          phone_number: editedData.phone_number,
+        })
+        .eq('user_id', patientData.user_id);
+
+      if (usersError) throw usersError;
+
+      setPatientData(editedData);
+      setIsEditing(false);
+      alert('Profile updated successfully!');
+
+      window.dispatchEvent(new Event('patientProfileUpdated'));
+
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      console.error('Error updating profile:', errorMessage);
+      alert('Failed to update profile. Please try again: ' + errorMessage);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleInputChange = (field: keyof PatientData, value: string) => {
+    if (editedData) {
+      setEditedData({
+        ...editedData,
+        [field]: value,
+      });
+    }
+  };
+
+  const handleBackToDashboard = () => {
+    navigate('/patientdashboard');
   };
 
   if (loading) {
-    return <div className="doctor-profile-loading">Loading Doctor Profile...</div>;
+    return <div className="patient-profile-loading">Loading patient profile...</div>;
   }
 
-  if (!doctorData) {
-    return <div className="doctor-profile-error">{message || 'No doctor profile data found.'}</div>;
+  if (error) {
+    return (
+      <div className="patient-profile-error">
+        <p>Error: {error}</p>
+        <button onClick={fetchPatientData}>Retry</button>
+      </div>
+    );
   }
 
-  const currentData = editMode ? editedData : doctorData;
+  if (!patientData) {
+    return <div className="patient-profile-no-data">No patient data available.</div>;
+  }
+
+  const currentData = isEditing ? editedData : patientData;
 
   return (
-    <div className="doctor-profile-container">
-      <div className="doctor-profile-card">
-        <div className="profile-header-area">
-          <h2 className="profile-title">Doctor Profile</h2>
-          {!editMode ? (
-            <button type="button" onClick={() => setEditMode(true)} className="edit-button">
-              Edit Profile
+    <div className="patient-profile-container">
+      <div className="profile-header">
+        <button className="back-button" onClick={handleBackToDashboard}>
+          ← Back to Dashboard
+        </button>
+        <h1>Patient Profile</h1>
+        {!isEditing ? (
+          <button className="edit-button" onClick={handleEdit}>
+            Edit Profile
+          </button>
+        ) : (
+          <div className="edit-buttons">
+            <button className="cancel-button" onClick={handleCancel}>
+              Cancel
             </button>
-          ) : (
-            <div className="edit-mode-buttons">
-              <button type="button" onClick={handleCancel} className="cancel-button">
-                Cancel
-              </button>
-              <button type="button" onClick={handleSave} className="submit-button" disabled={loading}>
-                {loading ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {message && (
-          <div className={`profile-message ${message.includes('successfully') ? 'success' : 'error'}`}>
-            {message}
+            <button
+              className="save-button"
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saving ? 'Saving...' : 'Save'}
+            </button>
           </div>
         )}
+      </div>
 
-        <form onSubmit={(e) => e.preventDefault()} className="doctor-form-area">
-          {/* Email Field (Non-editable) */}
-          <div className="form-group">
-            <div className="form-label">Email</div>
-            <div className="form-input-container">
-              <p className="profile-display-text">{currentData?.email || 'N/A'}</p>
-            </div>
+      <div className="profile-content">
+        <div className="profile-section">
+          <h2>Personal Information</h2>
+
+          <div className="profile-field">
+            <label>Email:</label>
+            <input
+              type="email"
+              value={currentData?.email || ''}
+              disabled={true}
+              className="profile-input disabled"
+            />
           </div>
 
-          {/* First Name Field */}
-          <div className="form-group">
-            <label htmlFor="first_name" className="form-label">First Name</label>
-            <div className="form-input-container">
-              {editMode ? (
-                <input
-                  type="text"
-                  id="first_name"
-                  name="first_name"
-                  value={currentData?.first_name || ''}
-                  onChange={handleChange}
-                  className="form-input"
-                  required
-                />
-              ) : (
-                <p className="profile-display-text">{currentData?.first_name || 'N/A'}</p>
-              )}
-            </div>
+          <div className="profile-field">
+            <label>First Name:</label>
+            <input
+              type="text"
+              value={currentData?.first_name || ''}
+              disabled={!isEditing}
+              className={`profile-input ${!isEditing ? 'disabled' : ''}`}
+              onChange={(e) => handleInputChange('first_name', e.target.value)}
+            />
           </div>
 
-          {/* Middle Name Field */}
-          <div className="form-group">
-            <label htmlFor="middle_name" className="form-label">Middle Name</label>
-            <div className="form-input-container">
-              {editMode ? (
-                <input
-                  type="text"
-                  id="middle_name"
-                  name="middle_name"
-                  value={currentData?.middle_name || ''}
-                  onChange={handleChange}
-                  className="form-input"
-                />
-              ) : (
-                <p className="profile-display-text">{currentData?.middle_name || 'N/A'}</p>
-              )}
-            </div>
+          <div className="profile-field">
+            <label>Last Name:</label>
+            <input
+              type="text"
+              value={currentData?.last_name || ''}
+              disabled={!isEditing}
+              className={`profile-input ${!isEditing ? 'disabled' : ''}`}
+              onChange={(e) => handleInputChange('last_name', e.target.value)}
+            />
           </div>
 
-          {/* Last Name Field */}
-          <div className="form-group">
-            <label htmlFor="last_name" className="form-label">Last Name</label>
-            <div className="form-input-container">
-              {editMode ? (
-                <input
-                  type="text"
-                  id="last_name"
-                  name="last_name"
-                  value={currentData?.last_name || ''}
-                  onChange={handleChange}
-                  className="form-input"
-                  required
-                />
-              ) : (
-                <p className="profile-display-text">{currentData?.last_name || 'N/A'}</p>
-              )}
-            </div>
+          <div className="profile-field">
+            <label>Middle Name:</label>
+            <input
+              type="text"
+              value={currentData?.middle_name || ''}
+              disabled={!isEditing}
+              className={`profile-input ${!isEditing ? 'disabled' : ''}`}
+              onChange={(e) => handleInputChange('middle_name', e.target.value)}
+            />
           </div>
 
-          {/* License Number Field */}
-          <div className="form-group">
-            <label htmlFor="license_number" className="form-label">License Number</label>
-            <div className="form-input-container">
-              {editMode ? (
-                <input
-                  type="text"
-                  id="license_number"
-                  name="license_number"
-                  value={currentData?.license_number || ''}
-                  onChange={handleChange}
-                  className="form-input"
-                  required
-                />
-              ) : (
-                <p className="profile-display-text">{currentData?.license_number || 'N/A'}</p>
-              )}
-            </div>
+          <div className="profile-field">
+            <label>Date of Birth:</label>
+            <input
+              type="date"
+              value={currentData?.date_of_birth || ''}
+              disabled={!isEditing}
+              className={`profile-input ${!isEditing ? 'disabled' : ''}`}
+              onChange={(e) => handleInputChange('date_of_birth', e.target.value)}
+            />
           </div>
 
-          {/* Specialization Field */}
-          <div className="form-group">
-            <label htmlFor="specialization" className="form-label">Specialization</label>
-            <div className="form-input-container">
-              {editMode ? (
-                <input
-                  type="text"
-                  id="specialization"
-                  name="specialization"
-                  value={currentData?.specialization || ''}
-                  onChange={handleChange}
-                  className="form-input"
-                  required
-                />
-              ) : (
-                <p className="profile-display-text">{currentData?.specialization || 'N/A'}</p>
-              )}
-            </div>
+          <div className="profile-field">
+            <label>Phone Number:</label>
+            <input
+              type="tel"
+              value={currentData?.phone_number || ''}
+              disabled={!isEditing}
+              className={`profile-input ${!isEditing ? 'disabled' : ''}`}
+              onChange={(e) => handleInputChange('phone_number', e.target.value)}
+            />
           </div>
 
-          {/* Phone Number Field */}
-          <div className="form-group">
-            <label htmlFor="phone_number" className="form-label">Phone Number</label>
-            <div className="form-input-container">
-              {editMode ? (
-                <input
-                  type="tel"
-                  id="phone_number"
-                  name="phone_number"
-                  value={currentData?.phone_number || ''}
-                  onChange={handleChange}
-                  pattern="[0-9]{11}"
-                  placeholder="e.g. 09123456789"
-                  className="form-input"
-                  required
-                />
-              ) : (
-                <p className="profile-display-text">{currentData?.phone_number || 'N/A'}</p>
-              )}
-            </div>
+          <div className="profile-field">
+            <label>Address:</label>
+            <textarea
+              value={currentData?.address || ''}
+              disabled={!isEditing}
+              className={`profile-input ${!isEditing ? 'disabled' : ''}`}
+              onChange={(e) => handleInputChange('address', e.target.value)}
+              rows={3}
+            />
           </div>
 
-          {/* Is Available Toggle */}
-          <div className="form-group checkbox-group">
-            <label htmlFor="is_available" className="form-label">Available for appointments</label>
-            <div className="form-input-container">
-              {editMode ? (
-                <input
-                  type="checkbox"
-                  id="is_available"
-                  name="is_available"
-                  checked={currentData?.is_available || false}
-                  onChange={handleChange}
-                  className="form-checkbox"
-                />
-              ) : (
-                <p className="profile-display-text">
-                  {currentData?.is_available ? 'Yes' : 'No'}
-                </p>
-              )}
-            </div>
+          <div className="profile-field">
+            <label>Emergency Contact:</label>
+            <input
+              type="text"
+              value={currentData?.emergency_contact || ''}
+              disabled={!isEditing}
+              className={`profile-input ${!isEditing ? 'disabled' : ''}`}
+              onChange={(e) => handleInputChange('emergency_contact', e.target.value)}
+            />
           </div>
 
-          {/* Emergency Contact Field */}
-          <div className="form-group">
-            <label htmlFor="emergency_contact" className="form-label">Emergency Contact</label>
-            <div className="form-input-container">
-              {editMode ? (
-                <input
-                  type="text"
-                  id="emergency_contact"
-                  name="emergency_contact"
-                  value={currentData?.emergency_contact || ''}
-                  onChange={handleChange}
-                  className="form-input"
-                />
-              ) : (
-                <p className="profile-display-text">{currentData?.emergency_contact || 'N/A'}</p>
-              )}
-            </div>
+          <div className="profile-field">
+            <label>Allergies:</label>
+            <textarea
+              value={currentData?.allergies || ''}
+              disabled={!isEditing}
+              className={`profile-input ${!isEditing ? 'disabled' : ''}`}
+              onChange={(e) => handleInputChange('allergies', e.target.value)}
+              rows={3}
+            />
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
 };
 
-export default DoctorProfile;
+export default PatientProfile;
