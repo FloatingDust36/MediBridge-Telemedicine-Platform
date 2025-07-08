@@ -3,13 +3,14 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, GeoJSON } from 'react-l
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
+import './Emergency.css';
+
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
   iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
 });
-
 
 interface EmergencyLocation {
   id: number;
@@ -22,7 +23,7 @@ interface EmergencyLocation {
 }
 
 const INITIAL_EMERGENCY_FACILITIES: EmergencyLocation[] = [
-  { id: 1, lat: 10.3157, lng: 123.8854, name: 'Cebu Doctors\' University Hospital', address: 'Osmeña Blvd, Cebu City', phone: '(032) 255 5555', type: 'hospital' },
+  { id: 1, lat: 10.3157, lng: 123.8854, name: 'Cebu Doctors\' University Hospital', address: 'OsmeÃ±a Blvd, Cebu City', phone: '(032) 255 5555', type: 'hospital' },
   { id: 2, lat: 10.3344, lng: 123.9056, name: 'Perpetual Succour Hospital', address: 'Gorordo Ave, Cebu City', phone: '(032) 233 8620', type: 'hospital' },
   { id: 3, lat: 10.3015, lng: 123.8967, name: 'Vicente Sotto Memorial Medical Center', address: 'B. Rodriguez St, Cebu City', phone: '(032) 253 9891', type: 'hospital' },
   { id: 4, lat: 10.3000, lng: 123.8800, name: 'Chong Hua Hospital (Cebu City)', address: 'Don Mariano Cui St, Cebu City', phone: '(032) 255 8000', type: 'hospital' },
@@ -88,7 +89,7 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
     Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = R * c;
+  const distance = R * c; 
   return distance;
 };
 
@@ -206,7 +207,7 @@ const LocationMarker: React.FC<{
       }
 
       const data = await response.json();
-      console.log("ORS Route response (raw data):", data);
+      console.log("ORS Route response (raw data):", data); 
 
       if (data.features && data.features.length > 0) {
           if (data.features[0].geometry && data.features[0].geometry.type === 'LineString') {
@@ -264,12 +265,12 @@ const LocationMarker: React.FC<{
       onClosestFacilityFound(closestFacility);
       const confirmedClosestFacility: EmergencyLocation = closestFacility;
 
-      if (ORS_API_KEY) {
+      if (ORS_API_KEY) { 
         console.log(`Attempting to fetch route from [${lng}, ${lat}] to [${confirmedClosestFacility.lng}, ${confirmedClosestFacility.lat}]`);
         await fetchRoute(lat, lng, confirmedClosestFacility.lat, confirmedClosestFacility.lng);
       } else {
         onRouteLoaded(null);
-        console.warn("ORS API key is not configured, skipping route fetch.");
+        console.warn("ORS API key is not configured, skipping route fetch."); 
       }
     } else {
       onClosestFacilityFound(null, "No medical facilities detected nearby (within 100 km).");
@@ -369,7 +370,7 @@ const Emergency: React.FC = () => {
     setDynamicFacilities(facilities);
   };
 
-  const handleRouteLoaded = (geoJson: any | null) => {
+  const handleRouteLoaded = (geoJson: any | null) => { 
     console.log("Route data received by Emergency component:", geoJson);
     setRouteGeoJson(geoJson);
   };
@@ -412,21 +413,20 @@ const Emergency: React.FC = () => {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
-
                   {facilitiesToDisplay.map(loc => (
                     <Marker key={loc.id} position={[loc.lat, loc.lng]}>
                       <Popup>
+                        {/* Display the dynamically determined type */}
                         <strong>{loc.name} ({loc.type.charAt(0).toUpperCase() + loc.type.slice(1)})</strong><br />
                         {loc.address}<br />
                         Phone: {loc.phone}
                       </Popup>
                     </Marker>
                   ))}
-
                   {routeGeoJson && (
                     <>
-                      {console.log("GeoJSON data attempting to render in MapContainer:", routeGeoJson)}
-                      <GeoJSON data={routeGeoJson} style={routeStyle} />
+                        {console.log("GeoJSON data attempting to render in MapContainer:", routeGeoJson)}
+                        <GeoJSON data={routeGeoJson} style={routeStyle} />
                     </>
                   )}
 
@@ -443,7 +443,7 @@ const Emergency: React.FC = () => {
                 {closestFacility ? (
                   <>
                     <h3 className="hospital-found-title">Closest Medical Facility:</h3>
-                    <p className="hospital-name-display">{closestFacility.name} ({closestFacility.type.charAt(0).toUpperCase() + closestFacility.type.slice(1)})</p>
+                    <p className="hospital-name-display">{closestFacility.name} ({closestFacility.type.charAt(0).toUpperCase() + closestFacility.type.slice(1)})</p> {/* Display type here too */}
                     <p className="hospital-address-display">{closestFacility.address}</p>
                     <p className="hospital-phone-display">Call: {closestFacility.phone}</p>
                     <a
@@ -458,7 +458,7 @@ const Emergency: React.FC = () => {
                   </>
                 ) : (
                   <p className="hospital-not-found-message">
-                    {errorMessage || "Attempting to find your location and nearest medical facility..."}
+                    {errorMessage || "Attempting to find your location and nearest medical facility..."} {/* Updated message */}
                   </p>
                 )}
               </div>
@@ -479,7 +479,7 @@ const Emergency: React.FC = () => {
                     <span>{f.phone}</span>
                   </div>
                 ))}
-                <p className="disclaimer">This list serves as a backup if no nearby medical facility is found on the map. This list is for informational purposes only; always verify phone numbers during an emergency.</p>
+                <p className="disclaimer">This list serves as a backup if no nearby medical facility is found on the map. This list is for informational purposes only; always verify phone numbers during an emergency.</p> {/* Updated disclaimer */}
               </div>
               <div className="draft-section panel-box">
                 <p className="draft-text">Draft an emergency message here. (e.g., "I am at [address] and need an ambulance.")</p>
