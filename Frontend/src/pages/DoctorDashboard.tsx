@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import supabase from '../lib/supabaseClient';
 import './DoctorDashboard.css';
+import logo from '../assets/MediBridge_LogoClear.png'; // Make sure this path is correct
 
 interface Appointment {
   id: string;
@@ -41,7 +42,7 @@ const DoctorDashboard: React.FC = () => {
   const [consultationsDone, setConsultationsDone] = useState<number>(0);
   const [pendingMessages, setPendingMessages] = useState<number>(0);
 
-  const fetchDoctorDashboardData = async () => {
+  const fetchDoctorDashboardData = useCallback(async () => {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     const userId = session?.user?.id;
 
@@ -77,6 +78,7 @@ const DoctorDashboard: React.FC = () => {
           is_available: false
         });
       } else {
+        // Parse individual names from full_name as a fallback, if doctorData's name fields are empty
         const parseFullName = (fullName: string) => {
           const nameParts = fullName.trim().split(' ');
           if (nameParts.length === 1) {
@@ -167,7 +169,7 @@ const DoctorDashboard: React.FC = () => {
         .from('session_messages')
         .select('*', { count: 'exact' })
         .eq('receiver_id', userId)
-        .neq('sender_id', userId);
+        .neq('sender_id', userId); // Assuming doctor should not count messages they sent
 
       setPendingMessages(messagesCount || 0);
 
@@ -179,13 +181,14 @@ const DoctorDashboard: React.FC = () => {
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     }
-  };
+  }, []); // useCallback dependency array: fetchDoctorDashboardData has no external dependencies
 
   useEffect(() => {
     fetchDoctorDashboardData();
 
     const handleProfileUpdate = () => {
-      fetchDoctorDashboardData();
+      console.log('Doctor profile updated event received. Refetching dashboard data...');
+      fetchDoctorDashboardData(); // Re-fetch data to update the dashboard
     };
 
     window.addEventListener('doctorProfileUpdated', handleProfileUpdate);
@@ -193,14 +196,20 @@ const DoctorDashboard: React.FC = () => {
     return () => {
       window.removeEventListener('doctorProfileUpdated', handleProfileUpdate);
     };
-  }, []);
+  }, [fetchDoctorDashboardData]); // Dependency array for useEffect
 
   const handleSaveNotes = async () => {
-    if (!consultationNotes.trim() || !selectedPatientId) return;
+    if (!consultationNotes.trim() || !selectedPatientId) {
+      alert('Please select a patient and enter consultation notes.');
+      return;
+    }
 
     const { data: { session } } = await supabase.auth.getSession();
     const doctorId = session?.user?.id;
-    if (!doctorId) return;
+    if (!doctorId) {
+      alert('Doctor not logged in.');
+      return;
+    }
 
     const selectedAppt = appointments.find(appt => appt.patients?.user_id === selectedPatientId);
 
@@ -208,28 +217,40 @@ const DoctorDashboard: React.FC = () => {
       doctor_id: doctorId,
       patient_id: selectedPatientId,
       notes: consultationNotes,
-      appointment_id: selectedAppt?.id || null,
+      appointment_id: selectedAppt?.id || null, // Link to appointment if found
     });
 
     if (!insertError) {
       setConsultationNotes('');
+      alert('Consultation notes saved successfully!');
+      // Re-fetch consultations done count
       const { count: newConsultationsCount } = await supabase
         .from('consultation_notes')
         .select('*', { count: 'exact' })
         .eq('doctor_id', doctorId);
       setConsultationsDone(newConsultationsCount || 0);
+    } else {
+      console.error('Error saving consultation notes:', insertError.message);
+      alert('Failed to save notes: ' + insertError.message);
     }
   };
 
   const handleSearch = () => {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim()) {
+      alert('Please enter a patient name or ID to search.');
+      return;
+    }
     console.log(`Searching for patient: ${searchQuery}`);
+    // Implement actual search logic here, e.g., navigate to a patient records page
+    // or display search results within the dashboard.
   };
 
   const getDisplayName = () => {
+    // Prioritize individual first and last name from doctorInfo if available
     if (doctorInfo?.first_name && doctorInfo?.last_name) {
       return `${doctorInfo.first_name} ${doctorInfo.last_name}`;
     }
+    // Fallback to full_name, removing "Dr." prefix if present
     return doctorInfo?.full_name?.replace(/^Dr\.?\s*/, '') || 'Unknown';
   };
 
