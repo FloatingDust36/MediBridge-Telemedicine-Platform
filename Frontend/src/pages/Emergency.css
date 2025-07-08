@@ -41,7 +41,6 @@ body {
 .main-content-and-footer-wrapper {
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Crucial: This makes it expand to fill available space within .emergency-page-container */
   width: 100%; /* Ensure it takes full horizontal space */
 }
 

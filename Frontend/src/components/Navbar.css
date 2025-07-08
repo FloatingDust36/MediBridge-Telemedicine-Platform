@@ -98,7 +98,7 @@
 
 /* Active Navigation Item */
 .nav-links li.active {
-    color: #800000; /* Blue for active link */
+    color: #800000; /* Red for active link */
     font-weight: 600; /* Slightly bolder for active link */
 }
 
@@ -109,46 +109,50 @@
     right: 0;
     bottom: 5px; /* Adjust distance from text */
     height: 3px; /* Thickness of the underline */
-    background-color: #800000; /* Blue underline */
+    background-color: #800000; /* Red underline */
     border-radius: 1.5px; /* Rounded ends */
     transform: scaleX(1);
     transition: transform 0.3s ease-in-out;
 }
 
-/* Highlight for toggled popups */
-.login-toggle.active-popup,
-.register-toggle.active-popup {
-  color: #800000;
-  font-weight: 600;
-  /* You can add a subtle background or border too if desired */
+/* Example: For the main container of your login/register form (if it's a fixed general modal) */
+/* This block is for a generic fixed modal, the specific login/register popup has its own rules below */
+.login-register-form-container {
+    position: fixed; /* or absolute if within a scrollable parent */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centers horizontally and vertically */
+    z-index: 100; /* Ensure it's on top */
+    background: white; /* Or your form's background */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+
+    width: 90%; /* Take up most of the width on mobile */
+    max-width: 400px; /* Max width for larger screens */
+    /* Add overflow-y: auto; if content can exceed screen height */
 }
 
-.logout-button {
-  background-color: #dc3545; /* Red logout button */
-  color: white !important; /* Important to override default link color */
-  padding: 5px 15px;
-  border-radius: 5px;
-  font-weight: 600;
-  text-align: center;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-  line-height: normal; /* Override line-height from .nav-links li */
-}
-
-.logout-button:hover {
-  background-color: #c82333;
-  transform: translateY(-1px);
-}
-.logout-button:active {
-  transform: translateY(0);
+/* For the overlay behind the popup (optional but recommended) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
 }
 
 
-/* Login & Register Popup Base Styles */
+
+
+/* Login & Register Popup Base Styles (Desktop) */
 .login-popup,
 .register-popup {
   position: fixed; /* Keep fixed so they stay in place on scroll */
-  top: 70px; /* Navbar height (40px) + 30px margin */
-  right: 20px;
+  top: 70px; /* Navbar height (40px) + 30px margin - this is for desktop */
+  right: 20px; /* For desktop positioning */
   width: 320px; /* Slightly wider */
   background: #fff;
   padding: 1.5rem; /* More generous padding */
@@ -259,9 +263,6 @@
 
 
 /* Register Specific Styles - only unique elements */
-/* Removed .register-form .input-group margin-bottom as it's now covered by general .input-group */
-
-/* New style for the password strength info wrapper */
 .password-strength-info {
   margin-top: 4px; /* Tiny space between input and strength text */
   margin-bottom: 0px; /* Ensure no extra gap after it within the input-group */
@@ -269,20 +270,6 @@
 .password-strength-info p {
     margin: 0; /* Reset default paragraph margin */
 }
-
-
-/* The .checkbox-row was for the register's show password, but it's now replaced by .checkbox-label
-   If you have other checkbox rows that need different styling, redefine them.
-   For now, this rule might become redundant if all checkboxes use .checkbox-label.
-*/
-/* .register-form .checkbox-row {
-  display: flex;
-  align-items: center;
-  font-size: 0.9em;
-  margin-bottom: 0.8rem;
-  color: #6b7280;
-} */
-
 
 .role-selection {
   display: flex;
@@ -306,10 +293,10 @@
 }
 
 .role-btn.active {
-  background: #1075b9;
+  background: #1075b9; /* Changed to a more distinct blue for active role */
   color: white;
   border-color: #1075b9;
-  box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); /* Adjusted shadow color */
 }
 
 .role-btn:not(.active):hover {
@@ -365,14 +352,55 @@
     bottom: 0px;
   }
 
+  /* --- CRITICAL MOBILE POPUP CENTERING FIXES --- */
   .login-popup,
   .register-popup {
-    top: 100px;
-    right: 50%;
-    transform: translateX(50%);
-    width: 90%;
-    max-width: 350px;
-    padding: 1rem;
+    /* Use !important to override any potentially conflicting desktop or less specific rules */
+    position: fixed !important; /* Ensure it's fixed relative to the viewport */
+    top: 50% !important;        /* Move its top edge to the vertical center of the viewport */
+    left: 50% !important;       /* Move its left edge to the horizontal center of the viewport */
+    transform: translate(-50%, -50%) !important; /* Shift it back by half its own width and half its own height, ensuring perfect centering */
+
+    /* Override any conflicting positioning from desktop styles */
+    right: auto !important;     /* Ensure no 'right' property is pushing it */
+    margin: auto !important;    /* Clear any conflicting margins */
+    
+    width: 90% !important;      /* Make it take up 90% of the screen width */
+    max-width: 350px !important; /* Prevent it from becoming too wide on larger mobile screens */
+    
+    padding: 1rem !important; /* Maintain consistent internal padding for mobile */
+    
+    z-index: 1001 !important; /* Keep it on top of other elements */
+    
+    max-height: 90vh !important; /* Limit height to 90% of viewport height to prevent overflow on smaller screens */
+    overflow-y: auto !important; /* Add vertical scroll if content exceeds max-height */
+
+    /* Keep existing background, border, shadow for styling */
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Ensure elements inside the now-centered popup are also centered if they are block elements */
+  .login-form button[type="submit"],
+  .register-submit,
+  .social-icons {
+      width: 90% !important; /* Give them a specific width */
+      margin-left: auto !important;
+      margin-right: auto !important; 
+    /* Center block elements horizontally */
+  }
+  
+  .role-selection { /* Parent of Patient/Doctor buttons */
+      justify-content: center !important; /* Centers flex items horizontally */
+      width: 100% !important; /* Ensure it takes full width for centering to be effective */
+  }
+
+  /* Titles inside the popup */
+  .login-form h3,
+  .register-form h2 {
+      text-align: center !important; /* Ensure the titles are horizontally centered */
   }
 }
 
@@ -392,26 +420,29 @@
   .nav-links li {
     font-size: 14px;
   }
+  /* --- CRITICAL MOBILE POPUP CENTERING FIXES FOR VERY SMALL SCREENS --- */
   .login-popup,
   .register-popup {
-    top: 90px;
-    width: 95%;
+    top: 330px !important; /* Re-affirm vertical centering */
+    width: 95% !important; /* Allow it to take up slightly more width on very small screens */
+    /* All other !important centering properties from 768px media query will still apply */
   }
+  /* Inner elements also apply !important here if they're still off */
   .login-form h3,
   .register-form h2 {
-    font-size: 1.3em;
+    font-size: 1.3em !important;
   }
   .login-form input,
   .register-form input {
-    padding: 0.6rem;
+    padding: 0.6rem !important;
   }
   .login-form button[type="submit"],
   .register-submit {
-    font-size: 1em;
-    padding: 0.6rem;
+    font-size: 1em !important;
+    padding: 0.6rem !important;
   }
   .social-icons img {
-    width: 30px;
-    height: 30px;
+    width: 30px !important;
+    height: 30px !important;
   }
 }

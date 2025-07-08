@@ -1,8 +1,62 @@
+//AboutUs.tsx
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import Nave from '../assets/pfp/Nave.jpg';
+import Pestano from '../assets/pfp/Pestano.jpg';
+import Rubio from '../assets/pfp/Rubio.jpg';
+import Tindogan from '../assets/pfp/Tindogan.jpg';
+import Villamor from '../assets/pfp/Villamor.jpg';
+
 import './AboutUs.css'; // About Us specific CSS
+
+// Define a type for team members for better type safety
+interface TeamMember {
+  name: string;
+  role: string;
+  description: string; // NEW: Add description property
+  imageUrl: string;
+  githubUrl: string;
+}
+
+const teamMembers: TeamMember[] = [
+  {
+    name: 'Jesnar T. Tindogan',
+    role: 'Project Manager',
+    description: 'Leads the team with strategic vision and ensures project milestones are met efficiently.', // NEW: Description
+    imageUrl: Tindogan,
+    githubUrl: 'https://github.com/Jasner13',
+  },
+  {
+    name: 'John Michael B. Villamor',
+    role: 'Frontend Developer',
+    description: 'Crafts intuitive and responsive user interfaces, focusing on user experience and modern web design.', // NEW: Description
+    imageUrl: Villamor,
+    githubUrl: 'https://github.com/Villamormike',
+  },
+  {
+    name: 'John Peter D. Pestaño',
+    role: 'Backend Developer',
+    description: 'Builds robust and scalable server-side logic, ensuring data integrity and efficient API operations.', // NEW: Description
+    imageUrl: Pestano,
+    githubUrl: 'https://github.com/FloatingDust36',
+  },
+  {
+    name: 'Christopher John G. Rubio',
+    role: 'DevOps',
+    description: 'Manages deployment pipelines and infrastructure, ensuring seamless integration and continuous delivery.', // NEW: Description
+    imageUrl: Rubio,
+    githubUrl: 'https://github.com/Seijima08',
+  },
+  {
+    name: 'John Michael A. Nave',
+    role: 'Full Stack Developer',
+    description: 'Contributes across the entire stack, from database design to frontend implementation, ensuring cohesive development.', // NEW: Description
+    imageUrl: Nave,
+    githubUrl: 'https://github.com/GoldenSnek',
+  },
+];
 
 const About = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -17,6 +71,13 @@ const About = () => {
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     navigate('/patientdashboard');
+  };
+
+  // Function to handle opening GitHub profile
+  const handleCardClick = (githubUrl: string) => {
+    if (githubUrl) {
+      window.open(githubUrl, '_blank', 'noopener,noreferrer');
+    }
   };
 
   useEffect(() => {
@@ -64,26 +125,19 @@ const About = () => {
           <div className="about-section">
             <h2 className="section-title">Meet the Team</h2>
             <div className="team-grid">
-              <div className="team-member-card">
-                <span className="member-name">[Member 1 Name]</span>
-                <span className="member-role">Project Manager</span>
-              </div>
-              <div className="team-member-card">
-                <span className="member-name">[Member 2 Name]</span>
-                <span className="member-role">Frontend Developer</span>
-              </div>
-              <div className="team-member-card">
-                <span className="member-name">[Member 3 Name]</span>
-                <span className="member-role">Backend Developer</span>
-              </div>
-              <div className="team-member-card">
-                <span className="member-name">[Member 4 Name]</span>
-                <span className="member-role">DevOps</span>
-              </div>
-              <div className="team-member-card">
-                <span className="member-name">[Member 5 Name]</span>
-                <span className="member-role">Full Stack Developer</span>
-              </div>
+              {teamMembers.map((member, index) => (
+                <div
+                  key={index} // Using index as key is okay if list is static and not reordered
+                  className="team-member-card"
+                  onClick={() => handleCardClick(member.githubUrl)} // Make the card clickable
+                  title={`Visit ${member.name}'s GitHub`} // Add a tooltip
+                >
+                  <img src={member.imageUrl} alt={member.name} className="team-member-image" /> {/* Member image */}
+                  <span className="member-name">{member.name}</span>
+                  <span className="member-role">{member.role}</span>
+                  <p className="member-description">{member.description}</p> {/* NEW: Member description */}
+                </div>
+              ))}
             </div>
           </div>
         </div> {/* End about-content-wrapper */}

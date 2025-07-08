@@ -207,7 +207,7 @@ await loadMessages(userId);
       <div className="card-base messages-inbox-card">
         <h3 className="card-title">Inbox</h3>
         {messages.length === 0 ? (
-          <p>No messages found.</p>
+          <p style={{ color: 'black' }}>No messages found.</p>
         ) : (
           <>
             <input

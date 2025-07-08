@@ -1,6 +1,7 @@
 # ai_assistant/main.py
 
-from fastapi import FastAPI, HTTPException, Response, UploadFile, File, Form
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi.responses import StreamingResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
@@ -8,16 +9,14 @@ from ai_service import AIService
 import pdf_service
 import database_service as db
 
-# --- 1. Initialize FastAPI Application ---
 app = FastAPI(
     title="MediBridge AI Health Assistant API",
     description="API endpoints for the AI-powered virtual nurse.",
     version="1.0.0"
 )
 
-# --- CORS Middleware Configuration ---
 origins = [
-    "http://localhost:5173", # The address of our Vite frontend
+    "http://localhost:5173",
     "http://localhost",
 ]
 
@@ -29,10 +28,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- 2. In-Memory Session Storage ---
 active_sessions = {}
 
-# --- 3. Pydantic Data Models (Cleaned Up) ---
 class StartChatRequest(BaseModel):
     user_id: str
 
@@ -43,45 +40,44 @@ class SendMessageResponse(BaseModel):
     response: str
     esi_level: int | None
 
-# New, simpler model for the end chat request
 class EndChatRequest(BaseModel):
     session_id: str
 
-# --- 4. API Endpoints ---
-
 @app.post("/chat/start", response_model=StartChatResponse)
 async def start_chat(request: StartChatRequest):
-    """Starts a new chat session for a user."""
     service = AIService(user_id=request.user_id)
     if not service.session_id:
         raise HTTPException(status_code=500, detail="Failed to create a new session in the database.")
     active_sessions[service.session_id] = service
     return StartChatResponse(session_id=service.session_id)
 
-@app.post("/chat/message", response_model=SendMessageResponse)
-async def send_message(session_id: str = Form(...), user_message: str = Form(...), image: UploadFile = File(None)):
-    """Processes a user message, which can include an optional image upload."""
+@app.post("/chat/message")
+async def send_message(
+    session_id: str = Form(...),
+    user_message: str = Form(...),
+    image: UploadFile = File(None)
+):
     service = active_sessions.get(session_id)
+
     if not service:
-        raise HTTPException(status_code=404, detail="Session not found or has expired. Please start a new chat.")
-    
-    image_bytes = None
-    image_content_type = None
-    if image:
-        if not image.content_type or not image.content_type.startswith("image/"):
-            raise HTTPException(status_code=400, detail="Invalid file type. Only images are allowed.")
-        image_bytes = await image.read()
-        image_content_type = image.content_type
-        
-    result = service.process_user_message(user_message, image_bytes, image_content_type)
-    return SendMessageResponse(**result)
+        # ... (the code for restoring a session remains the same)
+        print(f"Session {session_id} not in memory. Attempting to restore from DB.")
+        session_details = db.get_session_details(session_id)
+        if session_details and 'messages' in session_details:
+            user_id = str(session_details["user_id"])
+            service = AIService.from_existing_session(user_id, session_id, session_details['messages'])
+            active_sessions[session_id] = service
+        else:
+            raise HTTPException(status_code=404, detail="Session not found in memory or database.")
+
+    image_bytes = await image.read() if image else None # Use await for reading the file
+    image_content_type = image.content_type if image else None
+
+    # Use await to call the new async service function
+    return await service.get_non_streamed_response(user_message, image_bytes, image_content_type)
 
 @app.post("/chat/end", status_code=204)
 async def end_chat(request: EndChatRequest):
-    """
-    Cleans up an active session from the server's memory.
-    The summary is now generated automatically when triage is complete.
-    """
     service = active_sessions.get(request.session_id)
     if service:
         del active_sessions[request.session_id]
@@ -90,7 +86,6 @@ async def end_chat(request: EndChatRequest):
 
 @app.get("/session/{session_id}", response_model=dict)
 async def get_session(session_id: str):
-    """Retrieves the core details for a single session, including all messages."""
     details = db.get_session_details(session_id)
     if not details:
         raise HTTPException(status_code=404, detail="Session not found.")
@@ -98,7 +93,6 @@ async def get_session(session_id: str):
 
 @app.get("/sessions/user/{user_id}", response_model=list[dict])
 async def get_user_sessions(user_id: str):
-    """Retrieves a list of all past chat sessions for a specific user."""
     sessions = db.get_sessions_for_user(user_id)
     if sessions is None:
         return []
@@ -106,7 +100,6 @@ async def get_user_sessions(user_id: str):
 
 @app.get("/session/{session_id}/summary/pdf")
 async def get_pdf_summary(session_id: str):
-    """Retrieves the summary for a given session and returns it as a PDF file."""
     session_details = db.get_session_details(session_id)
     if not session_details or not session_details.get("session_summary"):
         raise HTTPException(status_code=404, detail="Summary not found for this session. Complete the assessment first.")
@@ -121,13 +114,24 @@ async def get_pdf_summary(session_id: str):
 
 @app.delete("/session/{session_id}", status_code=204)
 async def delete_session(session_id: str):
-    """Deletes a specific chat session and all its associated messages."""
     if session_id in active_sessions:
         del active_sessions[session_id]
+
+    success = db.delete_session_from_db(session_id)
+
+    if not success:
+        raise HTTPException(
+            status_code=404, 
+            detail="Session not found or you do not have permission to delete it."
+        )
     
-    db.delete_session_from_db(session_id)
     return Response(status_code=204)
 
-# --- Run the Application ---
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+@app.post("/session/{session_id}/generate-title", status_code=202)
+async def generate_title(session_id: str):
+    service = active_sessions.get(session_id)
+    if not service:
+        raise HTTPException(status_code=404, detail="Session not found.")
+    import asyncio
+    asyncio.create_task(service.generate_and_save_title())
+    return {"message": "Title generation initiated."}

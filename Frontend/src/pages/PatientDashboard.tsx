@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
 import supabase from '../lib/supabaseClient';
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react"; // Added useCallback
 import "./PatientDashboard.css";
-import { color } from "framer-motion";
 import logo from '../assets/MediBridge_LogoClear.png';
 
 const PatientDashboardSection: React.FC<{ data: any }> = ({ data }) => {
@@ -82,61 +81,97 @@ const PrescriptionsSection: React.FC = () => {
   );
 };
 
-const MedicalHistorySection: React.FC = () => {
-  return (
-    <div className="card-base medical-history-section">
-      <h3 className="medical-history-title">🩺 Medical History</h3>
-      <div className="card-content">
-        <p>No medical history available.</p>
-      </div>
-    </div>
-  );
-};
-
 const PatientDashboard: React.FC = () => {
   const [patientData, setPatientData] = useState<any>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  useEffect(() => {
-    const fetchPatientData = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      const userId = session?.user?.id;
+  // Wrap fetchPatientData in useCallback to prevent re-creation on every render
+  const fetchPatientData = useCallback(async () => {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    const userId = session?.user?.id;
 
-      if (!userId) {
-        console.error('No user session found');
-        return;
-      }
+    if (!userId) {
+      console.error('No user session found');
+      setPatientData(null); // Clear data if no user session
+      return;
+    }
 
-      const { data: patient, error: patientError } = await supabase
-        .from('patients')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
+    // Fetch from 'users' first to get the full_name, email, and other user-related data
+    const { data: userProfile, error: userError } = await supabase
+      .from('users')
+      .select('full_name, email, phone_number, date_of_birth, address, role')
+      .eq('user_id', userId)
+      .single();
 
-      if (patientError) {
-        console.error('Error fetching patient:', patientError.message);
-        return;
-      }
+    if (userError) {
+      console.error('Error fetching user info:', userError.message);
+      setPatientData(null);
+      return;
+    }
 
-      const { data: user, error: userError } = await supabase
-        .from('users')
-        .select('full_name')
-        .eq('user_id', userId)
-        .single();
+    // Fetch from 'patients' for patient-specific data
+    const { data: patientDetails, error: patientError } = await supabase
+      .from('patients')
+      .select('first_name, last_name, middle_name, contact_number, emergency_contact, allergies')
+      .eq('user_id', userId)
+      .single();
 
-      if (userError) {
-        console.error('Error fetching user info:', userError.message);
-        return;
-      }
-
+    if (patientError) {
+      console.error('Error fetching patient details:', patientError.message);
+      // It's possible for a user to exist but not yet have a patient profile
+      // In this case, we still want to show what we have from the user table.
       setPatientData({
-        ...patient,
-        full_name: user.full_name,
+        user_id: userId,
+        full_name: userProfile?.full_name || '',
+        email: userProfile?.email || '',
+        phone_number: userProfile?.phone_number || '',
+        date_of_birth: userProfile?.date_of_birth || '',
+        address: userProfile?.address || '',
+        role: userProfile?.role || 'patient', // Default to patient if not explicitly set
+        // Default patient-specific fields if patientDetails is null
+        first_name: '',
+        last_name: '',
+        middle_name: '',
+        contact_number: userProfile?.phone_number || '', // Fallback to user's phone
+        emergency_contact: '',
+        allergies: '',
       });
-    };
+      return;
+    }
 
+    // Combine data from both tables
+    setPatientData({
+      user_id: userId,
+      full_name: userProfile?.full_name || '',
+      email: userProfile?.email || '',
+      phone_number: userProfile?.phone_number || '',
+      date_of_birth: userProfile?.date_of_birth || '',
+      address: userProfile?.address || '',
+      role: userProfile?.role || 'patient', // Default to patient
+      
+      first_name: patientDetails?.first_name || '',
+      last_name: patientDetails?.last_name || '',
+      middle_name: patientDetails?.middle_name || '',
+      contact_number: patientDetails?.contact_number || userProfile?.phone_number || '',
+      emergency_contact: patientDetails?.emergency_contact || '',
+      allergies: patientDetails?.allergies || '',
+    });
+  }, []); // Empty dependency array means this function is created once
+
+  useEffect(() => {
     fetchPatientData();
-  }, []);
+
+    // Listen for custom event to refetch data
+    const handleProfileUpdate = () => {
+      console.log('Patient profile updated event received. Refetching dashboard data...');
+      fetchPatientData();
+    };
+    window.addEventListener('patientProfileUpdated', handleProfileUpdate);
+
+    return () => {
+      window.removeEventListener('patientProfileUpdated', handleProfileUpdate);
+    };
+  }, [fetchPatientData]); // Re-run effect if fetchPatientData changes (though with useCallback it won't)
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -178,9 +213,6 @@ const PatientDashboard: React.FC = () => {
       </section>
       <section className="prescriptions-section card-margin-bottom">
         <PrescriptionsSection />
-      </section>
-      <section className="medical-history-section card-margin-bottom">
-        <MedicalHistorySection />
       </section>
     </div>
   );

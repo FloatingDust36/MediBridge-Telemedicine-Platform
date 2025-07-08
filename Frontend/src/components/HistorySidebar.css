@@ -2,7 +2,7 @@
 
 .history-sidebar {
   width: 260px;
-  background-color: #f8fafc; /* A slightly softer background */
+  background-color: #f8fafc;
   border-right: 1px solid #e2e8f0;
   flex-shrink: 0;
   display: flex;
@@ -33,7 +33,12 @@
 }
 
 .new-chat-button:hover {
-  background-color: #f8fafc;
+  background-color: #f1f5f9;
+}
+
+.new-chat-button:active {
+  transform: scale(0.98); /* Makes the button slightly smaller on click */
+  filter: brightness(0.95); /* Slightly darkens the button on click */
 }
 
 .session-list-container {
@@ -79,7 +84,7 @@
 }
 
 .session-item:hover {
-  background-color: transparent; /* The hover is on the container now */
+  background-color: transparent;
 }
 
 .session-item.active {
@@ -87,50 +92,72 @@
   color: white;
 }
 .session-item.active:hover {
-    background-color: #2563eb;
+  background-color: #2563eb;
 }
 
-.delete-session-button {
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
+/* --- NEW Action Icon Styles --- */
+
+.session-actions {
+  display: flex;
+  align-items: center;
+  /* Hide the action icons by default */
   visibility: hidden;
   opacity: 0;
-  transition: all 0.2s ease;
-  margin-right: 4px;
+  transition: opacity 0.2s ease;
+  padding-right: 4px;
 }
 
-.session-item-container:hover .delete-session-button {
+/* On hover of the entire session item container, show the action icons */
+.session-item-container:hover .session-actions {
   visibility: visible;
   opacity: 1;
 }
 
-.delete-session-button:hover {
-  background-color: #d1d9e0;
-  color: #374151;
+/* Shared style for both icon buttons */
+.download-session-button, .delete-session-button {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin-left: 2px;
 }
 
+.download-session-button:hover {
+  background-color: #dbeafe; /* Light blue */
+  color: #2563eb; /* Darker blue */
+}
+
+.delete-session-button:hover {
+  background-color: #fee2e2; /* Light red */
+  color: #b91c1c; /* Darker red */
+}
+
+
+/* --- Empty and Loading State Styles --- */
 .empty-list-message {
-    text-align: center;
-    padding: 20px;
-    font-size: 14px;
-    color: #64748b;
-    font-style: italic;
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  color: #64748b;
+  font-style: italic;
 }
 
 .skeleton-container {
-    padding-top: 20px;
+  padding-top: 20px;
 }
 
 .skeleton-item {
-    height: 40px;
-    background-color: #eef2f5;
-    border-radius: 6px;
-    margin-bottom: 7px;
-    animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  height: 40px;
+  background-color: #eef2f5;
+  border-radius: 6px;
+  margin-bottom: 7px;
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes pulse {

@@ -5,72 +5,56 @@ import supabase from '../lib/supabaseClient';
 
 const OAuthCallback = () => {
   const navigate = useNavigate();
+  
 
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-          const user = session.user;
-          const selectedRole = localStorage.getItem('selectedRole');
-          localStorage.removeItem('selectedRole');
+  const handleOAuthRedirect = async () => {
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession();
 
-          if (!selectedRole) {
-            console.warn('No selected role in localStorage');
-            navigate('/');
-            return;
-          }
+    if (error || !session) {
+      console.error('Session Error:', error?.message || 'No session found.');
+      navigate('/');
+      return;
+    }
 
-          // Save role in user metadata
-          await supabase.auth.updateUser({
-            data: { user_role: selectedRole },
-          });
+    const user = session.user;
+    const userId = user.id;
 
-          const userId = user.id;
+    // Check if user exists in your `users` table
+    const { data: existingUser, error: lookupError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
 
-          // Insert into users table
-          const fullName =
-          user.user_metadata?.full_name ||
-          user.user_metadata?.name ||
-          'Unnamed User'; // Ensure fallback always applies
+    if (lookupError || !existingUser) {
+      // ❌ Not registered — log out and redirect
+      await supabase.auth.signOut();
+      alert('This Google account is not registered in MediBridge.');
+      navigate('/');
+      return;
+    }
 
-          await supabase.from('users').upsert([
-  {
-          user_id: userId,
-          email: user.email,
-          full_name: fullName, // Use safe value
-          role: selectedRole,
-          created_at: new Date(),
-          updated_at: new Date(),
-          },
-          ]);
+    // ✅ User exists — proceed
+    const role = existingUser.role;
 
-          if (selectedRole === 'doctor') {
-            await supabase.from('doctors').upsert([
-              {
-                user_id: userId,
-                is_available: true,
-                consultation_fee: 0,
-              },
-            ]);
-            navigate('/completedoctorprofile');
-          } else if (selectedRole === 'patient') {
-            await supabase.from('patients').upsert([
-              {
-                user_id: userId,
-              },
-            ]);
-            navigate('/completepatientprofile');
-          } else {
-            navigate('/');
-          }
-        }
-      }
-    );
+    if (role === 'doctor') {
+      navigate('/doctordashboard');
+    } else if (role === 'patient') {
+      navigate('/patientdashboard');
+    } else if (role === 'admin') {
+      navigate('/admindashboard');
+    } else {
+      navigate('/');
+    }
+  };
 
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [navigate]);
+  handleOAuthRedirect();
+}, [navigate]);
+
 
   return <div>Signing you in, please wait...</div>;
 };

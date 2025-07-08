@@ -61,13 +61,44 @@ body {
   border-bottom: 5px solid #b33838;
   /* margin-top is no longer needed here if using .page-content-wrapper */
   /* min-height is set in Home.tsx inline style for demo, consider moving to CSS if consistent */
+
+  position: relative; /* <--- NEW: Make this the positioning context for absolute children */
+  overflow: hidden; /* <--- NEW: Crucial to hide parts of images during transition */
+}
+
+/* NEW: Styles for the cycling background image container */
+.hero-background-cycler {
+  position: absolute; /* <--- NEW: Position it absolutely within .hero-section */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 1; /* <--- NEW: Default opacity */
+  transition: opacity 1s ease-in-out; /* <--- NEW: Smooth fade transition */
+  z-index: 0; /* <--- NEW: Ensure it's behind the overlay and text */
+}
+
+/* Hero Overlay */
+.hero-overlay {
+  position: relative; /* <--- Changed from absolute to relative to simplify layering with z-index */
+  z-index: 1; /* <--- NEW: Ensure overlay is on top of hero-background-cycler */
+  width: 100%; /* Ensure it spans the width */
+  height: 100%; /* Ensure it spans the height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .hero-text {
   flex: 1;
   min-width: 300px;
   position: relative;
-  z-index: 1;
+  z-index: 2; /* <--- NEW: Ensure text is on top of the overlay */
   padding-right: 20px; /* Added for spacing on desktop */
 }
 
@@ -147,6 +178,55 @@ body {
   font-size: 0.95rem;
 }
 
+/* NEW: What is MediBridge section styles */
+.description {
+  background: #f0f5fa; /* A clean white background */
+  padding: 3rem 2rem; /* More vertical padding, consistent horizontal padding */
+  text-align: center;
+  width: 100%;
+  margin: 0 auto;
+  border-top: 5px solid #b33838; /* A subtle separator from the section above */
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); /* Soft shadow at the top */
+  flex: 1;
+}
+
+.description h2 {
+  font-size: 2rem;
+  color: #333; /* Darker text for headings */
+  margin-bottom: 1.5rem;
+}
+
+.description .desc {
+  max-width: 1200px; /* Limit width for readability */
+  margin: 0 auto; /* Center the content */
+  text-align: left; /* Align text left within its container */
+  color: #555; /* Slightly softer text color */
+  line-height: 1.6; /* Improve readability */
+  font-size: 1.1rem;
+}
+
+.description .desc h3 { /* Style for subheadings within the description */
+  color: #800000; /* Use your primary red color */
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+}
+
+.description .desc p { /* Style for paragraphs within the description */
+  margin-bottom: 1rem;
+}
+
+/* Add responsive adjustments within your existing media queries in Home.css */
+@media (max-width: 768px) {
+  /* ... existing media queries ... */
+  .description {
+    padding: 2rem 1rem; /* Adjust padding for smaller screens */
+  }
+  .description .desc {
+    font-size: 1rem; /* Adjust font size for readability */
+  }
+}
+
 /* Responsive adjustments for Home page content */
 @media (max-width: 768px) {
   .hero-section {
@@ -195,4 +275,85 @@ body {
   .page-content-wrapper {
     padding-top: 120px; /* Further adjustment for very small screens */
   }
+}
+/* Apply styles specifically for mobile screens */
+@media (max-width: 768px) {
+      /* ----- Step B: Center content within the panel ----- */
+
+    /* For the toggles (Register/Login text/buttons at the very top) */
+   /* Adjust this breakpoint if needed (common for mobile/tablet) */
+
+    .login-register-popup { /* Replace with the actual class/ID of your popup */
+        /* Core Centering Properties */
+        position: fixed; /* Ensures it's positioned relative to the viewport */
+        top: 50%;        /* Moves the top edge of the popup to the vertical center */
+        left: 50%;       /* Moves the left edge of the popup to the horizontal center */
+        transform: translate(-50%, -50%); /* Shifts the popup back by half its own width and half its own height, perfectly centering it */
+        
+        /* Ensure it's on top of other content */
+        z-index: 1000; 
+
+        /* Styling for the popup's appearance (adjust as per your design) */
+        background-color: white; /* The white background you see */
+        padding: 20px; /* Internal spacing */
+        border-radius: 8px; /* Rounded corners */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Soft shadow for "pop" effect */
+
+        /* Mobile Responsiveness for Width */
+        width: 90%;      /* Take up 90% of the screen width on mobile */
+        max-width: 350px; /* Prevent it from getting too wide on slightly larger mobile screens */
+        height: auto;    /* Adjust height based on content */
+        max-height: 90vh; /* Prevent it from exceeding viewport height on tall content */
+        overflow-y: auto; /* Add scroll if content is too tall */
+
+        /* If your popup is animated, ensure transitions are smooth */
+        transition: transform 0.3s ease-out, opacity 0.3s ease-out; /* Example transitions */
+    }
+
+    /* Optional: Overlay background (highly recommended for modals/popups) */
+    .modal-overlay { /* Add a div with this class behind your popup in HTML */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6); /* Dark, semi-transparent background */
+        z-index: 999; /* Just below the popup */
+    }
+
+    /* Additionally, ensure elements *inside* the popup are centered */
+    /* Based on your Home.tsx, your selected role buttons and register button. */
+    /* If they are not centered, you might need to apply these: */
+    .role-selection-buttons { /* Assuming this wraps Patient/Doctor buttons */
+        display: flex;
+        justify-content: center; /* Centers the buttons horizontally */
+        margin-top: 15px; /* Add some space above */
+        margin-bottom: 15px; /* Add some space below */
+    }
+
+    /* For individual block-level buttons like "Register" and "Sign in with Google" */
+    .register-button,
+    .google-signin-button { /* Use the actual classes of these buttons */
+        display: block; /* Make it a block element */
+        width: 85%; /* Adjust width as needed, often slightly less than 100% */
+        margin: 10px auto; /* Centers horizontally and adds vertical spacing */
+        text-align: center; /* Ensures text inside is centered */
+        padding: 12px 0; /* Add vertical padding */
+    }
+
+    /* For the Login/Register toggles at the very top of the popup */
+    .login-toggle,
+    .register-toggle {
+        /* Remove any 'float' or 'left' positioning that might be applied */
+        display: inline-block; /* Or flex on their parent */
+        margin: 0 10px; /* Add horizontal spacing between them */
+        /* If they are in a flex container, remove margin: 0 auto; from here */
+    }
+    /* If they are in a container, center that container's content */
+    .auth-panel-header { /* Example: parent of login-toggle and register-toggle */
+        display: flex;
+        justify-content: center; /* Centers children within this header */
+        width: 100%;
+    }
+
 }

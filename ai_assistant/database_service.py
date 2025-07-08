@@ -1,4 +1,4 @@
-# ai_assistant/database_service.py - Updated with new table names
+# ai_assistant/database_service.py
 
 import supabase
 import uuid
@@ -16,7 +16,6 @@ except Exception as e:
 def create_session(user_id: str) -> str | None:
     if not supabase_client: return None
     try:
-        # CHANGED to 'ai_sessions'
         response = supabase_client.table("ai_sessions").insert({"user_id": user_id}).execute()
         if response.data:
             session_id = response.data[0]['id']
@@ -30,7 +29,6 @@ def create_session(user_id: str) -> str | None:
 def log_message(session_id: str, sender: str, message_content: str, image_url: str | None = None):
     if not supabase_client: return
     try:
-        # CHANGED to 'ai_messages'
         supabase_client.table("ai_messages").insert({
             "session_id": session_id, "sender": sender,
             "message_content": message_content, "image_url": image_url
@@ -41,7 +39,6 @@ def log_message(session_id: str, sender: str, message_content: str, image_url: s
 def update_session_esi_level(session_id: str, esi_level: int):
     if not supabase_client: return
     try:
-        # CHANGED to 'ai_sessions'
         supabase_client.table("ai_sessions").update({"final_esi_level": esi_level}).eq("id", session_id).execute()
         print(f"Updated AI session {session_id} with ESI level {esi_level}.")
     except Exception as e:
@@ -50,10 +47,9 @@ def update_session_esi_level(session_id: str, esi_level: int):
 def update_session_summary(session_id: str, summary_text: str):
     if not supabase_client: return
     try:
-        # CHANGED to 'ai_sessions'
         supabase_client.table("ai_sessions").update({
             "session_summary": summary_text,
-            "has_summary": True # Also mark that a summary now exists
+            "has_summary": True
         }).eq("id", session_id).execute()
         print(f"Updated AI session {session_id} with summary.")
     except Exception as e:
@@ -62,36 +58,35 @@ def update_session_summary(session_id: str, summary_text: str):
 def get_session_details(session_id: str) -> dict | None:
     if not supabase_client: return None
     try:
-        # CHANGED to 'ai_sessions'
-        session_response = supabase_client.table("ai_sessions").select("session_summary, user_id, final_esi_level").eq("id", session_id).single().execute()
-        if not session_response.data: return None
+        session_response = supabase_client.table("ai_sessions").select(
+            "session_summary, user_id, final_esi_level"
+        ).eq("id", session_id).single().execute()
+
+        if not session_response.data:
+            return None
+
         session_data = session_response.data
 
-        # CHANGED to 'ai_messages'
-        messages_response = supabase_client.table("ai_messages").select("sender, message_content").eq("session_id", session_id).order("timestamp", desc=False).execute()
+        messages_response = supabase_client.table("ai_messages").select(
+            "sender, message_content, image_url"
+        ).eq("session_id", session_id).order("timestamp", desc=False).execute()
 
-        session_data['messages'] = [{"type": row['sender'], "text": row['message_content']} for row in messages_response.data]
+        session_data['messages'] = [
+            {"type": row['sender'], "text": row['message_content'], "imageUrl": row.get('image_url')} 
+            for row in messages_response.data
+        ]
+
         return session_data
     except Exception as e:
-        print(f"Error fetching AI session details: {e}")
+        print(f"Error fetching session details: {e}")
         return None
 
 def get_sessions_for_user(user_id: str) -> list[dict] | None:
     if not supabase_client: return None
     try:
-        # CHANGED to 'ai_sessions'
-        response = supabase_client.table("ai_sessions").select("id, created_at, session_summary, final_esi_level, has_summary").eq("user_id", user_id).order("created_at", desc=True).execute()
-
-        for session in response.data:
-            utc_dt = datetime.fromisoformat(session['created_at'])
-            local_tz = pytz.timezone("Asia/Manila")
-            local_dt = utc_dt.astimezone(local_tz)
-            formatted_date = local_dt.strftime('%b %d, %I:%M %p')
-
-            if session.get("session_summary"):
-                session["title"] = session["session_summary"][:40] + "..."
-            else:
-                session["title"] = formatted_date
+        response = supabase_client.table("ai_sessions").select(
+            "id, title, created_at, session_summary, final_esi_level, has_summary"
+            ).eq("user_id", user_id).order("created_at", desc=True).execute()
 
         return response.data
     except Exception as e:
@@ -101,14 +96,12 @@ def get_sessions_for_user(user_id: str) -> list[dict] | None:
 def delete_session_from_db(session_id: str) -> bool:
     if not supabase_client: return False
     try:
-        # CHANGED to 'ai_sessions'
         response = supabase_client.table("ai_sessions").delete().eq("id", session_id).execute()
         return bool(response.data)
     except Exception as e:
         print(f"Error deleting AI session: {e}")
         return False
 
-# The upload_image function does not need changes as it uses its own bucket.
 def upload_image(file_bytes: bytes, content_type: str) -> str | None:
     if not supabase_client: return None
     try:
@@ -119,3 +112,11 @@ def upload_image(file_bytes: bytes, content_type: str) -> str | None:
     except Exception as e:
         print(f"Error uploading image to Supabase Storage: {e}")
         return None
+    
+def update_session_title(session_id: str, title: str):
+    if not supabase_client: return
+    try:
+        supabase_client.table("ai_sessions").update({"title": title}).eq("id", session_id).execute()
+        print(f"Updated session {session_id} with new title.")
+    except Exception as e:
+        print(f"Error updating session title: {e}")

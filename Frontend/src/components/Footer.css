@@ -1,17 +1,14 @@
-/* footer.css or global.css */
+/* Frontend/src/components/Footer.css */
 .footer {
-  background: #e0e0e0;
+  background: rgba(224, 224, 224, 0.8); /* semi-transparent */
   text-align: center;
   font-size: 10px;
-  height: 30px; /* Keep fixed height if desired */
+  height: 30px;
   width: 100%;
-  margin-top: auto; /* This will push it to the bottom of its flex parent */
 }
 
 .footer p {
   color: #000;
-  /* Vertically center text if not already */
-  line-height: 30px; /* Matches footer height */
+  line-height: 30px;
   margin: 0;
-  margin-top: auto;
 }

@@ -185,32 +185,29 @@ body {
   margin: 5px 0 0 0;
 }
 
-/* --- FIXES FOR CONSULTATION NOTES SECTION --- */
+/* --- FIXED CONSULTATION NOTES SECTION --- */
 .add-consultation-notes.panel-box {
-    /* Ensure this specific panel is a flex column for its contents */
     display: flex;
     flex-direction: column;
-    /* Add a gap for consistent spacing between its children */
-    gap: 15px; /* Adjust as needed for visual appeal */
-    height: 400px;
-    padding: 20px; /* Ensure padding is consistent with other panels */
-   
+    gap: 20px;
+    padding: 20px;
+    height: auto;
 }
 
-.form-group {
-    /* Explicit column flex for form groups */
+.add-consultation-notes .form-group {
     display: flex;
     flex-direction: column;
-    width: 45%;
-    gap: 20px; /* Space between label and input */
-    margin-top: 50px; /* Space above each form group */
+    gap: 8px;
+    width: 100%;
+    margin: 0;
 }
 
-.form-group label {
+.add-consultation-notes .form-group label {
     display: block;
     font-weight: 500;
     color: #455a64;
     font-size: 0.95em;
+    margin-bottom: 5px;
 }
 
 .input-field {
@@ -222,26 +219,25 @@ body {
     box-sizing: border-box;
     background-color: #fcfcfc;
     color: #000000;
-    min-height: 44px; /* Standard input height for better appearance */
+    min-height: 44px;
     font-family: inherit;
 }
+
 .input-field2 {
-    width: 90%;
-    padding: 10px;
+    width: 100%;
+    padding: 12px;
     border: 1px solid #cfd8dc;
     border-radius: 4px;
     font-size: 1em;
     box-sizing: border-box;
     background-color: #fcfcfc;
     color: #000000;
-    min-height: 44px; /* Standard input height for better appearance */
+    min-height: 44px;
     font-family: inherit;
-   margin-top: -10px;
-    margin-left: 20px;
-
 }
 
-.input-field:focus {
+.input-field:focus,
+.input-field2:focus {
     outline: none;
     border-color: #800000;
     box-shadow: 0 0 0 2px rgba(128, 0, 0, 0.2);
@@ -253,9 +249,10 @@ body {
     resize: vertical;
     font-family: inherit;
     line-height: 1.4;
+    padding: 12px;
 }
 
-  .save-notes-button {
+.save-notes-button {
     padding: 12px 20px;
     background-color: #800000;
     color: white;
@@ -268,7 +265,7 @@ body {
     width: 100%;
     box-sizing: border-box;
     min-height: 44px;
-    margin-top: 260px;
+    margin-top: 10px;
 }
 
 .search-button {
@@ -296,6 +293,15 @@ body {
     background-color: #550000;
 }
 
+.save-notes-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.save-notes-button:disabled:hover {
+    background-color: #ccc;
+}
+
 /* Search patient records specific styles */
 .search-patient-records.panel-box {
     display: flex;
@@ -304,21 +310,7 @@ body {
 }
 
 .search-patient-records .input-field {
-    margin-bottom: 0; /* Remove any default margin, rely on gap */
-}
-
-/* Ensure consultation notes section maintains proper structure */
-.add-consultation-notes .form-group:last-of-type {
-    margin-top: 130px; /* Remove margin from the last form group */
-    width: 42%; /* Ensure it takes full width */
-    margin-left: 20px;
-}
-
-/* Fix any potential layout issues with the textarea */
-.add-consultation-notes .textarea-field {
-    width: 100%;
-    box-sizing: border-box;
-  
+    margin-bottom: 0;
 }
 
 /* Responsive adjustments */

@@ -1,4 +1,4 @@
-/* index.css or global.css */
+/* Frontend/src/index.css */
 
 /* Tailwind CSS directives - these must always be at the top */
 @tailwind base;
@@ -10,6 +10,14 @@
   .all-\[unset\] {
     all: unset;
   }
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Base layer for custom styles and overrides, after Tailwind's preflight */

@@ -1,8 +1,8 @@
-// src/App.tsx
+// Frontend/src/App.tsx
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'; // Import useNavigate
 import supabase from './lib/supabaseClient';
-
+import OAuthRegisterCallback from './pages/OAuthRegisterCallback';
 
 import Layout from './components/Layout'; // Ensure correct path for Layout
 
@@ -25,6 +25,8 @@ import PatientDashboard from './pages/PatientDashboard';
 import Appointments from "./pages/AppointmentsPage";
 import Messages from "./pages/MessagesPage";
 import Chatbot from "./pages/ChatbotPage";
+import PatientProfile from './pages/PatientProfile';
+import DoctorProfile from './pages/DoctorProfile';
 
 import AdminDashboard from './pages/AdminDashboard';
 
@@ -142,7 +144,7 @@ function App() {
         padding: '10px',
         borderRadius: '8px',
         boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-        display: 'flex',
+        display: 'none',
         flexDirection: 'column',
         gap: '5px',
         color: '#666'
@@ -190,13 +192,13 @@ function App() {
             }
           />
          <Route
-  path="completepatientprofile"
-  element={
-    <ProtectedRoute allowedRoles={['guest', 'patient']}>
-      <CompletePatientProfile />
-    </ProtectedRoute>
-  }
-/>
+           path="completepatientprofile"
+           element={
+            <ProtectedRoute allowedRoles={['guest', 'patient']}>
+               <CompletePatientProfile />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Protected Dashboard and Related Routes */}
           <Route
@@ -215,6 +217,14 @@ function App() {
               </ProtectedRoute> 
             }
           />
+          <Route
+            path="doctorprofile"
+            element={
+              <ProtectedRoute allowedRoles={['doctor']}>
+                <DoctorProfile />
+              </ProtectedRoute>
+            }
+            />
           <Route
             path="summary"
             element={
@@ -248,6 +258,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="patientprofile"
+            element={
+              <ProtectedRoute allowedRoles={['patient']}>
+                <PatientProfile />
+              </ProtectedRoute>
+            }
+            /> {/* Patient Profile route */}
 
           {/* Messages accessible by both doctor and patient */}
           <Route
@@ -280,8 +298,9 @@ function App() {
           <Route path="*" element={<div>404 - Page Not Found</div>} />
         </Route>
 
-         {/* ✅ Google OAuth callback route */}
+         {/* Google OAuth callback route */}
          <Route path="/oauth-callback" element={<OAuthCallback />} />
+         <Route path="/oauth-register-callback" element={<OAuthRegisterCallback />} />
       </Routes>
     </>
   );

@@ -25,7 +25,7 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Lighter shadow than service blocks */
   padding: 30px;
   margin-bottom: 25px;
-  max-width: 900px; /* Max width for content sections */
+  max-width: 80%; /* Max width for content sections */
   width: 90%; /* Responsive width */
   box-sizing: border-box;
 }
@@ -45,9 +45,10 @@
 
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid for team members */
+  grid-template-columns: 1fr; /* CHANGED: Forces one card per row */
   gap: 20px;
   margin-top: 20px;
+  justify-items: center; /* Centers each grid item horizontally within its cell */
 }
 
 .team-member-card {
@@ -58,9 +59,28 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start; /* Align text to the left */
-  height: 90px; /* Fixed height for consistency */
+  align-items: center; /* Center content horizontally within the card */
+  height: auto; /* Allow height to adjust based on content including image and description */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow for cards */
+  cursor: pointer; /* Indicate that the card is clickable */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth hover effect */
+  max-width: 98%; /* Optional: Limit card width for better aesthetics on larger screens */
+  width: 100%; /* Ensure it takes full width of its grid cell */
+}
+
+.team-member-card:hover {
+  background-color: #f0f5fa;
+  transform: translateY(-5px); /* Lift card slightly on hover */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* More pronounced shadow on hover */
+}
+
+.team-member-image {
+  width: 80px; /* Adjust image size as needed */
+  height: 80px; /* Adjust image size as needed */
+  border-radius: 50%; /* Make image circular */
+  object-fit: cover; /* Ensure image covers the area without distortion */
+  margin-bottom: 15px; /* Space between image and name */
+  border: 2px solid #b33838; /* Optional: border around the image */
 }
 
 .member-name {
@@ -68,12 +88,25 @@
   font-size: 1.1rem;
   color: #333;
   margin-bottom: 5px;
+  text-align: center; /* Center name */
 }
 
 .member-role {
   font-size: 0.9rem;
   color: #777;
+  text-align: center; /* Center role */
+  margin-bottom: 10px; /* Space between role and new description */
 }
+
+/* NEW: Styles for the member description */
+.member-description {
+  font-size: 0.95rem;
+  color: #666;
+  text-align: center; /* Center the description text */
+  line-height: 1.4;
+  margin-top: 0; /* Reset default paragraph margin */
+}
+
 
 /* Media queries for responsiveness */
 @media (max-width: 768px) {
@@ -91,7 +124,7 @@
   }
 
   .team-grid {
-    grid-template-columns: 1fr; /* Single column on smaller screens for team members */
+    grid-template-columns: 1fr; /* Already 1fr, but good to keep explicit */
   }
 
   .team-member-card {
@@ -117,5 +150,8 @@
 
   .section-text {
     font-size: 0.9rem;
+  }
+  .member-description {
+    font-size: 0.9rem; /* Adjust for smaller screens */
   }
 }
