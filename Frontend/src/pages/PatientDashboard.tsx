@@ -8,9 +8,8 @@ interface AppointmentItem {
   doctorName: string;
   date: string;
   time: string;
-  isToday: boolean; // ← Add this
+  isToday: boolean;
 }
-
 
 const PatientDashboardSection: React.FC<{ data: any }> = ({ data }) => {
   if (!data) return <div style={{ color: 'black' }}>Loading patient info...</div>;
@@ -29,39 +28,6 @@ const PatientDashboardSection: React.FC<{ data: any }> = ({ data }) => {
         <p><strong>Contact:</strong> {data.contact_number}</p>
         <p><strong>Emergency Contact:</strong> {data.emergency_contact}</p>
         <p><strong>Allergies:</strong> {data.allergies || 'None reported'}</p>
-      </div>
-    </div>
-  );
-};
-
-const NotesSection: React.FC = () => {
-  const [patientNotes, setPatientNotes] = useState<string[]>([]);
-  const [newNote, setNewNote] = useState("");
-
-  const handleAddNote = () => {
-    if (newNote.trim() !== "") {
-      setPatientNotes([...patientNotes, newNote.trim()]);
-      setNewNote("");
-    }
-  };
-
-  return (
-    <div className="card-base notes-section">
-      <h3 className="notes-title">📝 Patient Notes</h3>
-      <div className="card-content">
-        <ul className="notes-list">
-          {patientNotes.map((note, index) => (
-            <li key={index}>{note}</li>
-          ))}
-        </ul>
-        <textarea
-          className="add-note-textarea"
-          placeholder="Add a new note..."
-          value={newNote}
-          onChange={(e) => setNewNote(e.target.value)}
-          rows={3}
-        ></textarea>
-        <button className="add-note-button" onClick={handleAddNote}>Add Note</button>
       </div>
     </div>
   );
@@ -105,27 +71,32 @@ const ConsultationAppointmentsSection: React.FC = () => {
         console.error("Error fetching appointments:", error.message);
         setAppointments([]);
       } else {
-         const mapped = data.map((app: any) => {
-          const startTime = new Date(app.start_time);
+        const mapped = data.map((app: any) => {
+          const start = new Date(app.start_time);
           const today = new Date();
-
           const isToday =
-            startTime.getFullYear() === today.getFullYear() &&
-            startTime.getMonth() === today.getMonth() &&
-            startTime.getDate() === today.getDate();
+            start.getFullYear() === today.getFullYear() &&
+            start.getMonth() === today.getMonth() &&
+            start.getDate() === today.getDate();
 
           return {
             id: app.id,
-            doctorName: app.doctors?.users?.full_name ? `Dr. ${app.doctors.users.full_name}` : 'Unknown Doctor',
-            date: startTime.toLocaleDateString('en-US', {
-              month: 'long', day: 'numeric', year: 'numeric'
+            doctorName: app.doctors?.users?.full_name
+              ? `Dr. ${app.doctors.users.full_name}`
+              : 'Unknown Doctor',
+            date: start.toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
             }),
-            time: startTime.toLocaleTimeString([], {
-              hour: '2-digit', minute: '2-digit'
+            time: start.toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
             }),
-            isToday: isToday
+            isToday,
           };
         });
+
         setAppointments(mapped);
       }
 
@@ -143,28 +114,19 @@ const ConsultationAppointmentsSection: React.FC = () => {
           <p>Loading appointments...</p>
         ) : appointments.length > 0 ? (
           <ul className="appointments-list">
-          {appointments.map((app) => (
-            <li key={app.id} className="appointment-item">
-              <strong>{app.doctorName}</strong><br />
-              {app.date} – {app.time}
-              {app.isToday && <span className="today-indicator"> •Today</span>}
-            </li>
-          ))}
-        </ul>
+            {appointments.map((app) => (
+              <li key={app.id} className="appointment-item">
+                <strong>{app.doctorName}</strong><br />
+                {app.date} – {app.time}
+                {app.isToday && (
+                  <span className="today-indicator">• Today</span>
+                )}
+              </li>
+            ))}
+          </ul>
         ) : (
           <p>No appointments to display.</p>
         )}
-      </div>
-    </div>
-  );
-};
-
-const PrescriptionsSection: React.FC = () => {
-  return (
-    <div className="card-base prescriptions-section">
-      <h3 className="prescriptions-title">💊 Prescriptions</h3>
-      <div className="card-content">
-        <p>No prescriptions found.</p>
       </div>
     </div>
   );
@@ -285,14 +247,9 @@ const PatientDashboard: React.FC = () => {
       <section className="dashboard-section card-margin-bottom">
         <PatientDashboardSection data={patientData} />
       </section>
-      <section className="notes-section card-margin-bottom">
-        <NotesSection />
-      </section>
+
       <section className="consultation-section card-margin-bottom">
         <ConsultationAppointmentsSection />
-      </section>
-      <section className="prescriptions-section card-margin-bottom">
-        <PrescriptionsSection />
       </section>
     </div>
   );
