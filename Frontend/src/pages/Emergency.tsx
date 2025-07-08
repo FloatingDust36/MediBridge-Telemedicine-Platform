@@ -122,14 +122,10 @@ const LocationMarker: React.FC<{
     const query = `
       [out:json];
       (
-        node(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[amenity=hospital];
-        node(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[healthcare=hospital];
-        node(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[amenity=doctors];
-        node(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[healthcare=doctor];
-        way(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[amenity=hospital];
-        way(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[healthcare=hospital];
-        way(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[amenity=doctors];
-        way(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[healthcare=doctor];
+        node(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[amenity~"^(hospital|clinic)$"];
+        node(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[healthcare~"^(hospital|clinic|doctor)$"];
+        way(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[amenity~"^(hospital|clinic)$"];
+        way(around:${radiusKm * 1000}, ${centerLat}, ${centerLng})[healthcare~"^(hospital|clinic|doctor)$"];
       );
       out body;
       >;
