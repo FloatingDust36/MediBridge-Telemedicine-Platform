@@ -31,15 +31,9 @@ interface DoctorInfo {
 
 const DoctorDashboard: React.FC = () => {
   const [doctorInfo, setDoctorInfo] = useState<DoctorInfo | null>(null);
-  const [selectedPatient, setSelectedPatient] = useState<string>('');
-  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
-  const [consultationNotes, setConsultationNotes] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState<string>('');
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [patientList, setPatientList] = useState<{ name: string; id: string }[]>([]);
   const [currentDate, setCurrentDate] = useState<string>('');
   const [consultationsDone, setConsultationsDone] = useState<number>(0);
-  const [pendingMessages, setPendingMessages] = useState<number>(0);
 
   const fetchDoctorDashboardData = async () => {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -67,7 +61,6 @@ const DoctorDashboard: React.FC = () => {
         .single<DoctorWithUser>();
 
       if (doctorError || !doctorData) {
-        console.error('Error fetching doctor info:', doctorError?.message);
         setDoctorInfo({
           full_name: 'Dr. Unknown',
           first_name: 'Unknown',
@@ -141,35 +134,9 @@ const DoctorDashboard: React.FC = () => {
           } : null,
         }));
         setAppointments(formattedAppts);
-
-        const patientListData = formattedAppts
-          .filter(appt => appt.patients)
-          .map(appt => ({
-            name: `${appt.patients?.first_name} ${appt.patients?.last_name}`,
-            id: appt.patients?.user_id || '',
-          }));
-        setPatientList(patientListData);
-
-        if (patientListData.length > 0) {
-          setSelectedPatient(patientListData[0].name);
-          setSelectedPatientId(patientListData[0].id);
-        }
       }
 
-      const { count: consultationsCount } = await supabase
-        .from('consultation_notes')
-        .select('*', { count: 'exact' })
-        .eq('doctor_id', userId);
-
-      setConsultationsDone(consultationsCount || 0);
-
-      const { count: messagesCount } = await supabase
-        .from('session_messages')
-        .select('*', { count: 'exact' })
-        .eq('receiver_id', userId)
-        .neq('sender_id', userId);
-
-      setPendingMessages(messagesCount || 0);
+      setConsultationsDone(0); // Placeholder
 
       const formattedDate = new Date().toLocaleDateString('en-US', {
         weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
@@ -183,48 +150,7 @@ const DoctorDashboard: React.FC = () => {
 
   useEffect(() => {
     fetchDoctorDashboardData();
-
-    const handleProfileUpdate = () => {
-      fetchDoctorDashboardData();
-    };
-
-    window.addEventListener('doctorProfileUpdated', handleProfileUpdate);
-
-    return () => {
-      window.removeEventListener('doctorProfileUpdated', handleProfileUpdate);
-    };
   }, []);
-
-  const handleSaveNotes = async () => {
-    if (!consultationNotes.trim() || !selectedPatientId) return;
-
-    const { data: { session } } = await supabase.auth.getSession();
-    const doctorId = session?.user?.id;
-    if (!doctorId) return;
-
-    const selectedAppt = appointments.find(appt => appt.patients?.user_id === selectedPatientId);
-
-    const { error: insertError } = await supabase.from('consultation_notes').insert({
-      doctor_id: doctorId,
-      patient_id: selectedPatientId,
-      notes: consultationNotes,
-      appointment_id: selectedAppt?.id || null,
-    });
-
-    if (!insertError) {
-      setConsultationNotes('');
-      const { count: newConsultationsCount } = await supabase
-        .from('consultation_notes')
-        .select('*', { count: 'exact' })
-        .eq('doctor_id', doctorId);
-      setConsultationsDone(newConsultationsCount || 0);
-    }
-  };
-
-  const handleSearch = () => {
-    if (!searchQuery.trim()) return;
-    console.log(`Searching for patient: ${searchQuery}`);
-  };
 
   const getDisplayName = () => {
     if (doctorInfo?.first_name && doctorInfo?.last_name) {
@@ -241,11 +167,12 @@ const DoctorDashboard: React.FC = () => {
           Specialization: {doctorInfo?.specialization || 'General'} |
           Status: {doctorInfo?.is_available ? 'Available' : 'Unavailable'}
         </p>
-        <p>Manage your appointments, view patient records, and conduct consultations.</p>
+        <p>Manage your appointments and view your daily schedule.</p>
         <span className="current-date">{currentDate}</span>
       </div>
 
-      <div className="summary-cards">
+      {/* Summary Cards */}
+      <div className="summary-cards full-width-summary">
         <div className="card">
           <h3>Appointments Today</h3>
           <p className="card-value">{appointments.length}</p>
@@ -254,95 +181,26 @@ const DoctorDashboard: React.FC = () => {
           <h3>Consultations Done</h3>
           <p className="card-value">{consultationsDone}</p>
         </div>
-        <div className="card">
-          <h3>Pending Messages</h3>
-          <p className="card-value">{pendingMessages}</p>
-        </div>
       </div>
 
-      <div className="main-sections">
-        <div className="section-left">
-          <div className="today-appointments panel-box">
-            <h2>Today's Appointments</h2>
-            {appointments.length > 0 ? (
-              appointments.map((appt) => (
-                <div className="appointment-item" key={appt.id}>
-                  <p className="patient-name">
-                    Patient: {appt.patients?.first_name} {appt.patients?.last_name}
-                  </p>
-                  <p className="appointment-time">
-                    {new Date(appt.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -
-                    {new Date(appt.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p>No appointments for today.</p>
-            )}
-          </div>
-
-          <div className="add-consultation-notes panel-box">
-            <h2>Add Patient Consultation Notes</h2>
-            <div className="form-group">
-              <label htmlFor="select-patient">Select Patient</label>
-              <select
-                id="select-patient"
-                className="input-field2"
-                value={selectedPatient}
-                onChange={(e) => {
-                  const selectedName = e.target.value;
-                  setSelectedPatient(selectedName);
-                  const patient = patientList.find(p => p.name === selectedName);
-                  setSelectedPatientId(patient ? patient.id : null);
-                }}
-              >
-                {patientList.length > 0 ? (
-                  patientList.map((patient, idx) => (
-                    <option value={patient.name} key={idx}>{patient.name}</option>
-                  ))
-                ) : (
-                  <option value="">No patients available</option>
-                )}
-              </select>
+      {/* Appointments Section */}
+      <div className="panel-box full-width-appointments">
+        <h2>Today's Appointments</h2>
+        {appointments.length > 0 ? (
+          appointments.map((appt) => (
+            <div className="appointment-item" key={appt.id}>
+              <p className="patient-name">
+                Patient: {appt.patients?.first_name} {appt.patients?.last_name}
+              </p>
+              <p className="appointment-time">
+                {new Date(appt.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -
+                {new Date(appt.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </p>
             </div>
-
-            <div className="form-group">
-              <label htmlFor="consultation-details">Consultation Details</label>
-              <textarea
-                id="consultation-details"
-                className="input-field textarea-field"
-                placeholder="Enter consultation details, symptoms, diagnosis, treatment plan..."
-                value={consultationNotes}
-                onChange={(e) => setConsultationNotes(e.target.value)}
-                rows={5}
-              />
-            </div>
-
-            <button
-              className="save-notes-button"
-              onClick={handleSaveNotes}
-              disabled={!consultationNotes.trim() || !selectedPatientId}
-            >
-              Save Notes
-            </button>
-          </div>
-        </div>
-
-        <div className="section-right">
-          <div className="search-patient-records panel-box">
-            <h2>Search Patient Records</h2>
-            <input
-              type="text"
-              placeholder="Enter patient name or ID"
-              className="input-field"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button className="search-button" onClick={handleSearch}>
-              Search
-            </button>
-          </div>
-        </div>
+          ))
+        ) : (
+          <p>No appointments for today.</p>
+        )}
       </div>
     </div>
   );
