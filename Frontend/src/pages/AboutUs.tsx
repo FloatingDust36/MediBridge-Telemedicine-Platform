@@ -1,21 +1,20 @@
-//AboutUs.tsx
-import { AnimatePresence, motion } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Nave from '../assets/pfp/Nave.jpg';
 import Pestano from '../assets/pfp/Pestano.jpg';
 import Rubio from '../assets/pfp/Rubio.jpg';
 import Tindogan from '../assets/pfp/Tindogan.jpg';
 import Villamor from '../assets/pfp/Villamor.jpg';
+import GroupPhoto from '../assets/pfp/group.jpg'; // Make sure this file exists!
+import GroupPhoto2 from '../assets/pfp/group2.jpg';
 
-import './AboutUs.css'; // About Us specific CSS
+import './AboutUs.css';
 
-// Define a type for team members for better type safety
 interface TeamMember {
   name: string;
   role: string;
-  description: string; // NEW: Add description property
+  description: string;
   imageUrl: string;
   githubUrl: string;
 }
@@ -24,35 +23,35 @@ const teamMembers: TeamMember[] = [
   {
     name: 'Jesnar T. Tindogan',
     role: 'Project Manager',
-    description: 'Leads the team with strategic vision and ensures project milestones are met efficiently.', // NEW: Description
+    description: 'Leads the team with strategic vision and ensures project milestones are met efficiently.',
     imageUrl: Tindogan,
     githubUrl: 'https://github.com/Jasner13',
   },
   {
     name: 'John Michael B. Villamor',
     role: 'Frontend Developer',
-    description: 'Crafts intuitive and responsive user interfaces, focusing on user experience and modern web design.', // NEW: Description
+    description: 'Crafts intuitive and responsive user interfaces, focusing on user experience and modern web design.',
     imageUrl: Villamor,
     githubUrl: 'https://github.com/Villamormike',
   },
   {
     name: 'John Peter D. Pestaño',
     role: 'Backend Developer',
-    description: 'Builds robust and scalable server-side logic, ensuring data integrity and efficient API operations.', // NEW: Description
+    description: 'Builds robust and scalable server-side logic, ensuring data integrity and efficient API operations.',
     imageUrl: Pestano,
     githubUrl: 'https://github.com/FloatingDust36',
   },
   {
     name: 'Christopher John G. Rubio',
     role: 'DevOps',
-    description: 'Manages deployment pipelines and infrastructure, ensuring seamless integration and continuous delivery.', // NEW: Description
+    description: 'Manages deployment pipelines and infrastructure, ensuring seamless integration and continuous delivery.',
     imageUrl: Rubio,
     githubUrl: 'https://github.com/Seijima08',
   },
   {
     name: 'John Michael A. Nave',
     role: 'Full Stack Developer',
-    description: 'Contributes across the entire stack, from database design to frontend implementation, ensuring cohesive development.', // NEW: Description
+    description: 'Contributes across the entire stack, from database design to frontend implementation, ensuring cohesive development.',
     imageUrl: Nave,
     githubUrl: 'https://github.com/GoldenSnek',
   },
@@ -61,19 +60,15 @@ const teamMembers: TeamMember[] = [
 const About = () => {
   const [showLogin, setShowLogin] = useState(false);
   const loginRef = useRef<HTMLDivElement>(null);
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const toggleLogin = () => {
-    setShowLogin(prev => !prev);
-  };
+  const toggleLogin = () => setShowLogin(prev => !prev);
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     navigate('/patientdashboard');
   };
 
-  // Function to handle opening GitHub profile
   const handleCardClick = (githubUrl: string) => {
     if (githubUrl) {
       window.open(githubUrl, '_blank', 'noopener,noreferrer');
@@ -96,12 +91,9 @@ const About = () => {
   }, []);
 
   return (
-    <div className="about-page-container"> {/* Consistent naming: about-page-container */}
-
-      {/* This is the main flex container that holds all scrollable content and the footer */}
+    <div className="about-page-container">
       <div className="main-content-and-footer-wrapper">
-        {/* Main Page Content Wrapper - This div ensures content sits below fixed navbar */}
-        <div className="about-content-wrapper"> {/* This holds your dynamic content */}
+        <div className="about-content-wrapper">
           <h1 className="page-title">About Us Page</h1>
 
           <div className="about-section">
@@ -124,25 +116,37 @@ const About = () => {
 
           <div className="about-section">
             <h2 className="section-title">Meet the Team</h2>
+            <p className="section-text">BS Computer Engineering - 3rd Year</p>
             <div className="team-grid">
               {teamMembers.map((member, index) => (
                 <div
-                  key={index} // Using index as key is okay if list is static and not reordered
+                  key={index}
                   className="team-member-card"
-                  onClick={() => handleCardClick(member.githubUrl)} // Make the card clickable
-                  title={`Visit ${member.name}'s GitHub`} // Add a tooltip
+                  onClick={() => handleCardClick(member.githubUrl)}
+                  title={`Visit ${member.name}'s GitHub`}
                 >
-                  <img src={member.imageUrl} alt={member.name} className="team-member-image" /> {/* Member image */}
+                  <img src={member.imageUrl} alt={member.name} className="team-member-image" />
                   <span className="member-name">{member.name}</span>
                   <span className="member-role">{member.role}</span>
-                  <p className="member-description">{member.description}</p> {/* NEW: Member description */}
+                  <p className="member-description">{member.description}</p>
                 </div>
               ))}
             </div>
           </div>
-        </div> {/* End about-content-wrapper */}
-      </div> {/* End main-content-and-footer-wrapper */}
-    </div> // End about-page-container
+
+          <div className="about-section group-photo-section">
+  <h2 className="section-title">We are BBCpE - Big Brain Computer Engineers</h2>
+  <p className="section-text">Below are team pictures proudly representing our group.</p>
+
+  <div className="group-photo-gallery">
+    <img src={GroupPhoto} alt="Group Photo 1" className="group-photo" />
+    <img src={GroupPhoto2} alt="Group Photo 2" className="group-photo" />
+  </div>
+</div>
+
+        </div>
+      </div>
+    </div>
   );
 };
 
