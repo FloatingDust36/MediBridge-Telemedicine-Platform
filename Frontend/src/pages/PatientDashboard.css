@@ -1,6 +1,3 @@
-/* src/pages/PatientDashboard.css */
-
-/* General */
 body {
     margin: 0;
     font-family: "Segoe UI", sans-serif;
@@ -18,12 +15,12 @@ body {
     background-color: #e6e9ed;
 }
 
-/* Main Content Area - Adjust padding-top to clear fixed navbar */
+
 .main-content-area {
     padding: 20px 30px;
     width: 100%;
     box-sizing: border-box;
-    padding-top: 60px; /* Space for the fixed navbar (navbar height + some margin) */
+    padding-top: 60px; 
 }
 
 .top-info-bar {
@@ -50,7 +47,7 @@ body {
     margin-bottom: 10px;
 }
 
-/* Make only the profile image container clickable */
+
 .clickable-profile-pic {
     cursor: pointer;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
@@ -105,7 +102,7 @@ body {
     margin-top: 5px;
 }
 
-/* Card Base Styles (for all dashboard sections) */
+
 .card-base {
     background-color: white;
     border-radius: 8px;
@@ -123,7 +120,7 @@ body {
     margin-bottom: 25px;
 }
 
-/* Common Header/Title Styling for all Sections (inside cards) */
+
 .card-base h3 {
     font-family: 'Segoe UI', sans-serif;
     font-weight: 600;
@@ -133,7 +130,7 @@ body {
     margin-bottom: 15px;
 }
 
-/* Common List Item Styling for all Sections */
+
 .card-base ul {
     list-style: none;
     padding-left: 0;
@@ -151,7 +148,7 @@ body {
 }
 
 
-/* --- Styles specific to PatientDashboardSection --- */
+
 .patient-dashboard-section-content p {
     margin-bottom: 8px;
     font-size: 15px;
@@ -162,7 +159,7 @@ body {
     font-weight: 600;
 }
 
-/* --- Styles specific to ConsultationAppointmentsSection --- */
+
 .consultation-section h4 {
     font-size: 1.1em;
     color: #333;
@@ -184,7 +181,7 @@ body {
     color: #333;
 }
 
-/* --- Modal Styles (Updated for Profile Picture) --- */
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -204,13 +201,13 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     width: 90%;
-    max-width: 400px; /* Smaller max-width for picture modal */
+    max-width: 400px;
     max-height: 80vh;
     overflow-y: auto;
     position: relative;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center content for the pic modal */
+    align-items: center; 
 }
 
 .modal-content h2 {
@@ -243,7 +240,7 @@ body {
 .file-input {
     margin-bottom: 20px;
     width: 100%;
-    text-align: center; /* Center the input visually */
+    text-align: center;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -251,12 +248,12 @@ body {
 }
 
 .modal-actions {
-    margin-top: 20px; /* Reduced margin from previous, as no form fields */
+    margin-top: 20px;
     text-align: right;
     display: flex;
     justify-content: flex-end;
     gap: 10px;
-    width: 100%; /* Ensure buttons span full width of modal content */
+    width: 100%;
 }
 
 .modal-actions button {
@@ -334,8 +331,19 @@ body {
     .card-base p, .card-base li {
         font-size: 14px;
     }
-    .notes-section .add-note-button {
-        font-size: 14px;
-        padding: 8px 12px;
-    }
+
+   
 }
+
+  .today-indicator {
+    color: red;
+    font-weight: bold;
+    margin-left: 8px;
+    animation: blink 1.2s infinite;
+  }
+
+  @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+  }
