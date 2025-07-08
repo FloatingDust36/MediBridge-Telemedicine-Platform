@@ -4,7 +4,7 @@ import supabase from '../lib/supabaseClient';
 import { Clock } from 'lucide-react';
 
 interface ScheduleItem {
-  id: string; // UUID from database
+  id: string;
   date: string;
   time: string;
 }
@@ -56,7 +56,6 @@ const ClockTimePicker: React.FC<{
       const minute = Math.round(angle / 30) * 5;
       setTempMinute(minute === 60 ? 0 : minute);
       
-      // Auto-close and save time after selecting minutes
       const finalTime: TimeValue = {
         hour: tempHour,
         minute: minute === 60 ? 0 : minute,
@@ -208,7 +207,6 @@ const AddSchedule: React.FC = () => {
   const [existingSchedulesData, setExistingSchedulesData] = useState<ScheduleItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Convert TimeValue to 24-hour format string for backend
   const timeValueTo24Hour = (time: TimeValue): string => {
     let hour = time.hour;
     if (time.period === 'AM' && hour === 12) hour = 0;
@@ -231,7 +229,6 @@ const AddSchedule: React.FC = () => {
       return;
     }
 
-    // ✅ Filter schedules by logged-in doctor only
     const { data, error } = await supabase
       .from("doctor_schedules")
       .select("id, start_time, end_time")
@@ -245,7 +242,6 @@ const AddSchedule: React.FC = () => {
       return;
     }
 
-    // Transform for display
     const formatted = data.map((schedule) => {
       const start = new Date(schedule.start_time);
       const end = new Date(schedule.end_time);
@@ -300,11 +296,9 @@ const AddSchedule: React.FC = () => {
       return;
     }
 
-    // Convert selected times to Date objects
     const newStart = new Date(`${selectedDate}T${startTime24}:00`);
     const newEnd = new Date(`${selectedDate}T${endTime24}:00`);
 
-    // 1. Fetch existing schedules for this doctor on the selected day
     const { data: existingSchedules, error: fetchError } = await supabase
       .from('doctor_schedules')
       .select('start_time, end_time')
@@ -318,7 +312,6 @@ const AddSchedule: React.FC = () => {
       return;
     }
 
-    // 2. Check for overlapping
     const hasConflict = existingSchedules?.some((schedule) => {
       const existingStart = new Date(schedule.start_time);
       const existingEnd = new Date(schedule.end_time);
@@ -330,7 +323,6 @@ const AddSchedule: React.FC = () => {
       return;
     }
 
-    // 3. Insert into database if no conflict
     const { error: insertError } = await supabase
       .from("doctor_schedules")
       .insert([
@@ -352,7 +344,7 @@ const AddSchedule: React.FC = () => {
     setSelectedStartTime(null);
     setSelectedEndTime(null);
 
-    await fetchSchedules(); // Reload schedules after successful insert
+    await fetchSchedules();
   };
 
   const handleDeleteSchedule = async (idToDelete: string) => {
@@ -452,7 +444,7 @@ const AddSchedule: React.FC = () => {
                 </li>
               ))
             ) : (
-              <p>No schedules published yet.</p>
+              <p style={{ color: '#800000' }}>No schedules published yet.</p>
             )}
           </ul>
         </div>

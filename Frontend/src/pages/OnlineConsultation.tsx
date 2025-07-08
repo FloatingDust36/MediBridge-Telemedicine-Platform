@@ -31,7 +31,7 @@ const OnlineConsultation: React.FC<OnlineConsultationProps> = ({
 
     const loadJitsiScript = useCallback(() => {
         if (document.getElementById('jitsi-external-api-script')) {
-            return Promise.resolve(true); // Script already loaded
+            return Promise.resolve(true);
         }
 
         const script = document.createElement('script');
@@ -42,22 +42,21 @@ const OnlineConsultation: React.FC<OnlineConsultationProps> = ({
 
         return new Promise((resolve) => {
             script.onload = () => {
-                // Wait for JitsiMeetExternalAPI to be available on window
                 const checkJitsiApi = setInterval(() => {
                     if (window.JitsiMeetExternalAPI) {
                         clearInterval(checkJitsiApi);
                         console.log("JitsiMeetExternalAPI found on window.");
                         resolve(true);
                     }
-                }, 100); // Check every 100ms
+                }, 100);
 
-                setTimeout(() => { // Add a timeout to prevent infinite loop if it never appears
+                setTimeout(() => {
                     if (!window.JitsiMeetExternalAPI) {
                         clearInterval(checkJitsiApi);
                         console.error("JitsiMeetExternalAPI did not become available after timeout.");
                         resolve(false);
                     }
-                }, 5000); // Max wait of 5 seconds
+                }, 5000);
             };
             script.onerror = () => {
                 console.error("Failed to load Jitsi Meet External API script via onerror event.");
@@ -72,16 +71,15 @@ const OnlineConsultation: React.FC<OnlineConsultationProps> = ({
         }
 
         console.log("Attempting to initialize Jitsi API...");
-        const scriptLoadedAndApiAvailable = await loadJitsiScript(); // This will now wait for window.JitsiMeetExternalAPI
+        const scriptLoadedAndApiAvailable = await loadJitsiScript();
 
         if (!scriptLoadedAndApiAvailable || !window.JitsiMeetExternalAPI) {
             console.error("Jitsi Meet External API is still not available after loading and check.");
-            setJitsiApiLoaded(false); // Indicate failure
+            setJitsiApiLoaded(false);
             return;
         }
 
-        // If we reach here, JitsiMeetExternalAPI should definitely be on the window object
-        setJitsiApiLoaded(true); // Indicate that Jitsi API is ready to be used
+        setJitsiApiLoaded(true);
 
         const domain = '8x8.vc';
         const options = {
@@ -174,7 +172,6 @@ const OnlineConsultation: React.FC<OnlineConsultationProps> = ({
 
     return (
     <div id="jitsi-container" ref={jitsiContainerRef} className="jitsi-container">
-        {/* You can add a small overlay or fixed div for the room code */}
         <div style={{
             position: 'absolute',
             top: '10px',
@@ -184,13 +181,11 @@ const OnlineConsultation: React.FC<OnlineConsultationProps> = ({
             padding: '5px 10px',
             borderRadius: '5px',
             fontSize: '0.9em',
-            zIndex: 1000 // Ensure it's above Jitsi UI elements
+            zIndex: 1000
         }}>
             Room Code: <strong>{roomName}</strong>
-            {/* Optional: Add a copy button */}
-            <button onClick={() => navigator.clipboard.writeText(roomName)} style={{ marginLeft: '10px', background: 'none', border: '1px solid white', color: 'white', cursor: 'pointer' }}>Copy</button>
+            <button onClick={() => document.execCommand('copy')} style={{ marginLeft: '10px', background: 'none', border: '1px solid white', color: 'white', cursor: 'pointer' }}>Copy</button>
         </div>
-        {/* The Jitsi iframe will be injected here */}
     </div>
     );
 };

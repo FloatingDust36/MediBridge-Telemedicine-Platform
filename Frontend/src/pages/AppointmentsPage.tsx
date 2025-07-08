@@ -29,24 +29,24 @@ const AppointmentsPage: React.FC = () => {
 
   useEffect(() => {
     const fetchDoctors = async () => {
-  const { data, error } = await supabase
-    .from('doctors')
-    .select('user_id, specialization, users ( full_name )')
-    .eq('is_available', true);
+      const { data, error } = await supabase
+        .from('doctors')
+        .select('user_id, specialization, users ( full_name )')
+        .eq('is_available', true);
 
-  if (error) {
-    console.error('Failed to load doctors:', error.message);
-    return;
-  }
+      if (error) {
+        console.error('Failed to load doctors:', error.message);
+        return;
+      }
 
-  const mapped = data.map((d: any) => ({
-    user_id: d.user_id,
-    specialization: d.specialization,
-    full_name: d.users?.full_name ?? 'Unknown Doctor', // Optional chaining
-  }));
+      const mapped = data.map((d: any) => ({
+        user_id: d.user_id,
+        specialization: d.specialization,
+        full_name: d.users?.full_name ?? 'Unknown Doctor',
+      }));
 
-  setDoctors(mapped);
-};
+      setDoctors(mapped);
+    };
 
     fetchDoctors();
   }, []);
@@ -105,11 +105,11 @@ const AppointmentsPage: React.FC = () => {
     }
 
     const mapped = data.map((app: any) => ({
-  id: app.id,
-  doctor: app.doctors?.users?.full_name ?? 'Unknown',
-  date: new Date(app.start_time).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-  time: new Date(app.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}));
+      id: app.id,
+      doctor: app.doctors?.users?.full_name ?? 'Unknown',
+      date: new Date(app.start_time).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+      time: new Date(app.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }));
 
 
     setUpcomingAppointments(mapped);
@@ -121,13 +121,13 @@ const AppointmentsPage: React.FC = () => {
 
   const handleBookAppointment = async () => {
     if (!selectedDoctorId || !selectedSlot) {
-      alert('❗ Please select a doctor and time slot.');
+      console.log('❗ Please select a doctor and time slot.');
       return;
     }
 
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
-      alert("❌ User not logged in.");
+      console.log("❌ User not logged in.");
       return;
     }
 
@@ -148,13 +148,13 @@ const AppointmentsPage: React.FC = () => {
 
     if (insertError) {
       console.error('Error booking appointment:', insertError.message);
-      alert('❌ Booking failed.');
+      console.log('❌ Booking failed.');
       return;
     }
 
-    alert('✅ Appointment successfully booked!');
+    console.log('✅ Appointment successfully booked!');
     setSelectedSlot(null);
-    fetchUpcomingAppointments(); // Refresh list after booking
+    fetchUpcomingAppointments();
   };
 
   const formattedDate = currentTime.toLocaleDateString('en-US', {
@@ -166,14 +166,12 @@ const AppointmentsPage: React.FC = () => {
 
   return (
     <div className="main-content-area appointments-page-wrapper">
-      {/* Page Title and Timestamp */}
       <div className="appointments-top-info-bar">
         <h1 className="appointments-page-title">Appointments Dashboard</h1>
         <span className="appointments-timestamp">{formattedTime} · {formattedDate}</span>
       </div>
 
       <div className="appointments-content-grid">
-        {/* Booking Card */}
         <div className="doctor-preference-card">
           <h3 className="card-title">Doctor Preference</h3>
 
@@ -234,17 +232,16 @@ const AppointmentsPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Upcoming Appointments */}
         <div className="card-base upcoming-appointments-card">
           <h3 className="card-title">Upcoming Appointments</h3>
           <ul className="upcoming-appointments-list">
             {upcomingAppointments.length > 0 ? upcomingAppointments.map((app) => (
               <li key={app.id} className="upcoming-appointment-item">
                 <span className="appointment-doctor">{app.doctor}</span>
-                <span className="appointment-date-time">{app.date} – {app.time}</span>
+                <span className="appointment-date-time">{app.date} - {app.time}</span>
               </li>
             )) : (
-              <p>No upcoming appointments yet.</p>
+              <p style={{ color: 'green' }}>No upcoming appointments yet.</p>
             )}
           </ul>
         </div>

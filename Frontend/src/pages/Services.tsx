@@ -1,9 +1,8 @@
 import { useLocation } from 'react-router-dom';
 
 
-import './Services.css'; // Your Services-specific CSS
+import './Services.css';
 
-// Import images for the service blocks
 import Service1 from '../assets/pictures/Service1.jpg';
 import Service2 from '../assets/pictures/Service2.jpg';
 import Service3 from '../assets/pictures/Service3.jpg';
@@ -13,17 +12,11 @@ const Services = () => {
   const location = useLocation();
 
   return (
-    // This is the outer container that will manage the vertical layout
-    // It should replace `home-container` if `home-container` is page-specific.
-    // If you have a global layout wrapper (e.g., in App.tsx), this might be its child.
-    // Assuming 'home-container' is just a general page wrapper in your current setup.
-    <div className="services-page-container"> {/* Renamed for clarity, or use `app-layout-container` */}
+    <div className="services-page-container">
 
-      {/* This is the main flex container that will push the footer to the bottom */}
-      <div className="main-content-and-footer-wrapper"> {/* NEW WRAPPER */}
+      <div className="main-content-and-footer-wrapper">
 
-        {/* This wrapper contains only the main content that needs padding-top for the navbar */}
-        <div className="services-content-wrapper"> {/* Existing content wrapper */}
+        <div className="services-content-wrapper">
           <div className="services-grid">
             <div className="service-block">
               <div className="service-image-container">
@@ -53,10 +46,10 @@ const Services = () => {
               </div>
             </div>
           </div>
-        </div> {/* END services-content-wrapper */}
+        </div>
 
-      </div> {/* END main-content-and-footer-wrapper */}
-    </div> // END services-page-container
+      </div>
+    </div>
   );
 };
 

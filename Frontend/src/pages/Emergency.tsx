@@ -1,34 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
-// Import Leaflet components and CSS, including GeoJSON for routes
 import { MapContainer, TileLayer, Marker, Popup, useMap, GeoJSON } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css'; // IMPORTANT: Import Leaflet's CSS
-import L from 'leaflet'; // Import Leaflet itself for custom icon fix
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 
-import './Emergency.css'; // Import the new CSS file
-
-// Fix for default Leaflet marker icons not showing in Webpack/Vite
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png', // This is the default red/orange pin for hospitals
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
 });
 
 
-// Define a type for your emergency locations
 interface EmergencyLocation {
-  id: number; // Will use OSM ID or a generated one
+  id: number;
   lat: number;
   lng: number;
   name: string;
   address: string;
   phone: string;
-  type: string; // Now can be 'hospital', 'clinic', 'doctors', etc.
+  type: string;
 }
 
-// Initial hardcoded facilities (as a fallback or for areas Overpass might miss/slowly load)
 const INITIAL_EMERGENCY_FACILITIES: EmergencyLocation[] = [
-  // Keeping a robust set of major hospitals as a fallback
   { id: 1, lat: 10.3157, lng: 123.8854, name: 'Cebu Doctors\' University Hospital', address: 'Osmeña Blvd, Cebu City', phone: '(032) 255 5555', type: 'hospital' },
   { id: 2, lat: 10.3344, lng: 123.9056, name: 'Perpetual Succour Hospital', address: 'Gorordo Ave, Cebu City', phone: '(032) 233 8620', type: 'hospital' },
   { id: 3, lat: 10.3015, lng: 123.8967, name: 'Vicente Sotto Memorial Medical Center', address: 'B. Rodriguez St, Cebu City', phone: '(032) 253 9891', type: 'hospital' },
@@ -86,9 +79,8 @@ const INITIAL_EMERGENCY_FACILITIES: EmergencyLocation[] = [
   { id: 180, lat: 9.8000, lng: 123.3600, name: 'Mariano Jesus Cuenco Memorial Hospital (Malabuyoc)', address: 'Poblacion, Malabuyoc', phone: '(032) 516 1400', type: 'hospital' },
 ];
 
-// Helper function to calculate distance
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-  const R = 6371; // Radius of Earth in kilometers
+  const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a =
@@ -96,21 +88,17 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
     Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = R * c; // Distance in km
+  const distance = R * c;
   return distance;
 };
 
-// OpenRouteService API Key (REPLACE WITH YOUR ACTUAL KEY!)
-// Get a free key from https://openrouteservice.org/sign-up/ (does NOT require credit card for free tier)
-// Note: You have already set a key here '5b3ce...' which is good!
-const ORS_API_KEY = '5b3ce3597851110001cf6248550434e639e24cdfaca90049a9b5e306'; //mas maayo ta if i hidden ni
+const ORS_API_KEY = '5b3ce3597851110001cf6248550434e639e24cdfaca90049a9b5e306';
 
 
-// Sub-component to manage map interactions and dynamic markers.
 const LocationMarker: React.FC<{
   onClosestFacilityFound: (facility: EmergencyLocation | null, error?: string) => void;
   onDynamicFacilitiesLoaded: (facilities: EmergencyLocation[]) => void;
-  onRouteLoaded: (routeGeoJson: any | null) => void; // New prop for route GeoJSON
+  onRouteLoaded: (routeGeoJson: any | null) => void;
   panToUser: boolean;
 }> = ({ onClosestFacilityFound, onDynamicFacilitiesLoaded, onRouteLoaded, panToUser }) => {
   const map = useMap();
@@ -118,7 +106,6 @@ const LocationMarker: React.FC<{
   const [locationError, setLocationError] = useState<string | null>(null);
   const watchIdRef = useRef<number | null>(null);
 
-  // User icon set to green for clear distinction
   const userIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
     iconRetinaUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
@@ -129,10 +116,8 @@ const LocationMarker: React.FC<{
     shadowSize: [41, 41]
   });
 
-  // --- MODIFIED: Function to fetch more types of facilities from Overpass API ---
   const fetchFacilitiesFromOverpass = async (centerLat: number, centerLng: number, radiusKm: number = 50) => {
     const overpassUrl = 'https://overpass-api.de/api/interpreter';
-    // Expanded query to include clinics, doctors, etc.
     const query = `
       [out:json];
       (
@@ -162,7 +147,7 @@ const LocationMarker: React.FC<{
       }
 
       const data = await response.json();
-      console.log("Overpass API response (expanded facilities):", data); // Changed log message
+      console.log("Overpass API response (expanded facilities):", data);
 
       const fetchedFacilities: EmergencyLocation[] = data.elements
         .filter((el: any) => el.lat && el.lon && el.tags && el.tags.name)
@@ -173,25 +158,23 @@ const LocationMarker: React.FC<{
           name: el.tags.name,
           address: el.tags['addr:full'] || el.tags['addr:street'] || el.tags['addr:housenumber'] || 'Address not available',
           phone: el.tags.phone || 'N/A',
-          // MODIFIED: Dynamically set type based on OSM tags
-          type: el.tags.healthcare || el.tags.amenity || 'facility' // Use 'healthcare' tag, then 'amenity', fallback to 'facility'
+          type: el.tags.healthcare || el.tags.amenity || 'facility'
         }));
       
       onDynamicFacilitiesLoaded(fetchedFacilities);
-      console.log("Fetched facilities (expanded):", fetchedFacilities); // Changed log message
+      console.log("Fetched facilities (expanded):", fetchedFacilities);
       return fetchedFacilities;
 
     } catch (error) {
-      console.error("Failed to fetch facilities from Overpass API:", error); // Changed error message
+      console.error("Failed to fetch facilities from Overpass API:", error);
       setLocationError("Could not load nearby medical facilities. Data might be unavailable or network issue.");
       onDynamicFacilitiesLoaded([]);
       return [];
     }
   };
 
-  // --- Function to fetch route from ORS API ---
   const fetchRoute = async (startLat: number, startLng: number, endLat: number, endLng: number) => {
-    if (!ORS_API_KEY) { // Check if ORS_API_KEY is defined and not empty
+    if (!ORS_API_KEY) {
       console.error("ERROR: OpenRouteService API Key is NOT set. Cannot fetch route.");
       onRouteLoaded(null);
       return;
@@ -200,8 +183,8 @@ const LocationMarker: React.FC<{
     const routeUrl = `https://api.openrouteservice.org/v2/directions/driving-car/geojson`;
     const body = {
       coordinates: [
-        [startLng, startLat], // ORS API expects coordinates as [longitude, latitude]
-        [endLng, endLat]     // Correct order for ORS
+        [startLng, startLat],
+        [endLng, endLat]
       ]
     };
 
@@ -223,24 +206,24 @@ const LocationMarker: React.FC<{
       }
 
       const data = await response.json();
-      console.log("ORS Route response (raw data):", data); 
+      console.log("ORS Route response (raw data):", data);
 
       if (data.features && data.features.length > 0) {
           if (data.features[0].geometry && data.features[0].geometry.type === 'LineString') {
             console.log("ORS Route GeoJSON feature being passed:", data.features[0]);
-            onRouteLoaded(data.features[0]); // Pass the GeoJSON feature (the route) to parent
+            onRouteLoaded(data.features[0]);
           } else {
             console.warn("ORS API returned feature, but it's not a LineString geometry:", data.features[0]);
-            onRouteLoaded(null); // Clear route if geometry type is unexpected
+            onRouteLoaded(null);
           }
       } else {
           console.warn("ORS API returned no route features for the given coordinates. Check coordinates or network.");
-          onRouteLoaded(null); // Clear route if no features found
+          onRouteLoaded(null);
       }
     } catch (error) {
       console.error("Failed to fetch route from ORS API (Catch Block):", error);
       setLocationError("Could not calculate route. Please check your API key, coordinates, or try again later.");
-      onRouteLoaded(null); // Clear route on error
+      onRouteLoaded(null);
     }
   };
 
@@ -253,16 +236,13 @@ const LocationMarker: React.FC<{
     setLocationError(null);
 
     if (map && panToUser) {
-      map.flyTo(currentUserLoc, 14); // flyTo for smooth animation
+      map.flyTo(currentUserLoc, 14);
     }
 
     const dynamicFacilities = await fetchFacilitiesFromOverpass(lat, lng, 50);
 
-    // Combine hardcoded and dynamic facilities for closest search
-    // We can filter out hardcoded ones if Overpass covers the area well enough,
-    // or keep them as a robust fallback. For now, we'll combine all.
     const allFacilities = [
-      ...INITIAL_EMERGENCY_FACILITIES, // Include all hardcoded facilities
+      ...INITIAL_EMERGENCY_FACILITIES,
       ...dynamicFacilities
     ];
 
@@ -280,21 +260,20 @@ const LocationMarker: React.FC<{
       }
     });
 
-    // MODIFIED: Adjusted threshold and message for general facilities
-    if (closestFacility && minDistance < 100) { // Increased search radius to 100km for general facilities
+    if (closestFacility && minDistance < 100) {
       onClosestFacilityFound(closestFacility);
       const confirmedClosestFacility: EmergencyLocation = closestFacility;
 
-      if (ORS_API_KEY) { 
+      if (ORS_API_KEY) {
         console.log(`Attempting to fetch route from [${lng}, ${lat}] to [${confirmedClosestFacility.lng}, ${confirmedClosestFacility.lat}]`);
         await fetchRoute(lat, lng, confirmedClosestFacility.lat, confirmedClosestFacility.lng);
       } else {
         onRouteLoaded(null);
-        console.warn("ORS API key is not configured, skipping route fetch."); 
+        console.warn("ORS API key is not configured, skipping route fetch.");
       }
     } else {
-      onClosestFacilityFound(null, "No medical facilities detected nearby (within 100 km)."); // Updated message
-      onRouteLoaded(null); // Clear any previous route if no facility found
+      onClosestFacilityFound(null, "No medical facilities detected nearby (within 100 km).");
+      onRouteLoaded(null);
     }
   };
 
@@ -310,7 +289,7 @@ const LocationMarker: React.FC<{
     }
     setLocationError(errorMessage);
     onClosestFacilityFound(null, errorMessage);
-    onRouteLoaded(null); // Clear any previous route on location error
+    onRouteLoaded(null);
   };
 
   useEffect(() => {
@@ -318,7 +297,7 @@ const LocationMarker: React.FC<{
       const msg = "Geolocation is not supported by your browser.";
       setLocationError(msg);
       onClosestFacilityFound(null, msg);
-      onRouteLoaded(null); // Ensure route is cleared
+      onRouteLoaded(null);
       return;
     }
 
@@ -337,7 +316,7 @@ const LocationMarker: React.FC<{
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
     };
-  }, [map, panToUser, ORS_API_KEY]); // Added ORS_API_KEY to dependencies to re-run effect if it changes
+  }, [map, panToUser, ORS_API_KEY]);
 
   const handleManualUpdate = () => {
     if (!navigator.geolocation) {
@@ -379,7 +358,7 @@ const Emergency: React.FC = () => {
   const [closestFacility, setClosestFacility] = useState<EmergencyLocation | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [dynamicFacilities, setDynamicFacilities] = useState<EmergencyLocation[]>([]);
-  const [routeGeoJson, setRouteGeoJson] = useState<any | null>(null); // State to hold the fetched route GeoJSON
+  const [routeGeoJson, setRouteGeoJson] = useState<any | null>(null);
 
   const handleClosestFacilityUpdate = (facility: EmergencyLocation | null, error?: string) => {
     setClosestFacility(facility);
@@ -390,25 +369,21 @@ const Emergency: React.FC = () => {
     setDynamicFacilities(facilities);
   };
 
-  const handleRouteLoaded = (geoJson: any | null) => { // Handler for route GeoJSON
-    console.log("Route data received by Emergency component:", geoJson); // Debugging log
+  const handleRouteLoaded = (geoJson: any | null) => {
+    console.log("Route data received by Emergency component:", geoJson);
     setRouteGeoJson(geoJson);
   };
 
-  // Default center for Cebu Province, zoomed out
   const defaultMapCenter: L.LatLngExpression = [10.35, 123.95];
   const defaultMapZoom = 10;
 
-  // Combine initial hardcoded facilities with dynamically loaded facilities for display
-  // No longer filtering by type 'hospital' here, as we want to display all medical types
   const facilitiesToDisplay = [
     ...INITIAL_EMERGENCY_FACILITIES,
     ...dynamicFacilities
   ];
 
-  // Define styling for the route line
   const routeStyle = {
-    color: '#007bff', // Blue color for the route
+    color: '#007bff',
     weight: 5,
     opacity: 0.7
   };
@@ -420,7 +395,7 @@ const Emergency: React.FC = () => {
           <div className="emergency-header-info">
             <h1 className="emergency-page-title">Emergency Services</h1>
             <p className="emergency-page-description">
-              Locate the nearest emergency medical facilities and get help quickly. {/* Updated description */}
+              Locate the nearest emergency medical facilities and get help quickly.
             </p>
           </div>
 
@@ -438,11 +413,9 @@ const Emergency: React.FC = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
 
-                  {/* Render all facilities on the map */}
                   {facilitiesToDisplay.map(loc => (
                     <Marker key={loc.id} position={[loc.lat, loc.lng]}>
                       <Popup>
-                        {/* Display the dynamically determined type */}
                         <strong>{loc.name} ({loc.type.charAt(0).toUpperCase() + loc.type.slice(1)})</strong><br />
                         {loc.address}<br />
                         Phone: {loc.phone}
@@ -450,18 +423,17 @@ const Emergency: React.FC = () => {
                     </Marker>
                   ))}
 
-                  {/* Render the route GeoJSON if available */}
                   {routeGeoJson && (
                     <>
-                        {console.log("GeoJSON data attempting to render in MapContainer:", routeGeoJson)}
-                        <GeoJSON data={routeGeoJson} style={routeStyle} />
+                      {console.log("GeoJSON data attempting to render in MapContainer:", routeGeoJson)}
+                      <GeoJSON data={routeGeoJson} style={routeStyle} />
                     </>
                   )}
 
                   <LocationMarker
                     onClosestFacilityFound={handleClosestFacilityUpdate}
                     onDynamicFacilitiesLoaded={handleDynamicFacilitiesLoaded}
-                    onRouteLoaded={handleRouteLoaded} // Pass new route handler
+                    onRouteLoaded={handleRouteLoaded}
                     panToUser={true}
                   />
                 </MapContainer>
@@ -470,8 +442,8 @@ const Emergency: React.FC = () => {
               <div className="closest-hospital-info-panel panel-box">
                 {closestFacility ? (
                   <>
-                    <h3 className="hospital-found-title">Closest Medical Facility:</h3> {/* Title changed */}
-                    <p className="hospital-name-display">{closestFacility.name} ({closestFacility.type.charAt(0).toUpperCase() + closestFacility.type.slice(1)})</p> {/* Display type here too */}
+                    <h3 className="hospital-found-title">Closest Medical Facility:</h3>
+                    <p className="hospital-name-display">{closestFacility.name} ({closestFacility.type.charAt(0).toUpperCase() + closestFacility.type.slice(1)})</p>
                     <p className="hospital-address-display">{closestFacility.address}</p>
                     <p className="hospital-phone-display">Call: {closestFacility.phone}</p>
                     <a
@@ -486,7 +458,7 @@ const Emergency: React.FC = () => {
                   </>
                 ) : (
                   <p className="hospital-not-found-message">
-                    {errorMessage || "Attempting to find your location and nearest medical facility..."} {/* Updated message */}
+                    {errorMessage || "Attempting to find your location and nearest medical facility..."}
                   </p>
                 )}
               </div>
@@ -500,15 +472,14 @@ const Emergency: React.FC = () => {
                   <p>National Emergency Hotline</p>
                   <span>911</span>
                 </div>
-                {/* Dynamically generate hotline items based on all relevant facilities */}
-                {facilitiesToDisplay.filter(f => f.phone && f.phone !== 'N/A').map(f => ( // Filter for facilities with a phone number
+                {facilitiesToDisplay.filter(f => f.phone && f.phone !== 'N/A').map(f => (
                   <div className="hotline-item" key={`hotline-${f.id}`}>
                     <i className="fas fa-phone-alt"></i>
-                    <p>{f.name} ({f.type.charAt(0).toUpperCase() + f.type.slice(1)})</p> {/* Display type */}
+                    <p>{f.name} ({f.type.charAt(0).toUpperCase() + f.type.slice(1)})</p>
                     <span>{f.phone}</span>
                   </div>
                 ))}
-                <p className="disclaimer">This list serves as a backup if no nearby medical facility is found on the map. This list is for informational purposes only; always verify phone numbers during an emergency.</p> {/* Updated disclaimer */}
+                <p className="disclaimer">This list serves as a backup if no nearby medical facility is found on the map. This list is for informational purposes only; always verify phone numbers during an emergency.</p>
               </div>
               <div className="draft-section panel-box">
                 <p className="draft-text">Draft an emergency message here. (e.g., "I am at [address] and need an ambulance.")</p>

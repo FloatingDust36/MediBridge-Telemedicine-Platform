@@ -1,10 +1,7 @@
-/* src/pages/PatientDashboard.css */
-
-/* General */
 body {
     margin: 0;
     font-family: "Segoe UI", sans-serif;
-    background-color: #e6e9ed;
+    background-color: #f0f5fa;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -15,15 +12,14 @@ body {
     align-items: center;
     width: 100vw;
     min-height: 100vh;
-    background-color: #e6e9ed;
+    background-color: #f0f5fa;
 }
 
-/* Main Content Area - Adjust padding-top to clear fixed navbar */
 .main-content-area {
     padding: 20px 30px;
     width: 100%;
     box-sizing: border-box;
-    padding-top: 60px; /* Space for the fixed navbar (navbar height + some margin) */
+    padding-top: 60px;
 }
 
 .top-info-bar {
@@ -37,7 +33,7 @@ body {
 .page-title {
     font-family: 'Segoe UI', sans-serif;
     font-weight: bold;
-    color: #333;
+    color: #007bff;
     font-size: 26px;
     margin-bottom: 10px;
     margin-top: 0;
@@ -55,7 +51,7 @@ body {
     height: 50px;
     border-radius: 50%;
     overflow: hidden;
-    border: 2px solid white;
+    border: 2px solid #FFFFFF;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -73,7 +69,7 @@ body {
 .medical-profile-label {
     font-family: 'Segoe UI', sans-serif;
     font-weight: 600;
-    color: #007bff;
+    color: #800000;
     font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -81,47 +77,44 @@ body {
 
 .welcome-message {
     font-family: 'Segoe UI', sans-serif;
-    color: #444;
+    color: #333333;
     font-size: 18px;
     font-weight: 500;
 }
 
 .current-timestamp {
     font-family: 'Segoe UI', sans-serif;
-    color: #777;
+    color: #6C757D;
     font-size: 13px;
     margin-top: 5px;
 }
 
-/* Card Base Styles (for all dashboard sections) */
 .card-base {
-    background-color: white;
+    background-color: #FFFFFF;
     border-radius: 8px;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
     box-sizing: border-box;
-    border: 1px solid #c0c0c0;
+    border: 1px solid #E0E0E0;
 }
 
 .card-content {
-    color: black;
+    color: #333333;
 }
 
 .card-margin-bottom {
     margin-bottom: 25px;
 }
 
-/* Common Header/Title Styling for all Sections (inside cards) */
 .card-base h3 {
     font-family: 'Segoe UI', sans-serif;
     font-weight: 600;
-    color: #333;
+    color: #333333;
     font-size: 18px;
     margin-top: 0;
     margin-bottom: 15px;
 }
 
-/* Common List Item Styling for all Sections */
 .card-base ul {
     list-style: none;
     padding-left: 0;
@@ -129,7 +122,7 @@ body {
 }
 
 .card-base li {
-    color: #555;
+    color: #333333;
     font-size: 15px;
     margin-bottom: 8px;
     line-height: 1.4;
@@ -138,33 +131,30 @@ body {
     margin-bottom: 0;
 }
 
-
-/* --- Styles specific to PatientDashboardSection --- */
 .patient-dashboard-section-content p {
     margin-bottom: 8px;
     font-size: 15px;
-    color: #444;
+    color: #333333;
 }
 .patient-dashboard-section-content p strong {
-    color: #000;
+    color: #000000;
     font-weight: 600;
 }
 
-/* --- Styles specific to NotesSection --- */
 .notes-section .notes-list {
     max-height: 120px;
     overflow-y: auto;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #E0E0E0;
     padding-bottom: 15px;
     margin-bottom: 15px;
 }
 
 .notes-section .notes-list li {
-    background-color: #fcfcfc;
+    background-color: #FDFDFD;
     padding: 8px 12px;
     border-radius: 5px;
     margin-bottom: 6px;
-    color: #333;
+    color: #333333;
     font-size: 14px;
     line-height: 1.3;
 }
@@ -172,7 +162,7 @@ body {
 .notes-section .add-note-textarea {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #E0E0E0;
     border-radius: 5px;
     resize: vertical;
     font-family: inherit;
@@ -192,7 +182,7 @@ body {
     width: 100%;
     padding: 10px 15px;
     background-color: #007bff;
-    color: white;
+    color: #FFFFFF;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -209,10 +199,9 @@ body {
     transform: translateY(0);
 }
 
-/* --- Styles specific to ConsultationAppointmentsSection --- */
 .consultation-section h4 {
     font-size: 1.1em;
-    color: #333;
+    color: #333333;
     margin-top: 15px;
     margin-bottom: 10px;
 }
@@ -225,32 +214,29 @@ body {
 .consultation-section .consultation-list li {
     margin-bottom: 6px;
     font-size: 14px;
-    color: #555;
+    color: #333333;
 }
 .consultation-section .consultation-list li strong {
-    color: #333;
+    color: #333333;
 }
 
-
-/* --- Styles specific to PrescriptionsSection --- */
 .prescriptions-section .prescriptions-list {
     list-style: none;
     padding-left: 0;
     margin: 0;
 }
 .prescriptions-section .prescriptions-list li {
-    background-color: #f8f8f8;
+    background-color: #F0F0F0;
     padding: 10px 15px;
     border-radius: 5px;
     margin-bottom: 8px;
     font-size: 14px;
-    color: #444;
+    color: #333333;
 }
 .prescriptions-section .prescriptions-list li:last-child {
     margin-bottom: 0;
 }
 
-/* Responsive Adjustments */
 @media (max-width: 768px) {
     .navbar {
         flex-direction: column;
@@ -270,11 +256,10 @@ body {
     .nav-item-new {
         line-height: normal;
     }
-    /* No more .logout-button-new specific styles */
 
     .main-content-area {
         padding: 20px;
-        padding-top: 150px; /* Adjust for stacked navbar */
+        padding-top: 150px;
     }
     .top-info-bar {
         padding-left: 0;

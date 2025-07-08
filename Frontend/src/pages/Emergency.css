@@ -1,76 +1,40 @@
-/* src/pages/Emergency.css */
-
-/* Global Box Sizing & Body Resets - IMPORTANT:
-    These should ideally be in a single global CSS file (e.g., index.css or App.css)
-    and NOT duplicated per page. Included here as comments for reference.
-*/
-/*
-html {
-  box-sizing: border-box;
-}
-
-*, *::before, *::after {
-  box-sizing: inherit;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: "Segoe UI", sans-serif;
-  width: 100vw;
-  min-height: 100vh;
-  overflow-x: hidden;
-  position: relative;
-  background-color: #f0f2f5;
-
-  display: flex;
-  flex-direction: column;
-}
-*/
-
-/* This is the top-level container for the Emergency page content.
-    It ensures the page content stretches within the body's flex context. */
 .emergency-page-container {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1; /* Allows it to take up all available vertical space in the body */
-  width: 100%; /* Ensures it takes full available horizontal space */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    width: 100%;
 }
 
-/* This new wrapper is the main flex container that holds your main content and the footer as siblings */
 .main-content-and-footer-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 100%; /* Ensure it takes full horizontal space */
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
 
-/* This wrapper holds the main content of the Emergency page.
-    It gets padding-top to account for the fixed navbar. */
 .emergency-content-wrapper {
-  padding-top: 60px; /* Adjust this value (Navbar's height + desired spacing, e.g., 40px + 20px) */
-  flex-grow: 1; /* This makes the content fill available vertical space within its parent BEFORE the footer */
-  display: flex; /* Make it a flex container for its children */
-  flex-direction: column; /* Stack children vertically */
-  width: 100%;
-  box-sizing: border-box;
-  background-color: #f0f5fa; /* Light background for the page */
-  padding-bottom: 20px; /* Space between content and footer */
-  align-items: center; /* Center content horizontally */
+    padding-top: 60px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #f0f5fa;
+    padding-bottom: 20px;
+    align-items: center;
 }
 
-/* New header info section for title and description */
 .emergency-header-info {
     width: 100%;
     text-align: center;
     margin-bottom: 25px;
-    padding: 0 20px; /* Add some horizontal padding */
+    padding: 0 20px;
     box-sizing: border-box;
 }
 
 .emergency-page-title {
     font-family: 'Segoe UI', sans-serif;
     font-weight: bold;
-    color: #333;
+    color: #007bff;
     font-size: 2em;
     margin-bottom: 10px;
     margin-top: 0;
@@ -78,70 +42,65 @@ body {
 
 .emergency-page-description {
     font-family: 'Segoe UI', sans-serif;
-    color: #555;
+    color: #333333;
     font-size: 1.1em;
     line-height: 1.5;
-    max-width: 700px; /* Limit width for readability */
-    margin: 0 auto; /* Center the description text */
+    max-width: 700px;
+    margin: 0 auto;
 }
 
-
 .emergency-main-sections {
-  display: flex;
-  flex-wrap: wrap; /* Allows sections to wrap on smaller screens */
-  justify-content: center; /* Center sections horizontally */
-  gap: 20px; /* Space between the left and right sections */
-  padding: 20px; /* Overall padding around the main sections */
-  max-width: 1200px; /* Max width for the entire content block */
-  width: 100%; /* Take full width up to max-width */
-  box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .emergency-section-left,
 .emergency-section-right {
-  flex: 1; /* Allow sections to grow and shrink */
-  min-width: 300px; /* Minimum width for each section before wrapping */
-  display: flex;
-  flex-direction: column;
-  gap: 20px; /* Space between elements within sections */
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .panel-box {
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  text-align: center;
-  flex-grow: 1; /* Allow panels to grow within their section if needed */
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    flex-grow: 1;
 }
 
-/* Map Container - now hosts the Leaflet MapContainer component */
 .map-container {
-  position: relative;
-  width: 100%;
-  height: 400px; /* Fixed height for the map */
-  background-color: #e0e0e0; /* Placeholder background */
-  border-radius: 8px; /* Match panel box radius */
-  overflow: hidden; /* Ensure map corners are rounded */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative;
+    width: 100%;
+    height: 400px;
+    background-color: #E0E0E0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* IMPORTANT: Leaflet's map div class for direct styling */
 .leaflet-map-display {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
-
-/* --- Map Controls (placed inside .map-container) --- */
 .location-control-panel {
     position: absolute;
     top: 340px;
     left: 15px;
-    z-index: 1000; /* Ensure it's above the map controls */
+    z-index: 1000;
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Space between button and error message */
+    gap: 8px;
     align-items: flex-start;
 }
 
@@ -150,8 +109,8 @@ body {
     align-items: center;
     gap: 8px;
     padding: 10px 15px;
-    background-color: #800000;
-    color: rgb(255, 255, 255);
+    background-color: #007bff;
+    color: #FFFFFF;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -170,32 +129,29 @@ body {
 .location-icon {
     width: 20px;
     height: 20px;
-    color: currentColor; /* Inherit color from parent (button text color) */
+    color: currentColor;
 }
 
 .location-error-message {
-    background-color: #ffe0e0;
-    color: #d9534f;
+    background-color: #F8D7DA;
+    color: #800000;
     padding: 8px 12px;
     border-radius: 5px;
     font-size: 0.9em;
-    border: 1px solid #d9534f;
+    border: 1px solid #F5C6CB;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     max-width: 280px;
-    text-align: left; /* Align text left within error message */
+    text-align: left;
 }
 
-
-/* --- Dynamic Closest Hospital Info Panel --- */
 .closest-hospital-info-panel {
     text-align: center;
-    /* Inherits .panel-box styles */
 }
 
 .hospital-found-title {
     font-family: 'Segoe UI', sans-serif;
     font-weight: 600;
-    color: #800000; /* Red for emphasis */
+    color: #007bff;
     font-size: 1.2em;
     margin-top: 0;
     margin-bottom: 10px;
@@ -205,7 +161,7 @@ body {
     font-family: 'Segoe UI', sans-serif;
     font-weight: bold;
     font-size: 1.4em;
-    color: #007bff;
+    color: #800000;
     margin-bottom: 5px;
 }
 
@@ -213,7 +169,7 @@ body {
 .hospital-phone-display {
     font-family: 'Segoe UI', sans-serif;
     font-size: 1em;
-    color: #555;
+    color: #333333;
     margin-bottom: 5px;
 }
 
@@ -221,8 +177,8 @@ body {
     display: inline-block;
     margin-top: 15px;
     padding: 10px 15px;
-    background-color: #800000; /* Green button */
-    color: white;
+    background-color: #007bff;
+    color: #FFFFFF;
     text-decoration: none;
     border-radius: 5px;
     font-family: 'Segoe UI', sans-serif;
@@ -232,86 +188,80 @@ body {
 }
 
 .get-directions-button:hover {
-    background-color: #218838;
+    background-color: #0056b3;
 }
 
 .disclaimer-small {
     font-size: 0.75em;
-    color: #777;
+    color: #6C757D;
     margin-top: 10px;
 }
 
 .hospital-not-found-message {
-    color: #d9534f; /* Reddish for error/not found */
+    color: #800000;
     font-weight: 500;
     font-size: 1em;
 }
 
-
-/* --- Emergency Hotlines Section --- */
 .emergency-hotlines {
-  /* Inherits .panel-box styles */
-  max-height: 450px; /* Set a fixed maximum height */
-  overflow-y: auto; /* Enable vertical scrolling if content exceeds max-height */
-  /* Added some padding to ensure content inside doesn't touch the scrollbar */
-  padding-right: 15px; /* Adjust as needed */
-  text-align: left; /* Align content to the left within this panel */
+    max-height: 450px;
+    overflow-y: auto;
+    padding-right: 15px;
+    text-align: left;
 }
 
 .emergency-hotlines h2 {
-  font-size: 1.8rem;
-  color: #007bff;
-  margin-bottom: 1.5rem;
-  text-align: center; /* Keep heading centered */
+    font-size: 1.8rem;
+    color: #007bff;
+    margin-bottom: 1.5rem;
+    text-align: center;
 }
 
 .hotline-item {
-  display: flex;
-  align-items: center;
-  /* Removed justify-content: center; to align to left now that panel is left-aligned */
-  gap: 10px;
-  margin-bottom: 10px;
-  font-size: 1.1rem;
-  color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    color: #333333;
 }
 
-.hotline-item i { /* Font Awesome icon styling */
-  color: #007bff;
-  font-size: 1.2rem;
+.hotline-item i {
+    color: #007bff;
+    font-size: 1.2rem;
 }
 
 .hotline-item p {
-  margin: 0;
-  font-weight: bold;
-  flex-grow: 1; /* Allow p to take space */
+    margin: 0;
+    font-weight: bold;
+    flex-grow: 1;
 }
 
 .hotline-item span {
-  color: #000;
-  white-space: nowrap; /* Prevent phone numbers from wrapping */
+    color: #333333;
+    white-space: nowrap;
 }
 
 .disclaimer {
-  font-size: 0.85rem;
-  color: #888;
-  margin-top: 15px;
-  text-align: left; /* Align disclaimer to left */
-  border-top: 1px solid #eee;
-  padding-top: 10px;
+    font-size: 0.85rem;
+    color: #6C757D;
+    margin-top: 15px;
+    text-align: left;
+    border-top: 1px solid #E0E0E0;
+    padding-top: 10px;
 }
 
-/* --- Draft Section --- */
 .draft-section {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    align-items: flex-start; /* Align text content to the left */
+    align-items: flex-start;
 }
 
 .draft-text {
     font-family: 'Segoe UI', sans-serif;
     font-size: 1em;
-    color: #333;
+    color: #333333;
     margin-top: 0;
     margin-bottom: 0;
 }
@@ -319,7 +269,7 @@ body {
 .draft-textarea {
     width: 100%;
     padding: 10px;
-    border: 1px solid #c0c0c0;
+    border: 1px solid #C0C0C0;
     border-radius: 5px;
     font-family: 'Segoe UI', sans-serif;
     font-size: 0.95em;
@@ -336,8 +286,8 @@ body {
 
 .send-draft-button {
     padding: 10px 20px;
-    background-color: #059669; /* Green button */
-    color: white;
+    background-color: #007bff;
+    color: #FFFFFF;
     border: none;
     border-radius: 5px;
     font-family: 'Segoe UI', sans-serif;
@@ -345,38 +295,37 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
-    align-self: flex-end; /* Align button to the right */
+    align-self: flex-end;
 }
 
 .send-draft-button:hover {
-    background-color: #047a55;
+    background-color: #0056b3;
     box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
 
-/* Responsive adjustments */
 @media (max-width: 992px) {
     .emergency-main-sections {
-        flex-direction: column; /* Stack sections vertically */
+        flex-direction: column;
     }
     .emergency-section-left,
     .emergency-section-right {
-        min-width: unset; /* Remove min-width to allow full width */
+        min-width: unset;
         width: 100%;
     }
     .map-container {
-        height: 400px; /* Adjust map height for smaller screens */
+        height: 400px;
     }
     .emergency-content-wrapper {
-        padding-top: 80px; /* Adjust for mobile navbar height if it changes */
+        padding-top: 80px;
     }
     .emergency-hotlines {
-        max-height: 350px; /* Adjust max height for hotlines on medium screens */
+        max-height: 350px;
     }
 }
 
 @media (max-width: 768px) {
     .main-content-and-footer-wrapper {
-        padding: 15px; /* Adjust overall padding for smaller screens */
+        padding: 15px;
     }
     .emergency-header-info {
         padding: 0 10px;
@@ -392,13 +341,13 @@ body {
         min-height: 250px;
     }
     .emergency-hotlines {
-        max-height: 300px; /* Further adjust max height for hotlines on small screens */
+        max-height: 300px;
     }
 }
 
 @media (max-width: 480px) {
     .main-content-and-footer-wrapper {
-        padding: 10px; /* Further adjust padding for very small screens */
+        padding: 10px;
     }
     .emergency-header-info {
         padding: 0 5px;
@@ -416,7 +365,7 @@ body {
     .panel-box {
         padding: 15px;
     }
-    .emergency-hotlines h2, .closest-hospital-info-panel h3 { /* Target h3 for closest hospital */
+    .emergency-hotlines h2, .closest-hospital-info-panel h3 {
         font-size: 1.3em;
     }
     .hotline-item p, .closest-hospital-info-panel p {
@@ -431,6 +380,6 @@ body {
         left: 10px;
     }
     .emergency-hotlines {
-        max-height: 250px; /* Final adjustment for very small screens */
+        max-height: 250px;
     }
 }

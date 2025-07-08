@@ -1,217 +1,263 @@
-/* src/pages/MessagesPage.css */
-
 .messages-page-container {
-  padding: 20px 30px;
-  width: 100%;
-  box-sizing: border-box;
+    padding: 20px 30px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #f0f5fa;
 }
 
 .messages-top-info-bar {
-  margin-bottom: 25px;
-  padding-left: 10px;
-  padding-right: 10px;
+    margin-bottom: 25px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .messages-page-title {
-  font-family: 'Segoe UI', sans-serif;
-  font-weight: bold;
-  color: #333;
-  font-size: 26px;
-  margin-bottom: 5px;
-  margin-top: 0;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    color: #007bff;
+    font-size: 26px;
+    margin-bottom: 5px;
+    margin-top: 0;
 }
 
 .messages-description {
-  font-family: 'Segoe UI', sans-serif;
-  color: #666;
-  font-size: 15px;
-  margin-bottom: 15px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #6C757D;
+    font-size: 15px;
+    margin-bottom: 15px;
 }
 
 .messages-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .message-item {
-  background-color: #fefefe;
-  padding: 15px;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+    background-color: #FFFFFF;
+    padding: 15px;
+    border: 1px solid #E0E0E0;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .message-item:hover {
-  background-color: #f0f8ff;
-  border-color: #a7d4ff;
+    background-color: #e6f3ff;
+    border-color: #a7d4ff;
 }
 
 .message-item.selected {
-  background-color: #e6f3ff;
-  border-color: #80c1ff;
+    background-color: #cfe2ff;
+    border-color: #92c1ff;
 }
 
 .message-item:last-child {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .message-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
 }
 
 .message-sender {
-  font-family: 'Segoe UI', sans-serif;
-  font-weight: 600;
-  color: #007bff;
-  font-size: 15px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 600;
+    color: #333333;
+    font-size: 15px;
 }
 
 .message-sender.you {
-  color: #28a745;
-  font-weight: 700;
+    color: #28a745;
+    font-weight: 700;
 }
 
 .message-sender.doctor {
-  color: #d63384;
+    color: #800000;
 }
 
 .message-sender.patient {
-  color: #007bff;
+    color: #007bff;
 }
 
 .message-time {
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 13px;
-  color: #777;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 13px;
+    color: #6C757D;
 }
 
 .message-subject {
-  font-family: 'Segoe UI', sans-serif;
-  font-weight: 500;
-  color: #333;
-  font-size: 16px;
-  margin-bottom: 5px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 500;
+    color: #333333;
+    font-size: 16px;
+    margin-bottom: 5px;
 }
 
 .message-snippet {
-  font-family: 'Segoe UI', sans-serif;
-  color: #555;
-  font-size: 14px;
-  line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    font-family: 'Segoe UI', sans-serif;
+    color: #333333;
+    font-size: 14px;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .new-message-button {
-  display: block;
-  width: 100%;
-  padding: 10px 15px;
-  margin-top: 20px;
-  border: none;
-  border-radius: 5px;
-  background-color: #007bff;
-  color: white;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #FFFFFF;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .new-message-button:hover {
-  background-color: #0056b3;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #0056b3;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Compose form styles */
 .compose-form {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #fefefe;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 5px;
 }
 
 .compose-form .input-field {
-  width: 100%;
-  padding: 10px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 14px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    margin-bottom: 10px;
+    border: 1px solid #C0C0C0;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #333333;
+    background-color: #FFFFFF;
 }
 
 .compose-form textarea.input-field {
-  resize: vertical;
-  min-height: 80px;
-  max-height: 200px;
+    resize: vertical;
+    min-height: 80px;
+    max-height: 200px;
 }
 
 .compose-form .send-button {
-  width: 100%;
-  padding: 10px 15px;
-  background-color: #28a745;
-  color: white;
-  font-weight: 600;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: #FFFFFF;
+    font-weight: 600;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .compose-form .send-button:hover {
-  background-color: #218838;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #218838;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Bulk delete button */
 .bulk-delete-button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 12px;
-  margin-bottom: 15px;
-  background-color: #dc3545;
-  color: white;
-  font-weight: 600;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+    width: 100%;
+    padding: 10px;
+    margin-top: 12px;
+    margin-bottom: 15px;
+    background-color: #800000;
+    color: #FFFFFF;
+    font-weight: 600;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .bulk-delete-button:hover {
-  background-color: #c82333;
+    background-color: #6a0000;
 }
 
-/* Responsive tweaks */
 @media (max-width: 768px) {
-  .messages-top-info-bar {
-    padding-left: 0;
-    padding-right: 0;
-  }
+    .messages-top-info-bar {
+        padding-left: 0;
+        padding-right: 0;
+    }
 
-  .messages-page-title {
-    font-size: 22px;
-  }
+    .messages-page-title {
+        font-size: 22px;
+    }
 }
 
 .dark-theme .messages-page-title {
-  color: #fff;
+    color: #e0f5fa;
+}
+.dark-theme .messages-description {
+    color: #BBBBBB;
 }
 .dark-theme .message-item {
-  background-color: #2c2c2c;
-  border-color: #444;
+    background-color: #1a1a1a;
+    border-color: #333333;
+}
+.dark-theme .message-item:hover {
+    background-color: #2a2a2a;
+    border-color: #555555;
+}
+.dark-theme .message-item.selected {
+    background-color: #004085;
+    border-color: #0056b3;
+}
+.dark-theme .message-sender {
+    color: #e0e0e0;
+}
+.dark-theme .message-sender.you {
+    color: #4CAF50;
+}
+.dark-theme .message-sender.doctor {
+    color: #ff5555;
+}
+.dark-theme .message-sender.patient {
+    color: #007bff;
+}
+.dark-theme .message-time {
+    color: #AAAAAA;
+}
+.dark-theme .message-subject {
+    color: #FFFFFF;
+}
+.dark-theme .message-snippet {
+    color: #CCCCCC;
+}
+.dark-theme .compose-form {
+    background-color: #1a1a1a;
+    border-color: #333333;
+}
+.dark-theme .compose-form .input-field {
+    background-color: #222222;
+    border-color: #444444;
+    color: #FFFFFF;
+}
+.dark-theme .compose-form .input-field::placeholder {
+    color: #777777;
+}
+.dark-theme .compose-form .input-field:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.4);
 }

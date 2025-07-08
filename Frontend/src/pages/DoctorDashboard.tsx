@@ -30,7 +30,6 @@ const DoctorDashboard: React.FC = () => {
   const [consultationsDone, setConsultationsDone] = useState<number>(0);
   const [pendingMessages, setPendingMessages] = useState<number>(0);
 
-  // Function to fetch all dashboard data
   const fetchDoctorDashboardData = async () => {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     const userId = session?.user?.id;
@@ -41,7 +40,6 @@ const DoctorDashboard: React.FC = () => {
     }
 
     try {
-      // Fetch doctor information from both users and doctors tables
       const { data: doctorData, error: doctorError } = await supabase
         .from('doctors')
         .select(`
@@ -68,7 +66,6 @@ const DoctorDashboard: React.FC = () => {
           is_available: false
         });
       } else {
-        // Use individual names from doctors table if available, otherwise parse from full_name
         const parseFullName = (fullName: string) => {
           const nameParts = fullName.trim().split(' ');
           if (nameParts.length === 1) {
@@ -96,7 +93,6 @@ const DoctorDashboard: React.FC = () => {
         });
       }
 
-      // Fetch Today's Appointments
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const tomorrow = new Date(today);
@@ -149,7 +145,6 @@ const DoctorDashboard: React.FC = () => {
         }
       }
 
-      // Fetch Consultations Done
       const { count: consultationsCount, error: notesError } = await supabase
         .from('consultation_notes')
         .select('*', { count: 'exact' })
@@ -161,7 +156,6 @@ const DoctorDashboard: React.FC = () => {
         setConsultationsDone(consultationsCount || 0);
       }
 
-      // Fetch Pending Messages
       const { count: messagesCount, error: messagesError } = await supabase
         .from('session_messages')
         .select('*', { count: 'exact' })
@@ -187,7 +181,6 @@ const DoctorDashboard: React.FC = () => {
   useEffect(() => {
     fetchDoctorDashboardData();
 
-    // Listen for profile updates
     const handleProfileUpdate = () => {
       fetchDoctorDashboardData();
     };
@@ -201,12 +194,12 @@ const DoctorDashboard: React.FC = () => {
 
   const handleSaveNotes = async () => {
     if (!consultationNotes.trim()) {
-      alert('Please enter consultation notes before saving.');
+      console.log('Please enter consultation notes before saving.');
       return;
     }
 
     if (!selectedPatientId) {
-      alert('Please select a patient.');
+      console.log('Please select a patient.');
       return;
     }
 
@@ -214,7 +207,7 @@ const DoctorDashboard: React.FC = () => {
     const doctorId = session?.user?.id;
 
     if (!doctorId) {
-      alert('Doctor not logged in.');
+      console.log('Doctor not logged in.');
       return;
     }
 
@@ -231,12 +224,11 @@ const DoctorDashboard: React.FC = () => {
 
     if (insertError) {
       console.error('Error saving note:', insertError.message);
-      alert('Failed to save note: ' + insertError.message);
+      console.log('Failed to save note: ' + insertError.message);
     } else {
-      alert('Consultation notes saved successfully!');
+      console.log('Consultation notes saved successfully!');
       setConsultationNotes('');
       
-      // Update consultations count
       const { count: newConsultationsCount } = await supabase
         .from('consultation_notes')
         .select('*', { count: 'exact' })
@@ -248,15 +240,14 @@ const DoctorDashboard: React.FC = () => {
 
   const handleSearch = () => {
     if (!searchQuery.trim()) {
-      alert('Please enter a patient name or ID to search.');
+      console.log('Please enter a patient name or ID to search.');
       return;
     }
 
     console.log(`Searching for patient: ${searchQuery}`);
-    alert(`Searching for: ${searchQuery} (Search functionality not yet implemented)`);
+    console.log(`Searching for: ${searchQuery} (Search functionality not yet implemented)`);
   };
 
-  // Get display name for welcome message
   const getDisplayName = () => {
     if (doctorInfo?.first_name && doctorInfo?.last_name) {
       return `${doctorInfo.first_name} ${doctorInfo.last_name}`;

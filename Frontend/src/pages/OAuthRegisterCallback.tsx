@@ -22,7 +22,6 @@ const OAuthRegisterCallback = () => {
       const email = user.email;
       const userId = user.id;
 
-      // Step 1: Check if email is already in your `users` table
       const { data: existingUser } = await supabase
         .from('users')
         .select('email')
@@ -30,14 +29,12 @@ const OAuthRegisterCallback = () => {
         .single();
 
       if (existingUser) {
-        // ❌ Already registered — reject
         await supabase.auth.signOut();
         alert('This Google account is already registered in MediBridge.');
         navigate('/');
         return;
       }
 
-      // ✅ Proceed with registration
       const selectedRole = localStorage.getItem('selectedRole');
       localStorage.removeItem('selectedRole');
 

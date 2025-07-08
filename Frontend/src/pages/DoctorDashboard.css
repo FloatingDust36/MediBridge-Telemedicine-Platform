@@ -1,52 +1,15 @@
-/* src/pages/DoctorDashboard.css */
-
-/*
-   *** GLOBAL STYLES - IMPORTANT ***
-   These 'body' styles should *NOT* be here. They belong in a single global CSS file
-   (e.g., src/index.css or src/global.css) to avoid conflicts and ensure consistency.
-   Please make sure these are defined globally and then REMOVE them from this file.
-*/
-/*
-body {
-  margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background-color: #f0f2f5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-*/
-
-/*
-   The original .doctor-panel-container and Navbar-related styles were removed.
-   They should not be present in this file, as they are now handled by Layout.tsx and Navbar.css.
-*/
-
-/*
-   This is the new main container for the Doctor Dashboard's unique content.
-   It is rendered inside the Layout component's <main> element.
-*/
 .main-content-area.doctor-dashboard-wrapper {
-    padding: 60px; /* General padding around the dashboard sections */
-    padding-bottom: 25px; /* Consistent padding at the bottom */
-
-    width: 100%; /* Ensures it takes full available width within Layout's <main> */
-    margin: 0 auto; /* Centers the content wrapper horizontally within Layout's <main> */
-    box-sizing: border-box; /* Ensures padding and border are included in the element's total width/height */
-
-    display: flex; /* Make this a flex container */
-    flex-direction: column; /* Stack its children (welcome, summary, main sections) vertically */
-    align-items: center; /* Horizontally center individual flex items (like the welcome section) if they are narrower than 100% */
-
-    flex-grow: 1; /* CRUCIAL: Makes this container expand vertically to fill available space
-                     within its parent (<main> in Layout.tsx), thereby pushing the Footer to the bottom. */
-    background-color: #f0f2f5; /* Apply the page-specific background color here */
+    padding: 60px;
+    padding-bottom: 25px;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    background-color: #f0f2f5;
 }
-
-/* All other existing dashboard-specific styles for .welcome-section, .summary-cards,
-   .card, .main-sections, .section-left, .section-right, .panel-box, etc. */
 
 .welcome-section {
   background-color: #e0f7fa;
@@ -129,9 +92,9 @@ body {
 
 .section-left {
   flex: 2 1 0%;
-  display: flex; /* Make section-left a flex container */
-  flex-direction: column; /* Stack its children (panel-boxes) vertically */
-  gap: 20px; /* Space between panel-boxes */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   box-sizing: border-box;
   min-width: 0;
 }
@@ -185,7 +148,6 @@ body {
   margin: 5px 0 0 0;
 }
 
-/* --- FIXED CONSULTATION NOTES SECTION --- */
 .add-consultation-notes.panel-box {
     display: flex;
     flex-direction: column;
@@ -302,7 +264,6 @@ body {
     background-color: #ccc;
 }
 
-/* Search patient records specific styles */
 .search-patient-records.panel-box {
     display: flex;
     flex-direction: column;
@@ -313,7 +274,6 @@ body {
     margin-bottom: 0;
 }
 
-/* Responsive adjustments */
 @media (max-width: 992px) {
   .summary-cards {
     justify-content: center;

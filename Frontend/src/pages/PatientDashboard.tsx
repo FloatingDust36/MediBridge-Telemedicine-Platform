@@ -1,6 +1,5 @@
-import { Link } from "react-router-dom";
 import supabase from '../lib/supabaseClient';
-import React, { useState, useEffect, useCallback } from "react"; // Added useCallback
+import React, { useState, useEffect, useCallback } from "react";
 import "./PatientDashboard.css";
 import logo from '../assets/MediBridge_LogoClear.png';
 
@@ -85,18 +84,16 @@ const PatientDashboard: React.FC = () => {
   const [patientData, setPatientData] = useState<any>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Wrap fetchPatientData in useCallback to prevent re-creation on every render
   const fetchPatientData = useCallback(async () => {
     const { data: { session }, error } = await supabase.auth.getSession();
     const userId = session?.user?.id;
 
     if (!userId) {
       console.error('No user session found');
-      setPatientData(null); // Clear data if no user session
+      setPatientData(null);
       return;
     }
 
-    // Fetch from 'users' first to get the full_name, email, and other user-related data
     const { data: userProfile, error: userError } = await supabase
       .from('users')
       .select('full_name, email, phone_number, date_of_birth, address, role')
@@ -109,7 +106,6 @@ const PatientDashboard: React.FC = () => {
       return;
     }
 
-    // Fetch from 'patients' for patient-specific data
     const { data: patientDetails, error: patientError } = await supabase
       .from('patients')
       .select('first_name, last_name, middle_name, contact_number, emergency_contact, allergies')
@@ -118,8 +114,6 @@ const PatientDashboard: React.FC = () => {
 
     if (patientError) {
       console.error('Error fetching patient details:', patientError.message);
-      // It's possible for a user to exist but not yet have a patient profile
-      // In this case, we still want to show what we have from the user table.
       setPatientData({
         user_id: userId,
         full_name: userProfile?.full_name || '',
@@ -127,19 +121,17 @@ const PatientDashboard: React.FC = () => {
         phone_number: userProfile?.phone_number || '',
         date_of_birth: userProfile?.date_of_birth || '',
         address: userProfile?.address || '',
-        role: userProfile?.role || 'patient', // Default to patient if not explicitly set
-        // Default patient-specific fields if patientDetails is null
+        role: userProfile?.role || 'patient',
         first_name: '',
         last_name: '',
         middle_name: '',
-        contact_number: userProfile?.phone_number || '', // Fallback to user's phone
+        contact_number: userProfile?.phone_number || '',
         emergency_contact: '',
         allergies: '',
       });
       return;
     }
 
-    // Combine data from both tables
     setPatientData({
       user_id: userId,
       full_name: userProfile?.full_name || '',
@@ -147,8 +139,7 @@ const PatientDashboard: React.FC = () => {
       phone_number: userProfile?.phone_number || '',
       date_of_birth: userProfile?.date_of_birth || '',
       address: userProfile?.address || '',
-      role: userProfile?.role || 'patient', // Default to patient
-      
+      role: userProfile?.role || 'patient',
       first_name: patientDetails?.first_name || '',
       last_name: patientDetails?.last_name || '',
       middle_name: patientDetails?.middle_name || '',
@@ -156,12 +147,11 @@ const PatientDashboard: React.FC = () => {
       emergency_contact: patientDetails?.emergency_contact || '',
       allergies: patientDetails?.allergies || '',
     });
-  }, []); // Empty dependency array means this function is created once
+  }, []);
 
   useEffect(() => {
     fetchPatientData();
 
-    // Listen for custom event to refetch data
     const handleProfileUpdate = () => {
       console.log('Patient profile updated event received. Refetching dashboard data...');
       fetchPatientData();
@@ -171,7 +161,7 @@ const PatientDashboard: React.FC = () => {
     return () => {
       window.removeEventListener('patientProfileUpdated', handleProfileUpdate);
     };
-  }, [fetchPatientData]); // Re-run effect if fetchPatientData changes (though with useCallback it won't)
+  }, [fetchPatientData]);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);

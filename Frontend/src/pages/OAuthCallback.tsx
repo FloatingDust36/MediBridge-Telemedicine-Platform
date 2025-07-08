@@ -1,4 +1,3 @@
-// src/pages/OAuthCallback.tsx
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../lib/supabaseClient';
@@ -23,7 +22,6 @@ const OAuthCallback = () => {
     const user = session.user;
     const userId = user.id;
 
-    // Check if user exists in your `users` table
     const { data: existingUser, error: lookupError } = await supabase
       .from('users')
       .select('*')
@@ -31,14 +29,12 @@ const OAuthCallback = () => {
       .single();
 
     if (lookupError || !existingUser) {
-      // ❌ Not registered — log out and redirect
       await supabase.auth.signOut();
       alert('This Google account is not registered in MediBridge.');
       navigate('/');
       return;
     }
 
-    // ✅ User exists — proceed
     const role = existingUser.role;
 
     if (role === 'doctor') {
