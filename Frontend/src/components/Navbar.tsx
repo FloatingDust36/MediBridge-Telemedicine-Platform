@@ -364,10 +364,11 @@ const Navbar: React.FC<NavbarProps> = ({ userType, onUserTypeChange }) => {
           { label: "Home", path: "/" },
           { label: "Services", path: "/services" },
           { label: "About Us", path: "/about" },
-          { label: "Reviews", path: "/reviews" },
+          //{ label: "Reviews", path: "/reviews" },
         ];
       case 'doctor':
         return [
+          { label: "EMERGENCY", path: "/emergency" },
           { label: "Dashboard", path: "/doctordashboard" },
           { label: "Consultation", path: "/consultation" },
           { label: "Messages", path: "/messages" },
@@ -376,6 +377,7 @@ const Navbar: React.FC<NavbarProps> = ({ userType, onUserTypeChange }) => {
         ];
       case 'patient':
         return [
+          { label: "EMERGENCY", path: "/emergency" },
           { label: "Dashboard", path: "/patientdashboard" },
           { label: "Consultation", path: "/consultation" },
           { label: "Messages", path: "/messages" },
@@ -418,11 +420,6 @@ const Navbar: React.FC<NavbarProps> = ({ userType, onUserTypeChange }) => {
           </>
         ) : (
           <>
-            {currentUser && (
-              <li className="user-info">
-                Welcome, {currentUser.full_name || currentUser.email}
-              </li>
-            )}
             <li onClick={handleLogout} className="logout-button">
               Logout
             </li>
@@ -475,7 +472,6 @@ const Navbar: React.FC<NavbarProps> = ({ userType, onUserTypeChange }) => {
                 {loading ? 'Logging in...' : 'Submit'}
               </button>
               <div className="social-icons">
-                <img src={facebookIcon} alt="Facebook Login" className="social-img" />
                 <img 
                   src={googleIcon} 
                   alt="Google Login" 
@@ -483,7 +479,6 @@ const Navbar: React.FC<NavbarProps> = ({ userType, onUserTypeChange }) => {
                   onClick={handleGoogleLogin}
                   style={{ cursor: 'pointer' }}
                 />
-                <img src={discordIcon} alt="Discord Login" className="social-img" />
               </div>
             </form>
           </motion.div>
@@ -586,7 +581,6 @@ const Navbar: React.FC<NavbarProps> = ({ userType, onUserTypeChange }) => {
                 {loading ? 'Registering...' : 'Register'}
               </button>
               <div className="social-icons">
-                <img src={facebookIcon} alt="Facebook" className="social-img" />
                 <img 
                   src={googleIcon} 
                   alt="Google" 
@@ -594,7 +588,6 @@ const Navbar: React.FC<NavbarProps> = ({ userType, onUserTypeChange }) => {
                   onClick={handleGoogleRegister} 
                   style={{ cursor: 'pointer' }} 
                 />
-                <img src={discordIcon} alt="Discord" className="social-img" />
               </div>
             </form>
           </motion.div>
