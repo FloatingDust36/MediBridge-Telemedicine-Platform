@@ -1,8 +1,7 @@
-// Frontend/src/pages/ChatbotPage.tsx
-
 import { useState, useEffect, useCallback } from 'react';
 import ChatWindow from '../components/ChatWindow';
 import HistorySidebar from '../components/HistorySidebar';
+import { useChatStore } from '../store/chatStore'; // Import our new store
 import './ChatbotPage.css';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -28,10 +27,9 @@ const LoadingSpinner = () => (
 );
 
 const ChatbotPage = () => {
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [activeSessionId, setActiveSessionId] = useState<string | null>(
-    () => sessionStorage.getItem('activeSessionId') || null
-  );
+  // Get state and actions from the global store instead of local useState
+  const { sessions, activeSessionId, setSessions, setActiveSessionId } = useChatStore();
+  
   const [isAppLoading, setIsAppLoading] = useState(true);
   const userId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
   
@@ -40,19 +38,13 @@ const ChatbotPage = () => {
       const response = await fetch(`${API_URL}/sessions/user/${userId}`);
       if (!response.ok) throw new Error("Failed to fetch sessions");
       const data = await response.json();
-      setSessions(data);
+      setSessions(data); // This now calls the action from our global store
     } catch (error) {
       console.error("Failed to fetch sessions:", error);
     }
-  }, [userId]);
+  }, [userId, setSessions]);
 
-  useEffect(() => {
-    if (activeSessionId) {
-      sessionStorage.setItem('activeSessionId', activeSessionId);
-    } else {
-      sessionStorage.removeItem('activeSessionId');
-    }
-  }, [activeSessionId]);
+  // The useEffects for sessionStorage are no longer needed here.
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -63,7 +55,7 @@ const ChatbotPage = () => {
   }, [fetchSessions]);
 
   const handleSelectSession = (sessionId: string) => {
-    setActiveSessionId(sessionId);
+    setActiveSessionId(sessionId); // This now calls the store's action
   };
 
   const handleNewChat = useCallback(async () => {
@@ -82,26 +74,30 @@ const ChatbotPage = () => {
     } catch (error) {
       console.error("Failed to start a new session:", error);
     }
-  }, [userId, fetchSessions]);
+  }, [userId, fetchSessions, setActiveSessionId]);
 
   const handleDeleteSession = useCallback(async (sessionIdToDelete: string) => {
     if (!window.confirm("Are you sure you want to delete this conversation?")) return;
     
-    const previousSessions = sessions;
-    setSessions(prev => prev.filter(s => s.id !== sessionIdToDelete));
+    // Optimistically update the UI by creating the new sessions list
+    const updatedSessions = sessions.filter(s => s.id !== sessionIdToDelete);
+    setSessions(updatedSessions); // Update the global store
+
     if (activeSessionId === sessionIdToDelete) {
       setActiveSessionId(null);
     }
-    // Remove the deleted session's messages from the session storage cache
-    sessionStorage.removeItem(`messages_${sessionIdToDelete}`);
+
     try {
       const response = await fetch(`${API_URL}/session/${sessionIdToDelete}`, { method: 'DELETE' });
-      if (!response.ok) setSessions(previousSessions);
+      if (!response.ok) {
+        // If the delete fails, refetch from the server to restore the state
+        fetchSessions();
+      }
     } catch (error) {
       console.error("Failed to delete session:", error);
-      setSessions(previousSessions);
+      fetchSessions(); // Restore state on error
     }
-  }, [sessions, activeSessionId]);
+  }, [sessions, activeSessionId, setSessions, setActiveSessionId, fetchSessions]);
 
   const handleMessageSent = useCallback((sessionId: string) => {
     const currentSession = sessions.find(s => s.id === sessionId);
@@ -126,10 +122,13 @@ const ChatbotPage = () => {
           isLoading={isAppLoading}
         />
         <ChatWindow 
-          sessionId={activeSessionId}
+          // The ChatWindow now gets its active session ID directly from the store,
+          // so we don't need to pass it as a prop.
+          // We will update this component in the next step.
           onTriageComplete={() => fetchSessions()}
           onMessageSent={() => {
-            if (activeSessionId) handleMessageSent(activeSessionId);
+            const currentActiveId = useChatStore.getState().activeSessionId;
+            if (currentActiveId) handleMessageSent(currentActiveId);
           }}
         />
       </div>
