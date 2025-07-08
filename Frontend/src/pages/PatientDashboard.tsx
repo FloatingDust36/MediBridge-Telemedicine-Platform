@@ -3,31 +3,29 @@ import React, { useState, useEffect, useCallback } from "react";
 import "./PatientDashboard.css";
 import logo from '../assets/MediBridge_LogoClear.png';
 
+interface AppointmentItem {
+  id: string;
+  doctorName: string;
+  date: string;
+  time: string;
+  isToday: boolean;
+}
+
 const PatientDashboardSection: React.FC<{ data: any }> = ({ data }) => {
   if (!data) return <div style={{ color: 'black' }}>Loading patient info...</div>;
-
-  // Calculate age based on date_of_birth
-  const calculateAge = (dobString: string) => {
-    if (!dobString) return 'N/A';
-    const dob = new Date(dobString);
-    const today = new Date();
-    let age = today.getFullYear() - dob.getFullYear();
-    const m = today.getMonth() - dob.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-      age--;
-    }
-    return `${age} years`;
-  };
 
   return (
     <div className="card-base patient-dashboard-section">
       <h3 className="patient-dashboard-section-title">📈 Patient Overview</h3>
       <div className="card-content patient-dashboard-section-content">
         <p><strong>Name:</strong> {data.full_name}</p>
-        <p><strong>Age:</strong> {calculateAge(data.date_of_birth)}</p>
+        <p><strong>Age:</strong> {
+          data.date_of_birth
+            ? `${Math.floor((new Date().getTime() - new Date(data.date_of_birth).getTime()) / (1000 * 60 * 60 * 24 * 365.25))} years`
+            : 'N/A'
+        }</p>
         <p><strong>Address:</strong> {data.address}</p>
-        {/* Display 'Contact' from 'patients.contact_number', fallback to 'users.phone_number' */}
-        <p><strong>Contact:</strong> {data.contact_number || data.phone_number || 'N/A'}</p>
+        <p><strong>Contact:</strong> {data.contact_number}</p>
         <p><strong>Emergency Contact:</strong> {data.emergency_contact}</p>
         <p><strong>Allergies:</strong> {data.allergies || 'None reported'}</p>
       </div>
@@ -36,11 +34,99 @@ const PatientDashboardSection: React.FC<{ data: any }> = ({ data }) => {
 };
 
 const ConsultationAppointmentsSection: React.FC = () => {
+  const [appointments, setAppointments] = useState<AppointmentItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      setLoading(true);
+      const { data: { user }, error: sessionError } = await supabase.auth.getUser();
+      if (sessionError || !user) {
+        console.error("User not authenticated");
+        setLoading(false);
+        return;
+      }
+
+      const now = new Date().toISOString();
+
+      const { data, error } = await supabase
+        .from('appointments')
+        .select(`
+          id,
+          start_time,
+          end_time,
+          doctor_id,
+          doctors (
+            user_id,
+            users (
+              full_name
+            )
+          )
+        `)
+        .eq('patient_id', user.id)
+        .gte('start_time', now)
+        .order('start_time', { ascending: true });
+
+      if (error) {
+        console.error("Error fetching appointments:", error.message);
+        setAppointments([]);
+      } else {
+        const mapped = data.map((app: any) => {
+          const start = new Date(app.start_time);
+          const today = new Date();
+          const isToday =
+            start.getFullYear() === today.getFullYear() &&
+            start.getMonth() === today.getMonth() &&
+            start.getDate() === today.getDate();
+
+          return {
+            id: app.id,
+            doctorName: app.doctors?.users?.full_name
+              ? `Dr. ${app.doctors.users.full_name}`
+              : 'Unknown Doctor',
+            date: start.toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
+            }),
+            time: start.toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+            isToday,
+          };
+        });
+
+        setAppointments(mapped);
+      }
+
+      setLoading(false);
+    };
+
+    fetchAppointments();
+  }, []);
+
   return (
     <div className="card-base consultation-section">
       <h3 className="consultation-section-title">🗓️ Consultation Appointments</h3>
       <div className="card-content">
-        <p>No appointments to display.</p>
+        {loading ? (
+          <p>Loading appointments...</p>
+        ) : appointments.length > 0 ? (
+          <ul className="appointments-list">
+            {appointments.map((app) => (
+              <li key={app.id} className="appointment-item">
+                <strong>{app.doctorName}</strong><br />
+                {app.date} – {app.time}
+                {app.isToday && (
+                  <span className="today-indicator">• Today</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No appointments to display.</p>
+        )}
       </div>
     </div>
   );
@@ -60,7 +146,6 @@ const PatientDashboard: React.FC = () => {
       return;
     }
 
-    // Fetch user profile from 'users' table - This is the primary source for general user info
     const { data: userProfile, error: userError } = await supabase
       .from('users')
       .select('full_name, email, phone_number, date_of_birth, address, role')
@@ -73,7 +158,6 @@ const PatientDashboard: React.FC = () => {
       return;
     }
 
-    // Fetch patient specific details from 'patients' table
     const { data: patientDetails, error: patientError } = await supabase
       .from('patients')
       .select('first_name, last_name, middle_name, contact_number, emergency_contact, allergies')
@@ -82,59 +166,54 @@ const PatientDashboard: React.FC = () => {
 
     if (patientError) {
       console.error('Error fetching patient details:', patientError.message);
-      // If patientDetails are not found, fallback to userProfile data for core info
       setPatientData({
         user_id: userId,
         full_name: userProfile?.full_name || '',
         email: userProfile?.email || '',
         phone_number: userProfile?.phone_number || '',
-        date_of_birth: userProfile?.date_of_birth || '', // Get DOB from users table
-        address: userProfile?.address || '',             // Get Address from users table
+        date_of_birth: userProfile?.date_of_birth || '',
+        address: userProfile?.address || '',
         role: userProfile?.role || 'patient',
         first_name: '',
         last_name: '',
         middle_name: '',
-        contact_number: userProfile?.phone_number || '', // Fallback for contact
+        contact_number: userProfile?.phone_number || '',
         emergency_contact: '',
         allergies: '',
       });
       return;
     }
 
-    // Combine data from both tables, prioritizing `users` for `full_name`, `date_of_birth`, `address`
     setPatientData({
       user_id: userId,
-      full_name: userProfile?.full_name || '', // Dashboard relies on this for name
+      full_name: userProfile?.full_name || '',
       email: userProfile?.email || '',
       phone_number: userProfile?.phone_number || '',
-      date_of_birth: userProfile?.date_of_birth || '', // Dashboard relies on this for age
-      address: userProfile?.address || '',             // Dashboard relies on this for address
+      date_of_birth: userProfile?.date_of_birth || '',
+      address: userProfile?.address || '',
       role: userProfile?.role || 'patient',
       first_name: patientDetails?.first_name || '',
       last_name: patientDetails?.last_name || '',
       middle_name: patientDetails?.middle_name || '',
-      contact_number: patientDetails?.contact_number || userProfile?.phone_number || '', // Prefer patients contact, fallback to users phone
+      contact_number: patientDetails?.contact_number || userProfile?.phone_number || '',
       emergency_contact: patientDetails?.emergency_contact || '',
       allergies: patientDetails?.allergies || '',
     });
   }, []);
 
   useEffect(() => {
-    fetchPatientData(); // Initial data fetch when component mounts
+    fetchPatientData();
 
-    // --- CRITICAL CONNECTION POINT ---
-    // Event listener for the custom 'patientProfileUpdated' event dispatched from PatientProfile.tsx
     const handleProfileUpdate = () => {
       console.log('Patient profile updated event received. Refetching dashboard data...');
-      fetchPatientData(); // Re-fetch data to update the dashboard
+      fetchPatientData();
     };
     window.addEventListener('patientProfileUpdated', handleProfileUpdate);
 
-    // Cleanup: remove event listener when component unmounts
     return () => {
       window.removeEventListener('patientProfileUpdated', handleProfileUpdate);
     };
-  }, [fetchPatientData]); // Dependency array: useCallback ensures fetchPatientData reference is stable
+  }, [fetchPatientData]);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -168,6 +247,7 @@ const PatientDashboard: React.FC = () => {
       <section className="dashboard-section card-margin-bottom">
         <PatientDashboardSection data={patientData} />
       </section>
+
       <section className="consultation-section card-margin-bottom">
         <ConsultationAppointmentsSection />
       </section>
