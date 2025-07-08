@@ -368,7 +368,6 @@ const Navbar: React.FC<NavbarProps> = ({ userType, onUserTypeChange }) => {
         ];
       case 'doctor':
         return [
-          { label: "EMERGENCY", path: "/emergency" },
           { label: "Dashboard", path: "/doctordashboard" },
           { label: "Consultation", path: "/consultation" },
           { label: "Messages", path: "/messages" },

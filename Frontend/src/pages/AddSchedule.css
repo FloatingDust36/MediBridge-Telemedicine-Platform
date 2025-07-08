@@ -1,90 +1,110 @@
+
 .main-content-area.schedule-page-wrapper {
+    padding-top: 25px;
+    padding-bottom: 117.5px;
+    padding-top: 60px;
+    padding-bottom: 25px;
+    padding-left: 30px; 
+    padding-right: 30px; 
+
     width: 100%;
-    height: 100%;
-    padding-left: 100px;
-    padding-right: 100px;
+    max-width: 1200px; 
     margin: 0 auto;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
+
+    display: flex; 
+    flex-direction: column; 
     align-items: center;
-    flex-grow: 1;
-    background-color: #f0f5fa;
+
+    flex-grow: 1; 
+    
+    background-color: #e6e9ed;
+    
 }
+
+
 
 .schedule-top-info-bar {
     display: flex;
     flex-direction: column;
     margin-bottom: 25px;
     width: 100%;
-    align-items: flex-start;
+    align-items: flex-start; 
+   
 }
 
 .schedule-page-title {
     font-family: 'Segoe UI', sans-serif;
     font-weight: bold;
-    color: #333333;
+    color: #333;
     font-size: 26px;
     margin-bottom: 10px;
-    margin-top: 0;
+    margin-top: 0; 
 }
 
 .schedule-timestamp {
     font-family: 'Segoe UI', sans-serif;
-    color: #6C757D;
+    color: #777;
     font-size: 13px;
     margin-top: 5px;
 }
 
+
 .schedule-content-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-    width: 100%;
-    max-width: 1200px;
+    grid-template-columns: 1fr 1fr; 
+    gap: 25px; 
+    width: 100%; 
+     
+    max-width: 1100px; 
     box-sizing: border-box;
     margin-bottom: 118.5px;
     margin-bottom: 118.5px;
 }
 
+
 .card-base {
-    background-color: #FFFFFF;
+    background-color: white;
     border-radius: 8px;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
     box-sizing: border-box;
     border: 1px solid #c0c0c0;
-    flex-grow: 1;
+    flex-grow: 1; 
 }
 
 .card-title {
     font-family: 'Segoe UI', sans-serif;
     font-weight: 600;
-    color: #333333;
+    color: #333;
     font-size: 18px;
     margin-top: 0;
     margin-bottom: 15px;
 }
 
+
+/* --- Styles specific to Add Schedule Card --- */
 .add-schedule-card {
     max-width: 100%;
-    height: 55vh;
-    background-color: #F8F9FA;
+    height: 55vh; 
+    background-color: #f0f0f0;
     padding: 15px;
     border-radius: 5px;
-    border: 1px solid #E0E0E0;
+    border: 1px solid #e0e0e0;
     padding: 20px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex; 
+    flex-direction: column; 
 }
 
-.add-schedule-card .input-group {
+.add-schedule-card .input-group { 
     margin-bottom: 20px;
 }
 
 .add-schedule-card label {
     font-family: 'Segoe UI', sans-serif;
     font-size: 16px;
-    color: #333333;
+    color: #333;
     margin-bottom: 8px;
     display: block;
     font-weight: 500;
@@ -92,21 +112,23 @@
 
 .add-schedule-card .schedule-date-input,
 .add-schedule-card .schedule-time-input {
-    width: 100%;
+    width: 100%; 
     padding: 10px 15px;
-    border: 1px solid #A0A0A0;
+    border: 1px solid #c0c0c0;
     border-radius: 4px;
-    background-color: #FFFFFF;
+    background-color: #f8f8f8;
     font-family: 'Segoe UI', sans-serif;
     font-size: 15px;
-    color: #333333;
+    color: #555;
     box-sizing: border-box;
+    
 }
+
 
 .add-schedule-card .time-slot-title {
     font-family: 'Segoe UI', sans-serif;
     font-weight: 600;
-    color: #333333;
+    color: #333;
     font-size: 16px;
     margin-top: 15px;
     margin-bottom: 10px;
@@ -117,36 +139,37 @@
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 5px;
     margin-bottom: 5px;
+ 
 }
 
 .add-schedule-card .schedule-time-button {
     padding: 5px 5px;
-    border: 1px solid #C0C0C0;
+    border: 1px solid #c0c0c0;
     border-radius: 4px;
-    background-color: #F0F0F0;
+    background-color: #f0f0f0;
     font-family: 'Segoe UI', sans-serif;
     font-size: 14px;
-    color: #555555;
+    color: #555;
     cursor: pointer;
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .add-schedule-card .schedule-time-button:hover {
-    background-color: #E6E6E6;
-    border-color: #A0A0A0;
+    background-color: #e0e0e0;
+    border-color: #a0a0a0;
 }
 
 .add-schedule-card .schedule-time-button.active {
-    background-color: #5CA4DE;
-    color: #FFFFFF;
-    border-color: #5CA4DE;
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
     font-weight: bold;
 }
 
 .add-schedule-card .schedule-note {
     font-family: 'Segoe UI', sans-serif;
     font-size: 12px;
-    color: #6C757D;
+    color: #666;
     margin-top: 5px;
     line-height: 1.4;
 }
@@ -156,8 +179,8 @@
     padding: 12px 20px;
     border: none;
     border-radius: 4px;
-    background-color: #215A8F;
-    color: #FFFFFF;
+    background-color: #059669; 
+    color: rgb(255, 255, 255);
     font-family: 'Segoe UI', sans-serif;
     font-size: 16px;
     font-weight: 600;
@@ -165,30 +188,64 @@
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
     margin-top: -19px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    
+    margin-top: auto; 
 }
 
 .add-schedule-card .publish-schedule-button:hover {
-    background-color: #1A4770;
+    background-color: #047a55;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.existing-schedules-card {
 
+.existing-schedules-card {
+  
+    display: flex; 
+    flex-direction: column; 
+    height: 55vh; 
+}
+
+.existing-schedules-card .card-title {
+    margin-bottom: 15px; 
+    flex-shrink: 0; 
 }
 
 .existing-schedules-card .schedule-list {
     list-style: none;
     padding: 0;
     margin: 0;
+    flex-grow: 1;
+    overflow-y: auto; 
+    scrollbar-width: thin; 
+    scrollbar-color: #007bff #f1f1f1;
+}
+
+
+.existing-schedules-card .schedule-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.existing-schedules-card .schedule-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.existing-schedules-card .schedule-list::-webkit-scrollbar-thumb {
+  background: #007bff;
+  border-radius: 10px;
+}
+
+.existing-schedules-card .schedule-list::-webkit-scrollbar-thumb:hover {
+  background: #0056b3; 
 }
 
 .existing-schedules-card .schedule-item {
-    background-color: #F8F9FA;
+    background-color: #f8f8f8;
     padding: 15px;
     border-radius: 5px;
     margin-bottom: 10px;
-    border: 1px solid #E0E0E0;
-    display: flex;
+    border: 1px solid #e0e0e0;
+    display: flex; 
     justify-content: space-between;
     align-items: center;
 }
@@ -197,16 +254,16 @@
     margin-bottom: 0;
 }
 
-.existing-schedules-card .schedule-info {
+.existing-schedules-card .schedule-info { 
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
+    flex-grow: 1; 
 }
 
 .existing-schedules-card .schedule-details {
     font-family: 'Segoe UI', sans-serif;
     font-weight: 600;
-    color: #333333;
+    color: #333;
     font-size: 16px;
     display: block;
     margin-bottom: 5px;
@@ -214,29 +271,31 @@
 
 .existing-schedules-card .schedule-date-time {
     font-family: 'Segoe UI', sans-serif;
-    color: #6C757D;
+    color: #555;
     font-size: 14px;
 }
 
-.delete-schedule-button {
-    background-color: #8E445E;
-    color: #FFFFFF;
+.delete-schedule-button { 
+    background-color: #dc3545; 
+    color: white;
     border: none;
     border-radius: 4px;
     padding: 8px 12px;
     cursor: pointer;
     font-size: 16px;
-    margin-left: 15px;
+    margin-left: 15px; 
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
-    display: flex;
+    display: flex; 
     align-items: center;
     justify-content: center;
 }
 
 .delete-schedule-button:hover {
-    background-color: #7A3B4F;
+    background-color: #c82333;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
+
+
 
 @media (max-width: 1200px) {
     .main-content-area.schedule-page-wrapper {
@@ -262,16 +321,24 @@
         padding-left: 15px;
         padding-right: 15px;
     }
+  
+    .add-schedule-card,
+    .existing-schedules-card {
+        height: auto;
+        max-height: none; 
+    }
+    .existing-schedules-card .schedule-list {
+        max-height: 300px; 
+    }
     .existing-schedules-card .schedule-item {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: column; 
     }
     .existing-schedules-card .schedule-info {
-        margin-bottom: 10px;
+        margin-bottom: 10px; 
     }
     .delete-schedule-button {
-        width: 100%;
-        margin-left: 0;
+        width: 100%; 
+        margin-left: 0; 
     }
 }
 
@@ -296,13 +363,15 @@
     }
     .add-schedule-card .publish-schedule-button {
         font-size: 15px;
-        margin-top: 0px;
+        margin-top: auto; 
     }
     .delete-schedule-button {
         padding: 6px 10px;
         font-size: 14px;
     }
+    
 }
+/* Clock Time Picker Styles */
 
 .clock-time-picker-container {
     position: relative;
@@ -312,12 +381,12 @@
 .clock-time-picker-button {
     width: 100%;
     padding: 10px 15px;
-    border: 1px solid #A0A0A0;
+    border: 1px solid #c0c0c0;
     border-radius: 4px;
-    background-color: #FFFFFF;
+    background-color: #f8f8f8;
     font-family: 'Segoe UI', sans-serif;
     font-size: 15px;
-    color: #333333;
+    color: #555;
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -327,24 +396,24 @@
 }
 
 .clock-time-picker-button:hover {
-    border-color: #6C757D;
-    background-color: #F0F0F0;
+    border-color: #a0a0a0;
+    background-color: #f0f0f0;
 }
 
 .clock-time-picker-button:focus {
     outline: none;
-    border-color: #5CA4DE;
-    box-shadow: 0 0 0 2px rgba(92, 164, 222, 0.25);
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
 .clock-time-picker-text {
-    color: #333333;
+    color: #555;
 }
 
 .clock-time-picker-icon {
     width: 20px;
     height: 20px;
-    color: #6C757D;
+    color: #888;
 }
 
 .clock-time-picker-dropdown {
@@ -353,8 +422,8 @@
     top: 100%;
     left: 0;
     margin-top: 8px;
-    background-color: #FFFFFF;
-    border: 1px solid #E0E0E0;
+    background-color: white;
+    border: 1px solid #d1d5db;
     border-radius: 8px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     padding: 16px;
@@ -369,13 +438,13 @@
 .clock-time-picker-mode-title {
     font-size: 18px;
     font-weight: 500;
-    color: #333333;
+    color: #333;
     margin-bottom: 4px;
 }
 
 .clock-time-picker-current-time {
     font-size: 14px;
-    color: #6C757D;
+    color: #666;
 }
 
 .clock-time-picker-clock-container {
@@ -392,12 +461,12 @@
 .clock-time-picker-number {
     font-size: 14px;
     font-weight: 500;
-    fill: #333333;
+    fill: #374151;
     pointer-events: none;
 }
 
 .clock-time-picker-number.selected {
-    fill: #FFFFFF;
+    fill: white;
     font-weight: 600;
 }
 
@@ -409,7 +478,7 @@
 
 .clock-time-picker-ampm-container {
     display: flex;
-    background-color: #F0F0F0;
+    background-color: #f3f4f6;
     border-radius: 8px;
     padding: 4px;
 }
@@ -419,7 +488,7 @@
     border: none;
     border-radius: 6px;
     background-color: transparent;
-    color: #6C757D;
+    color: #6b7280;
     font-family: 'Segoe UI', sans-serif;
     font-size: 14px;
     font-weight: 500;
@@ -428,26 +497,28 @@
 }
 
 .clock-time-picker-ampm-button:hover {
-    color: #333333;
+    color: #374151;
 }
 
 .clock-time-picker-ampm-button.active {
-    background-color: #5CA4DE;
-    color: #FFFFFF;
+    background-color: #3b82f6;
+    color: white;
 }
 
 .clock-time-picker-instructions {
     text-align: center;
     font-size: 12px;
-    color: #6C757D;
+    color: #6b7280;
 }
 
+/* Responsive adjustments for the clock picker */
 @media (max-width: 768px) {
     .clock-time-picker-dropdown {
         right: 0;
         left: auto;
         min-width: 260px;
     }
+    
     .clock-time-picker-svg {
         width: 180px;
         height: 180px;
@@ -464,6 +535,7 @@
         max-width: 300px;
         margin-top: 0;
     }
+    
     .clock-time-picker-svg {
         width: 160px;
         height: 160px;
