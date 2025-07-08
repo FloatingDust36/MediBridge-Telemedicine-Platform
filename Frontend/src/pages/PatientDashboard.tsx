@@ -3,6 +3,15 @@ import React, { useState, useEffect, useCallback } from "react";
 import "./PatientDashboard.css";
 import logo from '../assets/MediBridge_LogoClear.png';
 
+interface AppointmentItem {
+  id: string;
+  doctorName: string;
+  date: string;
+  time: string;
+  isToday: boolean; // ← Add this
+}
+
+
 const PatientDashboardSection: React.FC<{ data: any }> = ({ data }) => {
   if (!data) return <div style={{ color: 'black' }}>Loading patient info...</div>;
 
@@ -59,11 +68,92 @@ const NotesSection: React.FC = () => {
 };
 
 const ConsultationAppointmentsSection: React.FC = () => {
+  const [appointments, setAppointments] = useState<AppointmentItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      setLoading(true);
+      const { data: { user }, error: sessionError } = await supabase.auth.getUser();
+      if (sessionError || !user) {
+        console.error("User not authenticated");
+        setLoading(false);
+        return;
+      }
+
+      const now = new Date().toISOString();
+
+      const { data, error } = await supabase
+        .from('appointments')
+        .select(`
+          id,
+          start_time,
+          end_time,
+          doctor_id,
+          doctors (
+            user_id,
+            users (
+              full_name
+            )
+          )
+        `)
+        .eq('patient_id', user.id)
+        .gte('start_time', now)
+        .order('start_time', { ascending: true });
+
+      if (error) {
+        console.error("Error fetching appointments:", error.message);
+        setAppointments([]);
+      } else {
+         const mapped = data.map((app: any) => {
+          const startTime = new Date(app.start_time);
+          const today = new Date();
+
+          const isToday =
+            startTime.getFullYear() === today.getFullYear() &&
+            startTime.getMonth() === today.getMonth() &&
+            startTime.getDate() === today.getDate();
+
+          return {
+            id: app.id,
+            doctorName: app.doctors?.users?.full_name ? `Dr. ${app.doctors.users.full_name}` : 'Unknown Doctor',
+            date: startTime.toLocaleDateString('en-US', {
+              month: 'long', day: 'numeric', year: 'numeric'
+            }),
+            time: startTime.toLocaleTimeString([], {
+              hour: '2-digit', minute: '2-digit'
+            }),
+            isToday: isToday
+          };
+        });
+        setAppointments(mapped);
+      }
+
+      setLoading(false);
+    };
+
+    fetchAppointments();
+  }, []);
+
   return (
     <div className="card-base consultation-section">
       <h3 className="consultation-section-title">🗓️ Consultation Appointments</h3>
       <div className="card-content">
-        <p>No appointments to display.</p>
+        {loading ? (
+          <p>Loading appointments...</p>
+        ) : appointments.length > 0 ? (
+          <ul className="appointments-list">
+          {appointments.map((app) => (
+            <li key={app.id} className="appointment-item">
+              <strong>{app.doctorName}</strong><br />
+              {app.date} – {app.time}
+              {app.isToday && <span className="today-indicator"> •Today</span>}
+            </li>
+          ))}
+        </ul>
+        ) : (
+          <p>No appointments to display.</p>
+        )}
       </div>
     </div>
   );

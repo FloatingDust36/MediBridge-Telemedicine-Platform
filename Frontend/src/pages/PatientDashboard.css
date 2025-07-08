@@ -321,4 +321,21 @@ body {
         font-size: 14px;
         padding: 8px 12px;
     }
+
+
+
+    .today-indicator {
+  color: red;
+  font-weight: bold;
+  margin-left: 8px;
+  animation: blink 1.2s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+
 }
