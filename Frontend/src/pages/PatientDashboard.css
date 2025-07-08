@@ -1,7 +1,10 @@
+/* src/pages/PatientDashboard.css */
+
+/* General */
 body {
     margin: 0;
     font-family: "Segoe UI", sans-serif;
-    background-color: #f0f5fa;
+    background-color: #e6e9ed;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -12,14 +15,15 @@ body {
     align-items: center;
     width: 100vw;
     min-height: 100vh;
-    background-color: #f0f5fa;
+    background-color: #e6e9ed;
 }
 
+/* Main Content Area - Adjust padding-top to clear fixed navbar */
 .main-content-area {
     padding: 20px 30px;
     width: 100%;
     box-sizing: border-box;
-    padding-top: 60px;
+    padding-top: 60px; /* Space for the fixed navbar (navbar height + some margin) */
 }
 
 .top-info-bar {
@@ -33,7 +37,7 @@ body {
 .page-title {
     font-family: 'Segoe UI', sans-serif;
     font-weight: bold;
-    color: #007bff;
+    color: #333;
     font-size: 26px;
     margin-bottom: 10px;
     margin-top: 0;
@@ -46,12 +50,24 @@ body {
     margin-bottom: 10px;
 }
 
+/* Make only the profile image container clickable */
+.clickable-profile-pic {
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.clickable-profile-pic:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+
 .profile-image-container {
     width: 50px;
     height: 50px;
     border-radius: 50%;
     overflow: hidden;
-    border: 2px solid #FFFFFF;
+    border: 2px solid white;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -69,7 +85,7 @@ body {
 .medical-profile-label {
     font-family: 'Segoe UI', sans-serif;
     font-weight: 600;
-    color: #800000;
+    color: #007bff;
     font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -77,44 +93,47 @@ body {
 
 .welcome-message {
     font-family: 'Segoe UI', sans-serif;
-    color: #333333;
+    color: #444;
     font-size: 18px;
     font-weight: 500;
 }
 
 .current-timestamp {
     font-family: 'Segoe UI', sans-serif;
-    color: #6C757D;
+    color: #777;
     font-size: 13px;
     margin-top: 5px;
 }
 
+/* Card Base Styles (for all dashboard sections) */
 .card-base {
-    background-color: #FFFFFF;
+    background-color: white;
     border-radius: 8px;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
     box-sizing: border-box;
-    border: 1px solid #E0E0E0;
+    border: 1px solid #c0c0c0;
 }
 
 .card-content {
-    color: #333333;
+    color: black;
 }
 
 .card-margin-bottom {
     margin-bottom: 25px;
 }
 
+/* Common Header/Title Styling for all Sections (inside cards) */
 .card-base h3 {
     font-family: 'Segoe UI', sans-serif;
     font-weight: 600;
-    color: #333333;
+    color: #333;
     font-size: 18px;
     margin-top: 0;
     margin-bottom: 15px;
 }
 
+/* Common List Item Styling for all Sections */
 .card-base ul {
     list-style: none;
     padding-left: 0;
@@ -122,7 +141,7 @@ body {
 }
 
 .card-base li {
-    color: #333333;
+    color: #555;
     font-size: 15px;
     margin-bottom: 8px;
     line-height: 1.4;
@@ -131,77 +150,22 @@ body {
     margin-bottom: 0;
 }
 
+
+/* --- Styles specific to PatientDashboardSection --- */
 .patient-dashboard-section-content p {
     margin-bottom: 8px;
     font-size: 15px;
-    color: #333333;
+    color: #444;
 }
 .patient-dashboard-section-content p strong {
-    color: #000000;
+    color: #000;
     font-weight: 600;
 }
 
-.notes-section .notes-list {
-    max-height: 120px;
-    overflow-y: auto;
-    border-bottom: 1px solid #E0E0E0;
-    padding-bottom: 15px;
-    margin-bottom: 15px;
-}
-
-.notes-section .notes-list li {
-    background-color: #FDFDFD;
-    padding: 8px 12px;
-    border-radius: 5px;
-    margin-bottom: 6px;
-    color: #333333;
-    font-size: 14px;
-    line-height: 1.3;
-}
-
-.notes-section .add-note-textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #E0E0E0;
-    border-radius: 5px;
-    resize: vertical;
-    font-family: inherit;
-    font-size: 14px;
-    margin-bottom: 10px;
-    box-sizing: border-box;
-    min-height: 60px;
-}
-
-.notes-section .add-note-textarea:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
-}
-
-.notes-section .add-note-button {
-    width: 100%;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.notes-section .add-note-button:hover {
-    background-color: #0056b3;
-    transform: translateY(-1px);
-}
-.notes-section .add-note-button:active {
-    transform: translateY(0);
-}
-
+/* --- Styles specific to ConsultationAppointmentsSection --- */
 .consultation-section h4 {
     font-size: 1.1em;
-    color: #333333;
+    color: #333;
     margin-top: 15px;
     margin-bottom: 10px;
 }
@@ -214,49 +178,117 @@ body {
 .consultation-section .consultation-list li {
     margin-bottom: 6px;
     font-size: 14px;
-    color: #333333;
+    color: #555;
 }
 .consultation-section .consultation-list li strong {
-    color: #333333;
+    color: #333;
 }
 
-.prescriptions-section .prescriptions-list {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
+/* --- Modal Styles (Updated for Profile Picture) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
-.prescriptions-section .prescriptions-list li {
-    background-color: #F0F0F0;
-    padding: 10px 15px;
+
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 400px; /* Smaller max-width for picture modal */
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content for the pic modal */
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #007bff;
+    text-align: center;
+}
+
+.profile-pic-preview-container {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #eee;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+}
+
+.profile-pic-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.file-input {
+    margin-bottom: 20px;
+    width: 100%;
+    text-align: center; /* Center the input visually */
+    padding: 10px;
+    border: 1px solid #ddd;
     border-radius: 5px;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: #333333;
-}
-.prescriptions-section .prescriptions-list li:last-child {
-    margin-bottom: 0;
+    background-color: #f9f9f9;
 }
 
+.modal-actions {
+    margin-top: 20px; /* Reduced margin from previous, as no form fields */
+    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    width: 100%; /* Ensure buttons span full width of modal content */
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.modal-actions .save-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.modal-actions .save-button:hover {
+    background-color: #0056b3;
+}
+
+.modal-actions .cancel-button {
+    background-color: #ccc;
+    color: #333;
+}
+
+.modal-actions .cancel-button:hover {
+    background-color: #bbb;
+}
+
+
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        height: auto;
-        padding: 10px 15px;
-        gap: 10px;
-    }
-    .logo-text {
-        line-height: normal;
-    }
-    .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
-        width: 100%;
-    }
-    .nav-item-new {
-        line-height: normal;
-    }
-
     .main-content-area {
         padding: 20px;
         padding-top: 150px;
@@ -283,21 +315,6 @@ body {
 }
 
 @media (max-width: 480px) {
-    .navbar {
-        padding: 8px 10px;
-    }
-    .logo-img {
-        height: 30px;
-    }
-    .logo-text {
-        font-size: 1rem;
-    }
-    .nav-links {
-        gap: 10px;
-    }
-    .nav-item-new {
-        font-size: 14px;
-    }
     .main-content-area {
         padding: 15px;
         padding-top: 160px;
@@ -321,21 +338,4 @@ body {
         font-size: 14px;
         padding: 8px 12px;
     }
-
-
-
-    .today-indicator {
-  color: red;
-  font-weight: bold;
-  margin-left: 8px;
-  animation: blink 1.2s infinite;
-}
-
-@keyframes blink {
-  0% { opacity: 1; }
-  50% { opacity: 0.3; }
-  100% { opacity: 1; }
-}
-
-
 }
