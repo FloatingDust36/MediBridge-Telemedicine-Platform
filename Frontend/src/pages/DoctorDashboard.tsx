@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import supabase from '../lib/supabaseClient';
 import './DoctorDashboard.css';
+import logo from '../assets/MediBridge_LogoClear.png'; // Make sure this path is correct
 
 interface Appointment {
   id: string;
@@ -31,17 +32,17 @@ interface DoctorInfo {
 
 const DoctorDashboard: React.FC = () => {
   const [doctorInfo, setDoctorInfo] = useState<DoctorInfo | null>(null);
-  const [selectedPatient, setSelectedPatient] = useState<string>('');
-  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
-  const [consultationNotes, setConsultationNotes] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedPatient, setSelectedPatient] = useState<string>(''); // No longer needed for 'Add Patient Consultation Notes'
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null); // No longer needed for 'Add Patient Consultation Notes'
+  const [consultationNotes, setConsultationNotes] = useState<string>(''); // No longer needed for 'Add Patient Consultation Notes'
+  const [searchQuery, setSearchQuery] = useState<string>(''); // No longer needed for 'Search Patient Records'
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [patientList, setPatientList] = useState<{ name: string; id: string }[]>([]);
+  const [patientList, setPatientList] = useState<{ name: string; id: string }[]>([]); // No longer needed for 'Add Patient Consultation Notes'
   const [currentDate, setCurrentDate] = useState<string>('');
   const [consultationsDone, setConsultationsDone] = useState<number>(0);
   const [pendingMessages, setPendingMessages] = useState<number>(0);
 
-  const fetchDoctorDashboardData = async () => {
+  const fetchDoctorDashboardData = useCallback(async () => {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     const userId = session?.user?.id;
 
@@ -77,6 +78,7 @@ const DoctorDashboard: React.FC = () => {
           is_available: false
         });
       } else {
+        // Parse individual names from full_name as a fallback, if doctorData's name fields are empty
         const parseFullName = (fullName: string) => {
           const nameParts = fullName.trim().split(' ');
           if (nameParts.length === 1) {
@@ -142,17 +144,17 @@ const DoctorDashboard: React.FC = () => {
         }));
         setAppointments(formattedAppts);
 
+        // This section is now technically not needed if 'Add Patient Consultation Notes' is removed
         const patientListData = formattedAppts
           .filter(appt => appt.patients)
           .map(appt => ({
             name: `${appt.patients?.first_name} ${appt.patients?.last_name}`,
             id: appt.patients?.user_id || '',
           }));
-        setPatientList(patientListData);
-
+        setPatientList(patientListData); // You can keep this if patient list is used elsewhere
         if (patientListData.length > 0) {
-          setSelectedPatient(patientListData[0].name);
-          setSelectedPatientId(patientListData[0].id);
+          setSelectedPatient(patientListData[0].name); // Remove if not needed
+          setSelectedPatientId(patientListData[0].id); // Remove if not needed
         }
       }
 
@@ -167,7 +169,7 @@ const DoctorDashboard: React.FC = () => {
         .from('session_messages')
         .select('*', { count: 'exact' })
         .eq('receiver_id', userId)
-        .neq('sender_id', userId);
+        .neq('sender_id', userId); // Assuming doctor should not count messages they sent
 
       setPendingMessages(messagesCount || 0);
 
@@ -179,13 +181,14 @@ const DoctorDashboard: React.FC = () => {
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     }
-  };
+  }, []); // useCallback dependency array: fetchDoctorDashboardData has no external dependencies
 
   useEffect(() => {
     fetchDoctorDashboardData();
 
     const handleProfileUpdate = () => {
-      fetchDoctorDashboardData();
+      console.log('Doctor profile updated event received. Refetching dashboard data...');
+      fetchDoctorDashboardData(); // Re-fetch data to update the dashboard
     };
 
     window.addEventListener('doctorProfileUpdated', handleProfileUpdate);
@@ -193,43 +196,23 @@ const DoctorDashboard: React.FC = () => {
     return () => {
       window.removeEventListener('doctorProfileUpdated', handleProfileUpdate);
     };
-  }, []);
+  }, [fetchDoctorDashboardData]); // Dependency array for useEffect
 
+  // These handlers are no longer needed if the sections are removed
   const handleSaveNotes = async () => {
-    if (!consultationNotes.trim() || !selectedPatientId) return;
-
-    const { data: { session } } = await supabase.auth.getSession();
-    const doctorId = session?.user?.id;
-    if (!doctorId) return;
-
-    const selectedAppt = appointments.find(appt => appt.patients?.user_id === selectedPatientId);
-
-    const { error: insertError } = await supabase.from('consultation_notes').insert({
-      doctor_id: doctorId,
-      patient_id: selectedPatientId,
-      notes: consultationNotes,
-      appointment_id: selectedAppt?.id || null,
-    });
-
-    if (!insertError) {
-      setConsultationNotes('');
-      const { count: newConsultationsCount } = await supabase
-        .from('consultation_notes')
-        .select('*', { count: 'exact' })
-        .eq('doctor_id', doctorId);
-      setConsultationsDone(newConsultationsCount || 0);
-    }
+    // This function can be removed
   };
 
   const handleSearch = () => {
-    if (!searchQuery.trim()) return;
-    console.log(`Searching for patient: ${searchQuery}`);
+    // This function can be removed
   };
 
   const getDisplayName = () => {
+    // Prioritize individual first and last name from doctorInfo if available
     if (doctorInfo?.first_name && doctorInfo?.last_name) {
       return `${doctorInfo.first_name} ${doctorInfo.last_name}`;
     }
+    // Fallback to full_name, removing "Dr." prefix if present
     return doctorInfo?.full_name?.replace(/^Dr\.?\s*/, '') || 'Unknown';
   };
 
@@ -279,68 +262,6 @@ const DoctorDashboard: React.FC = () => {
             ) : (
               <p>No appointments for today.</p>
             )}
-          </div>
-
-          <div className="add-consultation-notes panel-box">
-            <h2>Add Patient Consultation Notes</h2>
-            <div className="form-group">
-              <label htmlFor="select-patient">Select Patient</label>
-              <select
-                id="select-patient"
-                className="input-field2"
-                value={selectedPatient}
-                onChange={(e) => {
-                  const selectedName = e.target.value;
-                  setSelectedPatient(selectedName);
-                  const patient = patientList.find(p => p.name === selectedName);
-                  setSelectedPatientId(patient ? patient.id : null);
-                }}
-              >
-                {patientList.length > 0 ? (
-                  patientList.map((patient, idx) => (
-                    <option value={patient.name} key={idx}>{patient.name}</option>
-                  ))
-                ) : (
-                  <option value="">No patients available</option>
-                )}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="consultation-details">Consultation Details</label>
-              <textarea
-                id="consultation-details"
-                className="input-field textarea-field"
-                placeholder="Enter consultation details, symptoms, diagnosis, treatment plan..."
-                value={consultationNotes}
-                onChange={(e) => setConsultationNotes(e.target.value)}
-                rows={5}
-              />
-            </div>
-
-            <button
-              className="save-notes-button"
-              onClick={handleSaveNotes}
-              disabled={!consultationNotes.trim() || !selectedPatientId}
-            >
-              Save Notes
-            </button>
-          </div>
-        </div>
-
-        <div className="section-right">
-          <div className="search-patient-records panel-box">
-            <h2>Search Patient Records</h2>
-            <input
-              type="text"
-              placeholder="Enter patient name or ID"
-              className="input-field"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button className="search-button" onClick={handleSearch}>
-              Search
-            </button>
           </div>
         </div>
       </div>

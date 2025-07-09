@@ -1,238 +1,258 @@
 .main-content-area.appointments-page-wrapper {
-    padding-top: 25px;
-    padding-bottom: 117.5px;
-    padding-top: 60px;
-    padding-bottom: 25px;
-    padding-left: 100px;
-    padding-right: 100px;
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-grow: 1;
-    background-color: #f0f5fa;
+    /*
+        The Layout component's <main> element applies a `padding-top: 60px`
+        to push content down from the fixed Navbar.
+        So, `padding-top` here is for *additional* internal spacing if needed,
+        or can be set to 0 if the Layout's padding is sufficient.
+        We'll keep a small internal padding here for the page title.
+    */
+    padding-top: 25px; /* Spacing from the Layout's padding-top, effectively adding more space */
+    padding-bottom: 117.5px; /* Spacing for the bottom of the page content before the footer */
+    padding-top: 60px; /* Spacing from the Layout's padding-top, effectively adding more space */
+    padding-bottom: 25px; /* Spacing for the bottom of the page content before the footer */
+    padding-left: 30px; /* General side padding for the content wrapper */
+    padding-right: 30px; /* General side padding for the content wrapper */
+
+    width: 100%; /* Ensures it takes full available width within Layout's <main> */
+    max-width: 1200px; /* Constrain the overall content width for readability on large screens */
+    margin: 0 auto; /* Centers the content wrapper horizontally within Layout's <main> */
+    box-sizing: border-box; /* Ensures padding and border are included in the element's total width/height */
+
+    display: flex; /* Make this a flex container */
+    flex-direction: column; /* Stack its children (info bar, content grid) vertically */
+    align-items: center; /* Horizontally center content (like the top info bar) within this wrapper */
+
+    flex-grow: 1; /* CRUCIAL: Makes this container expand vertically to fill available space
+                      within its parent (<main> in Layout.tsx), thereby pushing the Footer to the bottom. */
+    background-color: #e6e9ed; /* Apply the page-specific background color here */
+    
 }
 
+
+/* Top Info Bar (Page Title and Timestamp) */
 .appointments-top-info-bar {
     display: flex;
     flex-direction: column;
     margin-bottom: 25px;
-    width: 100%;
-    align-items: flex-start;
+    width: 100%; /* Important: ensure this takes full width of its parent (.appointments-page-wrapper) */
+    align-items: flex-start; /* Aligns text to the left within the info bar */
+    /* No padding-left/right here; let the .appointments-page-wrapper handle overall padding */
 }
 
 .appointments-page-title {
     font-family: 'Segoe UI', sans-serif;
     font-weight: bold;
-    color: #007bff;
+    color: #333;
     font-size: 26px;
     margin-bottom: 10px;
-    margin-top: 0;
+    margin-top: 0; /* Remove default top margin on H1 to control spacing precisely */
 }
 
 .appointments-timestamp {
     font-family: 'Segoe UI', sans-serif;
-    color: #6C757D;
+    color: #777;
     font-size: 13px;
     margin-top: 5px;
 }
 
+/* Content Grid (Booking Card and Upcoming Appointments) */
 .appointments-content-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-    width: 100%;
-    max-width: 1200px;
+    grid-template-columns: 1fr 1fr; /* Two columns for cards */
+    gap: 25px; /* Space between cards */
+    width: 100%; /* Ensure the grid takes full width of its parent */
+    /* Optional: If you want the grid to be narrower than the main-content-area,
+        you can add a max-width and margin: 0 auto here. */
+    max-width: 1100px; /* Constrain grid width if it gets too wide inside max-width: 1200px parent */
     box-sizing: border-box;
-    margin-bottom: 118.5px;
     margin-bottom: 118.5px;
 }
 
+/* Card Base Styles (These are common styles for all your dashboard cards) */
 .card-base {
-    background-color: #FFFFFF;
+    background-color: white;
     border-radius: 8px;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
     box-sizing: border-box;
-    border: 1px solid #E0E0E0;
-    flex-grow: 1;
+    border: 1px solid #c0c0c0;
+    flex-grow: 1; /* Allows cards to grow and distribute space, useful for grid layouts */
 }
 
 .card-title {
     font-family: 'Segoe UI', sans-serif;
     font-weight: 600;
-    color: #007bff;
+    color: #333;
     font-size: 18px;
     margin-top: 0;
     margin-bottom: 15px;
 }
 
-.doctor-preference-card {
+
+/* --- Styles specific to Doctor Preference Card (Booking) --- */
+.book-appointment-card { /* Using book-appointment-card as per your AppointmentsPage.tsx */
     max-width: 100%;
-    height: 55vh;
-    background-color: #ffffff;
+    /* height: 55vh; This height might need adjustment based on actual content */
+    background-color: #f0f0f0;
     padding: 15px;
     border-radius: 5px;
-    border: 1px solid #E0E0E0;
-    padding: 20px;
+    border: 1px solid #e0e0e0;
+    padding: 20px; /* Duplicate padding removed, kept this one */
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.doctor-preference-card .form-group {
+/* Adjusted class names to match AppointmentsPage.tsx */
+.book-appointment-card .input-group {
     margin-bottom: 20px;
-    margin-top: 15px;
-    max-width: 32.5%;
-    padding-top: 100px;
-    display: flex;
 }
 
-.form-group2 {
-    margin-bottom: 20px;
-    max-width: 500px;
-    display: flex;
-}
-
-.doctor-preference-card label {
+.book-appointment-card label {
     font-family: 'Segoe UI', sans-serif;
     font-size: 16px;
-    color: #333333;
+    color: #333;
     margin-bottom: 8px;
     display: block;
     font-weight: 500;
 }
 
-.doctor-preference-card .doctor-select {
-    width: 90%;
+.book-appointment-card .select-dropdown { /* Unified class for select inputs */
+    width: 100%; /* Changed from 90% to 100% for full width */
     padding: 10px 15px;
-    border: 1px solid #C0C0C0;
+    border: 1px solid #c0c0c0;
     border-radius: 4px;
-    background-color: #FFFFFF;
+    background-color: #f8f8f8;
     font-family: 'Segoe UI', sans-serif;
     font-size: 15px;
-    color: #333333;
+    color: #555;
     box-sizing: border-box;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236C757D'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 10px center;
     background-size: 1.5em;
     cursor: pointer;
 }
 
-.doctor-preference-card .select-time-title {
-    font-family: 'Segoe UI', sans-serif;
-    font-weight: 600;
-    color: #333333;
-    font-size: 16px;
-    margin-top: 15px;
-    margin-bottom: 10px;
-}
-
-.doctor-preference-card .time-slot-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 5px;
-    margin-bottom: 5px;
-}
-
-.doctor-preference-card .time-slot-button {
-    padding: 5px 5px;
-    border: 1px solid #C0C0C0;
-    border-radius: 4px;
-    background-color: #F0F0F0;
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 14px;
-    color: #555555;
-    cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-.doctor-preference-card .time-slot-button:hover {
-    background-color: #E0E0E0;
-    border-color: #A0A0A0;
-}
-
-.doctor-preference-card .time-slot-button.active {
-    background-color: #007bff;
-    color: #FFFFFF;
-    border-color: #007bff;
-    font-weight: bold;
-}
-
-.doctor-preference-card .time-slot-note {
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 12px;
-    color: #6C757D;
-    margin-top: 5px;
-    line-height: 1.4;
-}
-
-.doctor-preference-card .book-appointment-button {
+.book-appointment-card .book-appointment-button {
     width: 100%;
     padding: 12px 20px;
     border: none;
     border-radius: 4px;
-    background-color: #007bff;
-    color: #FFFFFF;
+    background-color: #059669; /* Green from your mockup */
+    color: rgb(255, 255, 255);
     font-family: 'Segoe UI', sans-serif;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
-    margin-top: 20px;
+    margin-top: 20px; /* Adjusted margin to ensure consistent spacing */
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.doctor-preference-card .book-appointment-button:hover {
-    background-color: #0056b3;
+.book-appointment-card .book-appointment-button:hover {
+    background-color: #047a55;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.upcoming-appointments-card .upcoming-appointments-list {
+/* --- Styles specific to Upcoming Appointments Card --- */
+.upcoming-appointments-card .appointment-list {
     list-style: none;
     padding: 0;
     margin: 0;
+    /* *** START: ADDITIONS FOR SCROLLABILITY *** */
+    max-height: 300px; /* Adjust this value as needed to control the visible height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding-right: 10px; /* Add padding to prevent content from touching the scrollbar */
+    /* Add a subtle scrollbar style if desired, though not strictly necessary */
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #888 #f1f1f1; /* Firefox (thumb color, track color) */
+    /* *** END: ADDITIONS FOR SCROLLABILITY *** */
 }
 
-.upcoming-appointments-card .upcoming-appointment-item {
-    background-color: #f0f5fa;
+/* For Webkit browsers (Chrome, Safari) */
+.upcoming-appointments-card .appointment-list::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+.upcoming-appointments-card .appointment-list::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color of the track */
+    border-radius: 4px;
+}
+
+.upcoming-appointments-card .appointment-list::-webkit-scrollbar-thumb {
+    background: #888; /* Color of the scroll thumb */
+    border-radius: 4px;
+}
+
+.upcoming-appointments-card .appointment-list::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color of the scroll thumb on hover */
+}
+
+
+.upcoming-appointments-card .appointment-item {
+    display: flex; /* Make the list item a flex container */
+    justify-content: space-between; /* Push details to left, button to right */
+    align-items: center; /* Vertically align items in the middle */
+    background-color: #f8f8f8;
     padding: 15px;
     border-radius: 5px;
     margin-bottom: 10px;
-    border: 1px solid #E0E0E0;
+    border: 1px solid #e0e0e0;
 }
 
-.upcoming-appointments-card .upcoming-appointment-item:last-child {
+.upcoming-appointments-card .appointment-item:last-child {
     margin-bottom: 0;
 }
 
-.upcoming-appointments-card .appointment-doctor {
-    font-family: 'Segoe UI', sans-serif;
-    font-weight: 600;
-    color: #007bff;
-    font-size: 16px;
-    display: block;
-    margin-bottom: 5px;
-}
-
-.upcoming-appointments-card .appointment-date-time {
-    font-family: 'Segoe UI', sans-serif;
-    color: #6C757D;
-    font-size: 14px;
-}
-
-.time-slot-section {
-    margin-bottom: 20px;
-    max-width: 500px;
+.upcoming-appointments-card .appointment-info {
     display: flex;
     flex-direction: column;
-    margin-top: 15px;
+    flex-grow: 1; /* Allow info to take available space and push the button to the right */
 }
 
-@media (max-width: 1200px) {
+.upcoming-appointments-card .appointment-details {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 600; /* Increased weight for doctor's name */
+    color: #333;
+    font-size: 16px;
+    display: block;
+    margin-bottom: 5px; /* Add some spacing below the doctor name */
+}
+
+.upcoming-appointments-card .appointment-date,
+.upcoming-appointments-card .appointment-time {
+    font-family: 'Segoe UI', sans-serif;
+    color: #555;
+    font-size: 14px;
+    display: block; /* Ensures each takes its own line */
+}
+
+
+/* Styles for the trash button */
+.delete-schedule-button {
+    background-color: #dc3545; /* Red color for delete */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 15px; /* Space from the schedule info */
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    display: flex; /* To center the trash icon if it's an icon */
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Prevent the button from shrinking on smaller screens */
+}
+
+.delete-schedule-button:hover {
+    background-color: #c82333;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) { /* Adjust breakpoint for max-width of main-content-area */
     .main-content-area.appointments-page-wrapper {
         padding-left: 20px;
         padding-right: 20px;
@@ -241,7 +261,7 @@
 
 @media (max-width: 768px) {
     .appointments-content-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Stack cards on smaller screens */
     }
     .appointments-top-info-bar {
         padding-left: 0;
@@ -252,9 +272,23 @@
         font-size: 22px;
     }
     .main-content-area.appointments-page-wrapper {
-        padding-top: 20px;
-        padding-left: 15px;
-        padding-right: 15px;
+        padding-top: 20px; /* Internal top padding for mobile */
+        padding-left: 15px; /* Adjust side padding for mobile */
+        padding-right: 15px; /* Adjust side padding for mobile */
+    }
+    .upcoming-appointments-card .appointment-item {
+        flex-direction: column; /* Stack info and button on small screens */
+        align-items: flex-start;
+    }
+    .upcoming-appointments-card .appointment-info {
+        margin-bottom: 10px; /* Space between info and button when stacked */
+    }
+    .delete-schedule-button {
+        width: 100%; /* Make button full width when stacked */
+        margin-left: 0; /* Remove left margin when stacked */
+    }
+    .upcoming-appointments-card .appointment-list {
+        max-height: 250px; /* Adjust max-height for smaller screens if needed */
     }
 }
 
@@ -265,7 +299,7 @@
     .main-content-area.appointments-page-wrapper {
         padding-left: 10px;
         padding-right: 10px;
-        padding-top: 15px;
+        padding-top: 15px; /* Slightly less padding on very small screens */
     }
     .card-base {
         padding: 15px;
@@ -273,12 +307,18 @@
     .card-title {
         font-size: 16px;
     }
-    .doctor-preference-card .time-slot-button,
-    .upcoming-appointments-card .appointment-date-time {
+    .upcoming-appointments-card .appointment-date-time { /* This class is no longer explicitly used for date/time spans, check if it's meant to target something else */
         font-size: 13px;
     }
-    .doctor-preference-card .book-appointment-button {
+    .book-appointment-card .book-appointment-button {
         font-size: 15px;
         margin-top: 0px;
+    }
+    .delete-schedule-button {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+    .upcoming-appointments-card .appointment-listg {
+        max-height: 200px; /* Adjust max-height for very small screens if needed */
     }
 }

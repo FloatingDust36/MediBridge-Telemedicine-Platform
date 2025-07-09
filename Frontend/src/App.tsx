@@ -17,7 +17,6 @@ import CompleteDoctorProfile from './pages/CompleteDoctorProfile';
 import CompletePatientProfile from './pages/CompletePatientProfile';
 
 import DoctorDashboard from './pages/DoctorDashboard';
-import OnlineConsultation from './pages/OnlineConsultation';
 import ConsultationSummary from './pages/ConsultationSummary';
 import AddSchedule from './pages/AddSchedule';
 
@@ -80,23 +79,66 @@ function App() {
     );
 
     // Initial check for session on app load
-    const checkSession = async () => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-            const user = session.user;
-            const userRole = (user.user_metadata?.user_role as UserRole) || 'patient';
-            setCurrentUser({
-                id: user.id,
-                role: userRole,
-                email: user.email || '',
-            });
-        } else {
-            // If no Supabase session, use the mock user for initial display
-            // Only set mock user if Supabase session is genuinely null
-            setCurrentUser(MOCK_USERS[mockUserRole]); // Set initial currentUser from mockUserRole
-        }
-        setLoadingUser(false);
-    };
+   const checkSession = async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (session) {
+    const user = session.user;
+    const userRole = (user.user_metadata?.user_role as UserRole) || 'patient';
+
+    setCurrentUser({
+      id: user.id,
+      role: userRole,
+      email: user.email || '',
+    });
+
+    // 🔍 1. Check if profile exists
+    if (userRole === 'patient') {
+      const { data: patientData, error: patientError } = await supabase
+        .from('patients')
+        .select('user_id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!patientData || patientError) {
+        // ❌ No patient profile: new user
+        navigate('/completepatientprofile');
+      } else {
+        // ✅ Existing patient
+        navigate('/patientdashboard');
+      }
+
+    } else if (userRole === 'doctor') {
+      const { data: doctorData, error: doctorError } = await supabase
+        .from('doctors')
+        .select('user_id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!doctorData || doctorError) {
+        // ❌ No doctor profile: new user
+        navigate('/completedoctorprofile');
+      } else {
+        // ✅ Existing doctor
+        navigate('/doctordashboard');
+      }
+    }
+
+    // ✅ Optional: You can also auto-redirect admin here
+    if (userRole === 'admin') {
+      navigate('/admindashboard');
+    }
+
+  } else {
+    // No session: fallback to guest mock
+    setCurrentUser(MOCK_USERS[mockUserRole]);
+  }
+
+  setLoadingUser(false);
+};
+
+
+
 
     checkSession();
 
@@ -188,7 +230,6 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['guest', 'doctor']}>
                 <CompleteDoctorProfile />
-                <AddSchedule/>
               </ProtectedRoute>
             }
           />

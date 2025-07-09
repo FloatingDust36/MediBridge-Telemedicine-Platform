@@ -3,6 +3,14 @@ import React, { useState, useEffect, useCallback } from "react";
 import "./PatientDashboard.css";
 import logo from '../assets/MediBridge_LogoClear.png';
 
+interface AppointmentItem {
+  id: string;
+  doctorName: string;
+  date: string;
+  time: string;
+  isToday: boolean;
+}
+
 const PatientDashboardSection: React.FC<{ data: any }> = ({ data }) => {
   if (!data) return <div style={{ color: 'black' }}>Loading patient info...</div>;
 
@@ -25,56 +33,100 @@ const PatientDashboardSection: React.FC<{ data: any }> = ({ data }) => {
   );
 };
 
-const NotesSection: React.FC = () => {
-  const [patientNotes, setPatientNotes] = useState<string[]>([]);
-  const [newNote, setNewNote] = useState("");
-
-  const handleAddNote = () => {
-    if (newNote.trim() !== "") {
-      setPatientNotes([...patientNotes, newNote.trim()]);
-      setNewNote("");
-    }
-  };
-
-  return (
-    <div className="card-base notes-section">
-      <h3 className="notes-title">📝 Patient Notes</h3>
-      <div className="card-content">
-        <ul className="notes-list">
-          {patientNotes.map((note, index) => (
-            <li key={index}>{note}</li>
-          ))}
-        </ul>
-        <textarea
-          className="add-note-textarea"
-          placeholder="Add a new note..."
-          value={newNote}
-          onChange={(e) => setNewNote(e.target.value)}
-          rows={3}
-        ></textarea>
-        <button className="add-note-button" onClick={handleAddNote}>Add Note</button>
-      </div>
-    </div>
-  );
-};
-
 const ConsultationAppointmentsSection: React.FC = () => {
+  const [appointments, setAppointments] = useState<AppointmentItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      setLoading(true);
+      const { data: { user }, error: sessionError } = await supabase.auth.getUser();
+      if (sessionError || !user) {
+        console.error("User not authenticated");
+        setLoading(false);
+        return;
+      }
+
+      const now = new Date().toISOString();
+
+      const { data, error } = await supabase
+        .from('appointments')
+        .select(`
+          id,
+          start_time,
+          end_time,
+          doctor_id,
+          doctors (
+            user_id,
+            users (
+              full_name
+            )
+          )
+        `)
+        .eq('patient_id', user.id)
+        .gte('start_time', now)
+        .order('start_time', { ascending: true });
+
+      if (error) {
+        console.error("Error fetching appointments:", error.message);
+        setAppointments([]);
+      } else {
+        const mapped = data.map((app: any) => {
+          const start = new Date(app.start_time);
+          const today = new Date();
+          const isToday =
+            start.getFullYear() === today.getFullYear() &&
+            start.getMonth() === today.getMonth() &&
+            start.getDate() === today.getDate();
+
+          return {
+            id: app.id,
+            doctorName: app.doctors?.users?.full_name
+              ? `Dr. ${app.doctors.users.full_name}`
+              : 'Unknown Doctor',
+            date: start.toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
+            }),
+            time: start.toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+            isToday,
+          };
+        });
+
+        setAppointments(mapped);
+      }
+
+      setLoading(false);
+    };
+
+    fetchAppointments();
+  }, []);
+
   return (
     <div className="card-base consultation-section">
       <h3 className="consultation-section-title">🗓️ Consultation Appointments</h3>
       <div className="card-content">
-        <p>No appointments to display.</p>
-      </div>
-    </div>
-  );
-};
-
-const PrescriptionsSection: React.FC = () => {
-  return (
-    <div className="card-base prescriptions-section">
-      <h3 className="prescriptions-title">💊 Prescriptions</h3>
-      <div className="card-content">
-        <p>No prescriptions found.</p>
+        {loading ? (
+          <p>Loading appointments...</p>
+        ) : appointments.length > 0 ? (
+          <ul className="appointments-list">
+            {appointments.map((app) => (
+              <li key={app.id} className="appointment-item">
+                <strong>{app.doctorName}</strong><br />
+                {app.date} – {app.time}
+                {app.isToday && (
+                  <span className="today-indicator">• Today</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No appointments to display.</p>
+        )}
       </div>
     </div>
   );
@@ -195,14 +247,9 @@ const PatientDashboard: React.FC = () => {
       <section className="dashboard-section card-margin-bottom">
         <PatientDashboardSection data={patientData} />
       </section>
-      <section className="notes-section card-margin-bottom">
-        <NotesSection />
-      </section>
+
       <section className="consultation-section card-margin-bottom">
         <ConsultationAppointmentsSection />
-      </section>
-      <section className="prescriptions-section card-margin-bottom">
-        <PrescriptionsSection />
       </section>
     </div>
   );

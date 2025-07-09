@@ -1,215 +1,174 @@
-.doctor-profile-card * {
-    box-sizing: border-box !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    position: static !important;
-    float: none !important;
-    clear: both !important;
-}
+/* src/pages/DoctorProfile.css */
 
 .doctor-profile-container {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    min-height: calc(100vh - 60px);
+    align-items: flex-start; /* Align to top */
+    min-height: calc(100vh - 60px); /* Adjust for fixed header if needed */
     padding: 40px 20px;
-    background-color: #f0f5fa;
+    background-color: #f0f2f5;
     font-family: 'Arial', sans-serif;
-    box-sizing: border-box;
+    position: relative; /* Needed for positioning the popup */
 }
 
+/* Profile Card */
 .doctor-profile-card {
-    background-color: #ffffff;
+    background-color: #fff;
+    padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
     width: 100%;
-    max-width: 600px;
-    box-sizing: border-box !important;
     display: flex;
     flex-direction: column;
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
-    position: relative;
-    scrollbar-width: thin;
-    scrollbar-color: #888 #f0f5fa;
+    gap: 24px;
 }
 
-.doctor-profile-card::-webkit-scrollbar {
-    width: 8px;
-}
-.doctor-profile-card::-webkit-scrollbar-track {
-    background: #f0f5fa;
-    border-radius: 10px;
-}
-.doctor-profile-card::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
-}
-.doctor-profile-card::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
+/* Header Section for Profile Card */
 .profile-header-area {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    margin-bottom: 35px !important;
-    border-bottom: 2px solid #E0E0E0;
-    padding-bottom: 15px !important;
-    flex-shrink: 0 !important;
-    width: 100% !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
 }
 
 .profile-title {
-    font-size: 2.2em;
-    color: #007bff;
-    text-align: left;
+    font-size: 28px;
     font-weight: bold;
-    margin: 0 !important;
-    flex-grow: 1 !important;
-    padding: 0 !important;
+    color: #333;
+    margin: 0;
 }
 
-.profile-message {
-    padding: 12px 20px;
-    margin-bottom: 20px !important;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 1em;
-    flex-shrink: 0 !important;
-    width: 100% !important;
-}
-
-.profile-message.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.profile-message.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-.doctor-form-area {
-    display: flex !important;
-    flex-direction: column !important;
-    flex-grow: 1 !important;
-    padding-bottom: 20px !important;
-    width: 100% !important;
-}
-
-.form-group {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    width: 100% !important;
-    margin-bottom: 20px !important;
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-}
-
-.doctor-form-area .form-group:last-child {
-    margin-bottom: 0 !important;
-}
-
-.form-label {
-    font-size: 0.95em;
-    color: #333333;
-    margin-bottom: 6px !important;
-    font-weight: 600;
-    width: 100% !important;
-    text-align: left;
-    display: block !important;
-}
-
-.form-input-container {
-    width: 100% !important;
-    display: block !important;
-}
-
+/* Input Field Styling - FIXED: Changed padding from 100px to 12px */
 .form-input {
-    width: 100% !important;
-    padding: 10px 12px;
-    border: 1px solid #C0C0C0;
+    width: 100%;
+    padding: 12px; /* CORRECTED PADDING */
+    border: 1px solid #ced4da; /* Light border */
     border-radius: 5px;
-    font-size: 1em;
-    color: #333333;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    box-sizing: border-box !important;
-    line-height: 1.5;
-    display: block !important;
-}
-
-.form-input::placeholder {
-    color: #6C757D;
+    font-size: 16px;
+    color: #343a40;
+    background-color: #fdfefe; /* Light background */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box; /* Ensures padding is included in the element's total width and height */
+    min-width: 0; /* Prevents overflow issues in flex/grid contexts */
 }
 
 .form-input:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
     outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
+.form-input[disabled] {
+    background-color: #e9ecef; /* Slightly darker for disabled */
+    color: #6C757D;
+    cursor: not-allowed;
+}
+
+textarea.form-input {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Display text for non-editable fields or when not in edit mode - Ensures consistent boxed look */
 .profile-display-text {
-    background-color: #f0f5fa;
-    padding: 10px 12px;
-    border: 1px solid #E0E0E0;
+    padding: 12px; /* Consistent with form-input */
+    background-color: #ffffff; /* White background */
+    border: 1px solid #ffffff; /* Consistent light border */
     border-radius: 5px;
-    font-size: 1em;
-    color: #333333;
-    width: 100% !important;
-    min-height: 40px;
-    display: flex !important;
-    align-items: center !important;
-    box-sizing: border-box !important;
-    line-height: 1.5;
-    margin: 0 !important;
-    position: static !important;
-    top: auto !important;
-    left: auto !important;
+    font-size: 16px;
+    color: #495057;
+    min-height: 44px; /* Approximate height of form-input for visual consistency */
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
-.profile-actions {
-    display: flex !important;
-    justify-content: center !important;
-    gap: 15px !important;
-    margin-top: 30px !important;
-    width: 100% !important;
-    flex-shrink: 0 !important;
-    padding-top: 20px !important;
-    border-top: 1px solid #eee;
+/* Form Group Labels */
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
 }
 
-.submit-button,
-.cancel-button {
-    padding: 10px 22px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    font-weight: bold;
+/* General body text color as a fallback */
+body {
+    color: #333;
+}
+
+/* Form Group Layout */
+.doctor-form-area {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-input-container {
+    flex-grow: 1; /* Allows the input/display text to take available space */
+}
+
+/* Checkbox specific styling - MODIFIED to place label above */
+.checkbox-group {
+    display: flex; /* Use flexbox for alignment */
+    flex-direction: column; /* Stack label and checkbox vertically */
+    align-items: flex-start; /* Align label and checkbox to the left */
+    gap: 5px; /* Space between label and checkbox */
+}
+
+/* Ensure the label within the checkbox group doesn't have extra bottom margin */
+.checkbox-group .form-label {
+    margin-bottom: 0;
+}
+
+.form-checkbox {
+    width: 20px;
+    height: 20px;
     cursor: pointer;
+    vertical-align: middle;
+}
+
+/* --- BUTTON STYLES --- */
+.edit-button,
+.cancel-button,
+.submit-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
     transition: background-color 0.3s ease, transform 0.2s ease;
     min-width: 120px;
     text-align: center;
-    margin: 0 !important;
-    position: static !important;
 }
 
-.submit-button {
-    background-color: #28a745;
+.edit-button {
+    background-color: #007bff;
     color: white;
 }
 
-.submit-button:hover {
-    background-color: #218838;
+.edit-button:hover {
+    background-color: #0056b3;
     transform: translateY(-2px);
+}
+
+.edit-mode-buttons {
+    display: flex;
+    gap: 10px;
 }
 
 .cancel-button {
@@ -218,40 +177,117 @@
 }
 
 .cancel-button:hover {
-    background-color: #5a6268;
+    background-color: #5a6266;
     transform: translateY(-2px);
 }
 
-.edit-button {
-    background-color: #007bff;
+.submit-button {
+    background-color: #28a745;
     color: white;
-    padding: 10px 22px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    min-width: 120px;
-    text-align: center;
-    margin: 0 !important;
-    position: static !important;
-    top: auto !important;
-    left: auto !important;
-    align-self: center !important;
 }
 
-.edit-button:hover {
-    background-color: #0056b3;
+.submit-button:hover:not(:disabled) {
+    background-color: #218838;
     transform: translateY(-2px);
 }
 
-.doctor-profile-loading {
-    text-align: center;
-    margin-top: 50px;
-    font-size: 1.2em;
-    padding: 20px;
+.submit-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.submit-button:disabled::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* --- POPUP MESSAGE STYLES --- */
+.popup-message-container {
+    position: fixed;
+    top: -80px; /* Start off-screen */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 25px;
     border-radius: 8px;
-    background-color: #f0f5fa;
-    color: #007bff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    opacity: 0; /* Start invisible */
+    transition: top 0.5s ease-out, opacity 0.5s ease-out; /* Smooth transition */
+    min-width: 250px;
+    text-align: center;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-message-container.show {
+    top: 70px; /* Slide into view */
+    opacity: 1; /* Become visible */
+}
+
+.popup-message-container.success {
+    background-color: #4CAF50; /* Green for success */
+}
+
+.popup-message-container.error {
+    background-color: #f44336; /* Red for error */
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-header-area {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .profile-title {
+        font-size: 24px;
+    }
+
+    .edit-mode-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .edit-button,
+    .cancel-button,
+    .submit-button {
+        width: 100%;
+    }
+
+    .doctor-form-area {
+        grid-template-columns: 1fr;
+    }
+
+    .form-input,
+    .profile-display-text {
+        /* Adjusted padding for smaller screens if needed, still consistent */
+        padding: 10px;
+    }
+
+    .popup-message-container {
+        width: 90%;
+        left: 5%;
+        transform: translateX(0);
+    }
 }

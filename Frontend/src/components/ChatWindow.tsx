@@ -7,11 +7,13 @@ import type { Message } from '../pages/ChatbotPage';
 import './../pages/ChatbotPage.css';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
-const INACTIVITY_TIMEOUT = 120000; // 2 minutes
+const INACTIVITY_TIMEOUT = 180000; // 2 minutes
+
+const SYSTEM_INACTIVITY_PROMPT = "The user has not responded for a while. Send a message to check if they are okay and still there.";
 
 const WelcomeScreen = () => (
   <div className="welcome-screen">
-    <img src="/src/assets/pictures/chatbot-villamor.jpg" alt="MedBot" className="welcome-icon" />
+    <img src="/src/assets/MediBridge_LogoClear.png" alt="MedBot" className="welcome-icon" />
     <h2>MediBridge AI Assistant</h2>
     <p>Your personal health guide. Select a past conversation or click "New Chat" to begin.</p>
   </div>
@@ -140,7 +142,7 @@ const ChatWindow = ({
   };
   
   const sendInactivityMessage = () => {
-    sendMessage("The user has not responded for a while. Send a message to check if they are okay and still there.", null);
+    sendMessage(SYSTEM_INACTIVITY_PROMPT, null);
   };
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,7 +159,7 @@ const ChatWindow = ({
   return (
     <div className="chatbot-card">
       <div className="chatbot-header">
-        <img src="/src/assets/pictures/chatbot-villamor.jpg" alt="Chatbot Icon" className="chatbot-icon" />
+        <img src="/src/assets/MediBridge_LogoClear.png" alt="Chatbot Icon" className="chatbot-icon" />
         <h3 className="chatbot-title">AI Health Assistant</h3>
         {finalEsiLevel && activeSessionId && (
           <a href={`${API_URL}/session/${activeSessionId}/summary/pdf`} target="_blank" rel="noopener noreferrer" className="download-pdf-button">
@@ -168,35 +170,37 @@ const ChatWindow = ({
 
       <div className={`chatbot-messages ${isLoading ? 'loading' : ''}`}>
         {!activeSessionId ? <WelcomeScreen /> :
-          messages.map((msg, index) => (
-            <div key={msg.key || index} className={`message-row ${msg.type}-row`}>
-              {msg.type === 'user' ? (
-                <>
-                  <div className="message-bubble user">
-                    {msg.imageUrl && <img src={msg.imageUrl} alt="User upload" className="message-image" />}
-                    {msg.text && <div className="message-text"><ReactMarkdown>{msg.text}</ReactMarkdown></div>}
-                  </div>
-                  <img 
-                    src={"/images/default-patient-avatar.png"} 
-                    alt="user avatar" 
-                    className="chat-avatar"
-                  />
-                </>
-              ) : (
-                <>
-                  <img 
-                    src={"/images/chatbot-icon.png"} 
-                    alt="bot avatar" 
-                    className="chat-avatar"
-                  />
-                  <div className={`message-bubble bot ${!msg.text ? 'typing-indicator' : ''}`}>
-                    {msg.imageUrl && <img src={msg.imageUrl} alt="User upload" className="message-image" />}
-                    {msg.text ? <div className="message-text"><ReactMarkdown>{msg.text}</ReactMarkdown></div> : <><span></span><span></span><span></span></>}
-                  </div>
-                </>
-              )}
-            </div>
-          ))
+          messages
+            .filter(msg => msg.text !== SYSTEM_INACTIVITY_PROMPT) // This line fixes the bug
+            .map((msg, index) => (
+              <div key={msg.key || index} className={`message-row ${msg.type}-row`}>
+                {msg.type === 'user' ? (
+                  <>
+                    <div className="message-bubble user">
+                      {msg.imageUrl && <img src={msg.imageUrl} alt="User upload" className="message-image" />}
+                      {msg.text && <div className="message-text"><ReactMarkdown>{msg.text}</ReactMarkdown></div>}
+                    </div>
+                    <img 
+                      src={"/src/assets/pictures/chatbot-icon.png"} 
+                      alt="user avatar" 
+                      className="chat-avatar"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <img 
+                      src={"/src/assets/MediBridge_LogoClear.png"} 
+                      alt="bot avatar" 
+                      className="chat-avatar"
+                    />
+                    <div className={`message-bubble bot ${!msg.text ? 'typing-indicator' : ''}`}>
+                      {msg.imageUrl && <img src={msg.imageUrl} alt="User upload" className="message-image" />}
+                      {msg.text ? <div className="message-text"><ReactMarkdown>{msg.text}</ReactMarkdown></div> : <><span></span><span></span><span></span></>}
+                    </div>
+                  </>
+                )}
+              </div>
+            ))
         }
         <div ref={messagesEndRef} />
       </div>

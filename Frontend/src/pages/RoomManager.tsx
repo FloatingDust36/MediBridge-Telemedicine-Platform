@@ -1,28 +1,20 @@
+// Frontend/src/pages/RoomManager.tsx
+
 import React, { useState, useEffect } from 'react';
-import OnlineConsultation from './OnlineConsultation';
+import { Link } from 'react-router-dom'; // Import Link for navigation
 import supabase from '../lib/supabaseClient';
-import './RoomManager.css';
+import './RoomManager.css'; // We will use this for styling the new layout
 
 interface UserProfile {
   user_id: string;
   role: 'doctor' | 'patient' | 'admin' | null;
   full_name: string;
-  email: string;
-  phone_number?: string;
-  address?: string;
-  date_of_birth?: string;
 }
 
 const RoomManager: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
-  const [roomNameInput, setRoomNameInput] = useState('');
-  const [activeRoomName, setActiveRoomName] = useState<string | null>(null);
-  const [jitsiJwt, setJitsiJwt] = useState<string | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
-  const [loadingCall, setLoadingCall] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const API_BASE_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
     const fetchUserAndRole = async () => {
@@ -32,125 +24,50 @@ const RoomManager: React.FC = () => {
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
         if (authError || !user) {
-          setError('User not logged in or session expired. Please log in.');
-          setCurrentUser(null);
-          setLoadingUser(false);
-          return;
+          throw new Error('User not logged in or session expired. Please log in.');
         }
 
+        // Fetch the user's role and name from your 'users' table
         const { data: profile, error: profileError } = await supabase
           .from('users')
-          .select('user_id, role, full_name, email, phone_number, date_of_birth, address')
+          .select('user_id, role, full_name')
           .eq('user_id', user.id)
           .single();
 
         if (profileError || !profile) {
-          setError('Could not fetch user profile. Ensure user profile table is correctly set up for this user.');
-          setCurrentUser(null);
-          setLoadingUser(false);
-          return;
+          throw new Error('Could not fetch user profile.');
         }
 
-        setCurrentUser({
-            user_id: profile.user_id,
-            role: profile.role,
-            full_name: profile.full_name,
-            email: profile.email,
-            phone_number: profile.phone_number,
-            date_of_birth: profile.date_of_birth,
-            address: profile.address,
-        } as UserProfile);
-        setLoadingUser(false);
-
+        setCurrentUser(profile as UserProfile);
       } catch (err: any) {
-        console.error('Error fetching user or profile:', err);
-        setError(`Failed to load user data: ${err.message || 'Unknown error'}`);
-        setCurrentUser(null);
+        console.error('Error loading user data:', err);
+        setError(err.message || 'An unknown error occurred.');
+      } finally {
         setLoadingUser(false);
       }
     };
 
     fetchUserAndRole();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
+    // Listen for auth changes to re-fetch user data if needed
+    const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         fetchUserAndRole();
-      } else {
+      }
+      if (event === 'SIGNED_OUT') {
         setCurrentUser(null);
-        setActiveRoomName(null);
-        setJitsiJwt(null);
-        setLoadingUser(false);
       }
     });
 
     return () => {
-        authListener?.subscription.unsubscribe();
+      authListener?.subscription.unsubscribe();
     };
   }, []);
 
-  const generateUniqueRoomName = (prefix: string = 'consultation') => {
-    const timestamp = new Date().getTime();
-    const random = Math.random().toString(36).substring(2, 8);
-    return `${prefix}-${timestamp}-${random}`;
-  };
-
-  const handleGenerateAndJoin = async () => {
-    if (!currentUser) {
-      setError('User not loaded. Cannot create/join room.');
-      return;
-    }
-
-    setLoadingCall(true);
-    setError(null);
-
-    const roomToUse = currentUser.role === 'doctor' ? generateUniqueRoomName() : roomNameInput;
-
-    if (currentUser.role === 'patient' && !roomToUse.trim()) {
-      setError('Please enter a room code to join the consultation.');
-      setLoadingCall(false);
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/generate-jitsi-jwt`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          roomName: roomToUse,
-          user_id: currentUser.user_id,
-          user_name: currentUser.full_name,
-          user_email: currentUser.email,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to get JWT from backend (Status: ${response.status})`);
-      }
-
-      const data = await response.json();
-      setJitsiJwt(data.jwt);
-      setActiveRoomName(roomToUse);
-      setLoadingCall(false);
-
-    } catch (err: any) {
-      console.error('Error fetching JWT:', err);
-      setError(`Failed to start call: ${err.message || 'An unknown error occurred.'}`);
-      setLoadingCall(false);
-    }
-  };
-
-  const handleHangup = () => {
-    console.log('Call ended. Returning to room selection.');
-    setActiveRoomName(null);
-    setJitsiJwt(null);
-    setRoomNameInput('');
-  };
+  // --- Render logic ---
 
   if (loadingUser) {
-    return <div className="manager-status">Loading user data...</div>;
+    return <div className="manager-status">Loading...</div>;
   }
 
   if (error) {
@@ -161,46 +78,45 @@ const RoomManager: React.FC = () => {
     return <div className="manager-status">Please log in to access consultations.</div>;
   }
 
-    if (activeRoomName && jitsiJwt) {
-    return (
-        <OnlineConsultation
-        roomName={activeRoomName}
-        jwt={jitsiJwt}
-        onHangup={handleHangup}
-        userDisplayName={currentUser.full_name || currentUser.email}
-        userEmail={currentUser.email}
-        userId={currentUser.user_id}
-        />
-    );
-    }
+  // --- Main component JSX based on user role ---
 
   return (
     <div className="room-manager-container">
-      <h2 className="room-manager-header">Welcome, {currentUser.full_name} ({currentUser.role})</h2>
+      <h2 className="room-manager-header">
+        Online Consultation Room
+      </h2>
+      <p className="room-manager-welcome">
+        Welcome, {currentUser.full_name}
+      </p>
+
       {currentUser.role === 'doctor' ? (
-        <div className="doctor-section">
+        <div className="role-section doctor-section">
           <h3>Start a New Consultation</h3>
-          <p>A unique room name will be generated for your call.</p>
-          <button onClick={handleGenerateAndJoin} disabled={loadingCall}>
-            {loadingCall ? 'Starting Call...' : 'Create & Join Room'}
-          </button>
+          <p className="instructions">
+            Click the button below to create a new, secure Google Meet room.
+            Once the meeting starts, copy the link and send it to your patient via the <strong>Messages</strong> tab.
+          </p>
+          <a
+            href="https://meet.google.com/new"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="google-meet-button"
+          >
+            Start Google Meet
+          </a>
         </div>
       ) : (
-        <div className="patient-section">
-          <h3>Join an Existing Consultation</h3>
-          <input
-            type="text"
-            placeholder="Enter room code"
-            value={roomNameInput}
-            onChange={(e) => setRoomNameInput(e.target.value)}
-            disabled={loadingCall}
-          />
-          <button onClick={handleGenerateAndJoin} disabled={!roomNameInput.trim() || loadingCall}>
-            {loadingCall ? 'Joining Call...' : 'Join Room'}
-          </button>
+        <div className="role-section patient-section">
+          <h3>Join Your Consultation</h3>
+          <p className="instructions">
+            Your doctor will start the meeting and send you the Google Meet link through your private messages.
+            Please check your messages to join the call.
+          </p>
+          <Link to="/messages" className="messages-button">
+            Go to My Messages
+          </Link>
         </div>
       )}
-      {loadingCall && <p className="manager-status">Preparing your call...</p>}
     </div>
   );
 };
