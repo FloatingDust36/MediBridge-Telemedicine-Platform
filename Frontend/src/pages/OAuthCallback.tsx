@@ -1,4 +1,4 @@
-// src/pages/OAuthCallback.tsx
+// Frontend/src/pages/OAuthCallback.tsx
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../lib/supabaseClient';
@@ -14,58 +14,48 @@ const OAuthCallback = () => {
       } = await supabase.auth.getSession();
 
       if (error || !session) {
-        console.error('Session Error:', error?.message || 'No session found.');
-        navigate('/');
+        console.error('OAuthCallback: Session Error:', error?.message || 'No session found.');
+        navigate('/'); // Redirect to home on session error
         return;
       }
 
       const user = session.user;
       const userId = user.id;
 
-      const { data: existingUser, error: lookupError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
+      try {
+        // Verify that this user exists in your application's 'users' table
+        const { data: existingUserInDb, error: lookupError } = await supabase
+          .from('users')
+          .select('user_id') // We only need to confirm existence here
+          .eq('user_id', userId)
+          .single();
 
-      if (lookupError || !existingUser) {
-        await supabase.auth.signOut();
-        alert('This account is not registered in MediBridge.');
+        if (lookupError && lookupError.code !== 'PGRST116') { // PGRST116 means no rows found
+          console.error('OAuthCallback: Error looking up user in "users" table:', lookupError.message);
+          // If there's a real DB error, don't just sign out, maybe alert user
+          alert('An error occurred during login. Please try again.');
+          navigate('/');
+          return;
+        }
+
+        if (!existingUserInDb) {
+          // This Google account is authenticated with Supabase, but not registered in MediBridge's 'users' table.
+          // This means they tried to log in with an account that was never registered via MediBridge's flow.
+          await supabase.auth.signOut(); // Sign them out from Supabase Auth
+          alert('This Google account is not registered in MediBridge. Please register first.');
+          navigate('/'); // Redirect to home/registration page
+          return;
+        }
+
+        // If we reach here, the user is authenticated via Google AND exists in your 'users' table.
+        // --- CRITICAL CHANGE: Redirect to root ---
+        // App.tsx's useEffect will now detect the authenticated session,
+        // read the user's role and profile completion status, and navigate accordingly.
         navigate('/');
-        return;
-      }
 
-      const role = existingUser.role;
-
-      if (role === 'doctor') {
-        const { data: doctorProfile, error: doctorError } = await supabase
-          .from('doctors')
-          .select('id')
-          .eq('user_id', userId)
-          .single();
-
-        if (doctorError || !doctorProfile) {
-          navigate('/completedoctorprofile');
-        } else {
-          navigate('/doctordashboard');
-        }
-
-      } else if (role === 'patient') {
-        const { data: patientProfile, error: patientError } = await supabase
-          .from('patients')
-          .select('id')
-          .eq('user_id', userId)
-          .single();
-
-        if (patientError || !patientProfile) {
-          navigate('/completepatientprofile');
-        } else {
-          navigate('/patientdashboard');
-        }
-
-      } else if (role === 'admin') {
-        navigate('/admindashboard');
-      } else {
+      } catch (e) {
+        console.error('OAuthCallback: Unexpected error:', e);
+        alert('An unexpected error occurred during login.');
         navigate('/');
       }
     };
@@ -73,7 +63,11 @@ const OAuthCallback = () => {
     handleOAuthRedirect();
   }, [navigate]);
 
-  return <div>Signing you in, please wait...</div>;
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '20px', color: '#555' }}>
+      Signing you in, please wait...
+    </div>
+  );
 };
 
 export default OAuthCallback;

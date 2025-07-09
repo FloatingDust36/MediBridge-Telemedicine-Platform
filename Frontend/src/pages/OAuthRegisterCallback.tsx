@@ -1,3 +1,4 @@
+// Frontend/src/pages/OAuthRegisterCallback.tsx
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../lib/supabaseClient';
@@ -13,8 +14,8 @@ const OAuthRegisterCallback = () => {
       } = await supabase.auth.getSession();
 
       if (error || !session) {
-        console.error('Session Error:', error?.message || 'No session found.');
-        navigate('/');
+        console.error('OAuthRegisterCallback: Session Error:', error?.message || 'No session found.');
+        navigate('/'); // Redirect to home on session error
         return;
       }
 
@@ -22,70 +23,74 @@ const OAuthRegisterCallback = () => {
       const email = user.email;
       const userId = user.id;
 
-      const { data: existingUser } = await supabase
-        .from('users')
-        .select('email')
-        .eq('email', email)
-        .maybeSingle();
-
-      if (existingUser) {
-        await supabase.auth.signOut();
-        alert('This Google account is already registered in MediBridge.');
-        navigate('/');
-        return;
-      }
-
+      // Retrieve the selected role from localStorage
       const selectedRole = localStorage.getItem('selectedRole');
-      localStorage.removeItem('selectedRole');
+      localStorage.removeItem('selectedRole'); // Clean up localStorage immediately
 
       if (!selectedRole) {
-        alert('Missing selected role.');
-        navigate('/');
+        console.error('OAuthRegisterCallback: Missing selected role in localStorage.');
+        alert('Registration incomplete: User role not determined. Please try registering again.');
+        navigate('/'); // Redirect to home if role is missing
         return;
       }
 
-      await supabase.auth.updateUser({
-        data: { user_role: selectedRole },
-      });
-
-      await supabase.from('users').insert([
-        {
-          user_id: userId,
-          email,
-          role: selectedRole,
-          created_at: new Date(),
-          updated_at: new Date(),
-        },
-      ]);
-
-      // ✅ Only insert empty profile if truly new
-      if (selectedRole === 'doctor') {
-        const { data: existingDoctor } = await supabase
-          .from('doctors')
-          .select('id')
+      try {
+        // First, check if the user already exists in your 'users' table
+        const { data: existingUserInDb, error: checkError } = await supabase
+          .from('users')
+          .select('user_id')
           .eq('user_id', userId)
-          .maybeSingle();
+          .single();
 
-        if (!existingDoctor) {
-          await supabase.from('doctors').insert([{ user_id: userId }]);
+        if (checkError && checkError.code !== 'PGRST116') { // PGRST116 means no rows found
+          console.error('OAuthRegisterCallback: Error checking existing user in DB:', checkError.message);
+          alert('An error occurred during registration. Please try again.');
+          navigate('/');
+          return;
         }
 
-        navigate('/completedoctorprofile');
+        if (existingUserInDb) {
+          // If user already exists in your 'users' table, it means they've been through this flow before.
+          // Just ensure their auth metadata is up-to-date and redirect.
+          console.warn('OAuthRegisterCallback: User already exists in "users" table. Updating metadata.');
+          await supabase.auth.updateUser({
+            data: { user_role: selectedRole },
+          });
+        } else {
+          // If user does NOT exist in your 'users' table, insert them.
+          // This is a new Google registration for MediBridge.
+          const { error: insertError } = await supabase.from('users').insert([
+            {
+              user_id: userId,
+              email: email,
+              role: selectedRole,
+              created_at: new Date().toISOString(), // Use ISO string for consistency
+              updated_at: new Date().toISOString(),
+            },
+          ]);
 
-      } else if (selectedRole === 'patient') {
-        const { data: existingPatient } = await supabase
-          .from('patients')
-          .select('id')
-          .eq('user_id', userId)
-          .maybeSingle();
+          if (insertError) {
+            console.error('OAuthRegisterCallback: Error inserting new user into "users" table:', insertError.message);
+            alert('Failed to complete registration. Please try again.');
+            navigate('/');
+            return;
+          }
 
-        if (!existingPatient) {
-          await supabase.from('patients').insert([{ user_id: userId }]);
+          // Update Supabase auth user metadata with the selected role
+          // This ensures the role is immediately available in session.user.user_metadata
+          await supabase.auth.updateUser({
+            data: { user_role: selectedRole },
+          });
         }
 
-        navigate('/completepatientprofile');
+        // --- CRITICAL CHANGE: Redirect to root ---
+        // App.tsx's useEffect will now detect the authenticated session,
+        // read the user's role and profile completion status, and navigate accordingly.
+        navigate('/');
 
-      } else {
+      } catch (e) {
+        console.error('OAuthRegisterCallback: Unexpected error:', e);
+        alert('An unexpected error occurred during registration.');
         navigate('/');
       }
     };
@@ -93,7 +98,11 @@ const OAuthRegisterCallback = () => {
     handleGoogleRegistration();
   }, [navigate]);
 
-  return <div>Registering your account, please wait...</div>;
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '20px', color: '#555' }}>
+      Registering your account, please wait...
+    </div>
+  );
 };
 
 export default OAuthRegisterCallback;
