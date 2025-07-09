@@ -17,6 +17,7 @@ import CompleteDoctorProfile from './pages/CompleteDoctorProfile';
 import CompletePatientProfile from './pages/CompletePatientProfile';
 
 import DoctorDashboard from './pages/DoctorDashboard';
+import OnlineConsultation from './pages/OnlineConsultation';
 import ConsultationSummary from './pages/ConsultationSummary';
 import AddSchedule from './pages/AddSchedule';
 
