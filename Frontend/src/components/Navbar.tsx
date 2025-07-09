@@ -51,7 +51,7 @@ const Navbar: React.FC<NavbarProps> = ({ userType, onUserTypeChange }) => {
     try {
       const { data: { session }, error } = await supabase.auth.getSession();
       
-      if (error) {
+      if (error) { 
         console.error('Session check error:', error);
         return;
       }
