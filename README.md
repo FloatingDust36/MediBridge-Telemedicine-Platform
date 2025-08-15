@@ -4,29 +4,6 @@ MediBridge is a full-stack telemedicine platform designed to connect patients an
 
 ---
 
-## Features
-
-- **User Authentication:** Secure login and registration using Firebase Auth.
-- **Role-Based Access:** Separate dashboards for patients, doctors, and admins.
-- **AI Symptom Checker:** FastAPI-powered AI module for symptom analysis and clinical title generation.
-- **Appointment Scheduling:** Book, manage, and track appointments with healthcare providers.
-- **Video Consultations:** Real-time video calls using Daily.co or Jitsi Meet API.
-- **PDF Generation:** Downloadable summaries and prescriptions.
-- **Responsive UI:** Modern, mobile-friendly interface built with React and TypeScript.
-- **Admin Panel:** Manage users, appointments, and system logs.
-- **Database Integration:** PostgreSQL via Supabase for secure data storage.
-
----
-
-## Project Structure
-
-- **ai_assistant/**: Python FastAPI AI service for symptom checking and chat summarization.
-- **backend/**: Node.js/TypeScript backend API for appointments, authentication, and business logic.
-- **database/**: Database schema, migrations, and scripts.
-- **Frontend/**: React.js + TypeScript frontend application.
-
----
-
 ## Installation
 
 ### Prerequisites
@@ -103,12 +80,6 @@ Open [http://localhost:5173](http://localhost:5173) in your browser to view the 
 - **Book Appointment:** Log in as a patient, choose a doctor, and schedule a video consultation.
 - **Video Call:** Join a scheduled appointment and start a secure video call.
 - **Admin Panel:** Manage users and appointments as an admin.
-
----
-
-## Contributors
-
-See [README.md](README.md) for the full team list and roles.
 
 ---
 
